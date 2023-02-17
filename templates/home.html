@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+{% block content %}
+
+{% include 'chart/home.html' %}
+
+<div class="container-fluid">
+  <div class="row">
+    {% include 'top_filter.html' %}
+
+    <div class="col-lg-6">
+      <div class="row g-2">
+        <div class="col-12">
+          <div class="card mb-2 shadow-sm text-bg-warning">
+            <div class="row g-0 align-items-center">
+              {% for title, money, percent in value.money_card %}
+
+              <div class="col-6">
+                <div class="card-body">
+                  <h6 class="card-subtitle mb-2"><i class="fa-solid fa-money-bill me-2"></i> <a
+                      href="{{ url_for('revenue')}}" class="text-reset text-decoration-none stretched-link">{{ title
+                      }}</a></h6>
+                  <hr class="my-2">
+                  <h3 class="card-title">{{ "{:,} đ".format(money) }} </h3>
+
+                  <p class="text-muted card-text">
+                    <span class="">
+                      {% if percent[0]%}
+                      <i class="fa-solid fa-arrow-trend-up me-1 fw-bold text-success"></i>
+                      {% else %}
+                      <i class="fa-solid fa-arrow-trend-down me-1 fw-bold text-danger"></i>
+                      {% endif %}
+                      {{ percent[1] }}%</span>
+                    <span>hôm trước</span>
+                  </p>
+
+                </div>
+              </div>
+              {% endfor %}
+
+
+            </div>
+          </div>
+
+        </div>
+        {% for title, icon, count, percent in value.patient_card %}
+        <div class="col-6">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <h6 class="card-subtitle mb-2"><i class="{{ icon }} me-2 fa-fw"></i>{{ title }}</h6>
+              <hr class="my-2">
+              <div class="row">
+                <div class="col-4 align-items-center justify-content-start d-flex">
+                  <a href="{{ url_for('hospitalized') }}" class="text-decoration-none stretched-link link-dark m-0">
+                    <h5 class="card-title p-0 m-0">{{ count }}</h5>
+                  </a>
+                </div>
+                <div class="col-8 align-items-center justify-content-end d-flex">
+                  <p class="text-muted card-text p-0 m-0">
+
+                    <span>
+                      {% if percent[0]%}
+                      <i class="fa-solid fa-arrow-trend-up me-1 fw-bold text-success"></i>
+                      {% else %}
+                      <i class="fa-solid fa-arrow-trend-down me-1 fw-bold text-danger"></i>
+                      {% endif %}
+                      {{ percent[1] }}%</span>
+
+                    <span>hôm trước</span>
+
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+
+      </div>
+      <div class="row g-2">
+        <div class="col-lg-6">
+          <div class="card shadow-sm mt-3">
+            <div class="card-header">
+              <h6 class="m-0">Lượt khám bệnh</h6>
+            </div>
+
+            <ul class="list-group list-group-flush">
+              {% for department in value.visited_in_department %}
+              <a href="#"
+                class="list-group-item list-group-item-action d-flex justify-content-between align-items-start">
+
+                {{ department[0] }}
+                <span class="fw-bold ms-2">{{ department[1]}}</span>
+              </a>
+              {% endfor %}
+            </ul>
+          </div>
+
+          <!-- Chart lượt khám bệnh -->
+          <div class="border shadow-sm rounded p-1 bg-white mt-2">
+            <div id="piechart"></div>
+          </div>
+          <!-- End Chart lượt khám bệnh -->
+        </div>
+        <div class="col-lg-6">
+          <div class="card shadow-sm mt-3">
+            <div class="card-header">
+              <h6 class="m-0">Bệnh nhân nội trú</h6>
+            </div>
+            <ul class="list-group list-group-flush">
+              {% for department in value.patient_in_department %}
+              <a href="$"
+                class="list-group-item list-group-item-action d-flex justify-content-between align-items-start ">
+
+                {{ department[0] }}
+                <span class="fw-bold ms-2">{{ department[1]}}</span>
+
+              </a>
+              {% endfor %}
+            </ul>
+          </div>
+
+          <!-- Chart bệnh nhân nội trú -->
+          <div class="border shadow-sm rounded p-1 bg-white mt-2">
+            <div id="piechart_benhnhannoitru"></div>
+          </div>
+          <!-- End Chart bệnh nhân nội trú -->
+
+        </div>
+
+      </div>
+
+
+    </div>
+
+    <div class="col-lg-6">
+
+      <div class="list-group w-auto shadow-sm">
+        <a href="#" class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
+          <img src="https://github.com/twbs.png" alt="twbs" width="32" height="32" class="rounded-circle flex-shrink-0">
+          <div class="d-flex gap-2 w-100 justify-content-between">
+            <div>
+              <h6 class="mb-0">Thông báo mới 1</h6>
+              <p class="mb-0 opacity-75">Some placeholder content in a paragraph.</p>
+            </div>
+            <small class="opacity-50 text-nowrap">now</small>
+          </div>
+        </a>
+        <a href="#" class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
+          <img src="https://github.com/twbs.png" alt="twbs" width="32" height="32" class="rounded-circle flex-shrink-0">
+          <div class="d-flex gap-2 w-100 justify-content-between">
+            <div>
+              <h6 class="mb-0">Thông báo mới 2</h6>
+              <p class="mb-0 opacity-75">Some placeholder content in a paragraph that goes a little longer so it wraps
+                to a new line.</p>
+            </div>
+            <small class="opacity-50 text-nowrap">3d</small>
+          </div>
+        </a>
+        <a href="#" class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
+          <img src="https://github.com/twbs.png" alt="twbs" width="32" height="32" class="rounded-circle flex-shrink-0">
+          <div class="d-flex gap-2 w-100 justify-content-between">
+            <div>
+              <h6 class="mb-0">Thông báo mới 3</h6>
+              <p class="mb-0 opacity-75">Some placeholder content in a paragraph.</p>
+            </div>
+            <small class="opacity-50 text-nowrap">1w</small>
+          </div>
+        </a>
+      </div>
+
+      <div class="border shadow-sm rounded p-1 bg-white mt-3">
+        <div id="chart_soluotkham"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  const urlGenerator = '/dashboard/';
+  const todayURL = "{{ url_for('home') }}";
+</script>
+
+<script src="{{ url_for('static', filename='js/myjs.js')}}"></script>
+
+
+
+{% endblock %}

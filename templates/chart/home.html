@@ -1,0 +1,82 @@
+<script type="text/javascript">
+  const data_chart = {{ value.visited_in_department_chart| tojson }}
+  google.charts.load('current', { 'packages': ['corechart'] });
+  google.charts.setOnLoadCallback(drawChart);
+
+  function drawChart() {
+
+    var data = google.visualization.arrayToDataTable(data_chart);
+
+    var options = {
+      title: 'Thống kê lượt khám bệnh trong ngày',
+      legend: { position: 'none' }
+    };
+
+    var chart = new google.visualization.PieChart(document.getElementById('piechart'));
+
+    chart.draw(data, options);
+  }
+
+
+  $(window).resize(function () {
+    drawChart();
+  });
+</script>
+
+<!-- Biểu đồ 30 ngày gần nhất -->
+<script>
+  const date_chart2 = {{ value.soluotkham30ngay| tojson }}
+  google.charts.load('current', { packages: ['corechart', 'bar'] });
+  google.charts.setOnLoadCallback(drawTrendlines);
+
+  function drawTrendlines() {
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'Ngày');
+    data.addColumn('number', 'Số lượt khám');
+
+    data.addRows(date_chart2);
+
+    var options = {
+      title: 'Thống kê số lượt khám 30 ngày gần nhất'
+    };
+
+    var chart = new google.visualization.ColumnChart(document.getElementById('chart_soluotkham'));
+    chart.draw(data, options);
+
+
+  }
+
+  $(window).resize(function () {
+    drawTrendlines();
+  }); ll
+
+
+</script>
+
+<!-- chart bệnh nhân nội trú theo khoa -->
+<script type="text/javascript">
+  google.charts.load('current', { 'packages': ['corechart'] });
+  google.charts.setOnLoadCallback(drawBenhNhanNoiTru);
+
+  function drawBenhNhanNoiTru() {
+  const data_chart = {{ value.patient_in_department_chart| tojson }}
+
+
+    var data = google.visualization.arrayToDataTable(data_chart);
+
+    var options = {
+      title: 'Thống kê số bệnh nhân nội trú trong ngày',
+      legend: { position: 'none' }
+    };
+
+    var chart = new google.visualization.PieChart(document.getElementById('piechart_benhnhannoitru'));
+
+    chart.draw(data, options);
+  }
+
+
+  $(window).resize(function () {
+    drawBenhNhanNoiTru();
+  });
+</script>
+<!-- End chart bệnh nhân nội trú theo khoa -->

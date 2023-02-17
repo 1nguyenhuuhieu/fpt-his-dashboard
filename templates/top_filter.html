@@ -1,0 +1,48 @@
+
+<div class="col-12">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center  pb-2 mb-2 border-bottom">
+      <div>
+      <h1 class="h4 m-0 p-0">{{ title }} <span id="date_today"></span></h1>
+   
+
+      </div>
+      <script>
+        const dateToday = document.getElementById('date_today');
+        const today = {{ value.today|tojson }};
+        const event = new Date(today);
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        const dayLocale = event.toLocaleDateString('vi-VN', options)
+        dateToday.textContent = dayLocale
+      </script>
+
+
+      <div class="mb-2 mb-md-0  justify-content-end d-flex">
+        <div><button class="btn btn-sm btn-outline-secondary me-2 disabled"><i class="fa-solid fa-file-export me-2"></i>Xuất báo cáo</button></div>
+        <div>
+          <input type="date" class="form-control form-control-sm me-2 border-secondary"  id="dateQuery" value="{{ value.today }}" >
+          <a href="#" class="btn btn-success d-none " id="dateQueryLink">Xem</a>
+        </div>
+
+        <div class="ms-2">
+          <div class="btn-group">
+            <a href="#" class="btn btn-sm btn-outline-secondary" id="yesterdayLink"><i class="fa-solid fa-caret-left me-2"></i>Hôm trước</a>
+            <a href="{{ url_for('home') }}" class="btn btn-sm btn-outline-secondary" id="todayLink">Hôm nay</a>
+            <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+              <span class="visually-hidden">Toggle Dropdown</span>
+            </button>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="#">Tuần này</a></li>
+              <li><a class="dropdown-item" href="#">Tuần trước</a></li>
+              <li><a class="dropdown-item" href="#">Tháng này</a></li>
+              <li><a class="dropdown-item" href="#">Tháng trước</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="#">Tùy chỉnh</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+
+
