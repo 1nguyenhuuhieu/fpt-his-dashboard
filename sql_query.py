@@ -1,6 +1,5 @@
 from datetime import timedelta
 # Thống kê tiền doanh thu trong 1 ngày
-
 def doanhthu_day(day, cursor):
     try:
         q = cursor.execute(
@@ -602,25 +601,6 @@ def top10_doanhthu(day, cursor):
         print("Lỗi query top10_doanhthu")
         return None
 
-
-# SQL query tổng tiền trong ngày fast từ bảng nhh_revenue
-def total_money_between_fast(startday, endday, cursor):
-    try:
-        q = cursor.execute(
-            """
-            SELECT
-            COALESCE(SUM(tongdoanhthu), 0) as 'tongdoanhthu'
-            FROM nhh_revenue
-            WHERE NgayXacNhan BETWEEN ? AND ?
-            """, startday, endday
-        ).fetchone()[0]
-
-        return int(q)
-
-    except:
-        print("Lỗi query total_money_between_fast")
-        return None
-
 # SQL query thống kê số lượt nhập viện nội trú theo ngày
 def total_in_hospital_between(startday, endday, cursor):
     query = """
@@ -636,4 +616,51 @@ def total_in_hospital_between(startday, endday, cursor):
     except:
         print("Lỗi query total_in_hospital_between")
         return None
-       
+
+# SQL query số lượt xác nhận theo loại ngoại trú hoặc nội trú
+def confirmed_loai_day(day, loai, cursor):
+    try:
+        q = cursor.execute(
+            """
+            SELECT  
+            COALESCE(COUNT(TiepNhan.TiepNhan_Id),0)
+            FROM TiepNhan
+            INNER JOIN XacNhanChiPhi
+            ON TiepNhan.TiepNhan_Id = XacNhanChiPhi.TiepNhan_Id
+            WHERE XacNhanChiPhi.NgayXacNhan = ?
+            AND Loai=?
+            """, day, loai
+        ).fetchone()[0]
+
+        return q
+    except:
+        print("Lỗi query confirmed_loai_day")
+        return None
+    
+
+# Xác nhận chi phí cuối cùng
+def last_confirmed(cursor):
+    q = cursor.execute(
+        """
+        SELECT TOP 1
+        SoTiepNhan, XacNhanChiPhi.BenhNhan_Id, ThoiGianTiepNhan, XacNhanChiPhi.NgayTao, TongDoanhThu, Chandoan, Loai, TenPhongKham
+        FROM TiepNhan
+        INNER JOIN XacNhanChiPhi
+        ON TiepNhan.TiepNhan_Id = XacNhanChiPhi.TiepNhan_Id
+        ORDER BY XacNhanChiPhi.XacNhanChiPhi_Id DESC
+        """
+    ).fetchone()
+
+    return q
+
+# SQL query thời gian update mới nhất doanh thu
+def last_money_update(cursor):
+    q = cursor.execute(
+        """
+        SELECT TOP 1 NgayTao
+        FROM XacNhanChiPhi
+        ORDER BY XacNhanChiPhi_Id DESC
+        """
+    ).fetchone()[0]
+
+    return q

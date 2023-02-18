@@ -8,19 +8,21 @@ from time import time
 from flask import jsonify
 
 import sql_query
-import threading
-import sqlite3
-
 
 
 # Kết nối database sql server
+# def get_db():
+#     server = '192.168.123.254'
+#     database = 'eHospital_NgheAn'
+#     username = 'sa'
+#     password = 'toanthang'
+#     cnxn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER=' +
+#                           server+';DATABASE='+database+';UID='+username+';PWD=' + password)
+#     return cnxn
+
 def get_db():
-    server = '192.168.123.254'
-    database = 'eHospital_NgheAn'
-    username = 'sa'
-    password = 'toanthang'
-    cnxn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER=' +
-                          server+';DATABASE='+database+';UID='+username+';PWD=' + password)
+    cnxn = pyodbc.connect(driver='{ODBC Driver 17 for SQL Server}', server='localhost', database='eHospital_NgheAn',               
+               trusted_connection='yes')
     return cnxn
 
 def get_change(current, previous):
@@ -34,6 +36,7 @@ def get_change(current, previous):
         return (current > previous, round((abs(current - previous) / previous) * 100, 1))
     except ZeroDivisionError:
         return (current > previous, 0)
+    
 def get_percent(current, previous):
     if not current:
         current = 0
@@ -45,16 +48,6 @@ def get_percent(current, previous):
         return (current > previous, round((current/ previous) * 100, 1))
     except ZeroDivisionError:
         return (current > previous, 0)
-
-    
-# Tính trung bình số tiền trên mỗi xác nhận
-def abs_confirmed(count, total):
-    if count:
-        avg = round(total/count)
-    else:
-        avg = 0
-
-    return avg
 
 # Convert to google chart data
 def convert_to_chart(list):
@@ -85,7 +78,6 @@ def get_day(day):
     last_first_year_day = first_year_day + relativedelta(years=-1)
     end_last_year_day = first_year_day + timedelta(days=-1)
 
-
     day_dict['today'] = today
     day_dict['yesterday'] = yesterday
     day_dict['mon_day'] = mon_day
@@ -100,9 +92,7 @@ def get_day(day):
     day_dict['last_first_year_day'] = last_first_year_day
     day_dict['end_last_year_day'] = end_last_year_day
     
-
     return day_dict
-
 
 
 huonggiaiquyet = {
@@ -121,111 +111,6 @@ huonggiaiquyet = {
     9165: "Khám Thêm Phòng"
 }
 
-# SQL query -----------------------------------------
-
-# SQL query số lượt xác nhận theo loại ngoại trú hoặc nội trú
-def query_confirmed_day(day, loai, cursor):
-    try:
-        q = cursor.execute(
-            """
-            SELECT  
-            COUNT(TiepNhan.TiepNhan_Id)
-            FROM TiepNhan
-            INNER JOIN XacNhanChiPhi
-            ON TiepNhan.TiepNhan_Id = XacNhanChiPhi.TiepNhan_Id
-            WHERE XacNhanChiPhi.NgayXacNhan = ?
-            AND Loai=?
-
-            """, day, loai
-        ).fetchone()[0]
-    except:
-        q = 0
-
-    return q
-
-
-# SQL query số lượt xác nhận trong khoảng ngày
-def query_all_confirmed_day(startday, endday, cursor):
-    try:
-        q = cursor.execute(
-            """
-            SELECT  
-            COUNT(TiepNhan.TiepNhan_Id)
-            FROM TiepNhan
-            INNER JOIN XacNhanChiPhi
-            ON TiepNhan.TiepNhan_Id = XacNhanChiPhi.TiepNhan_Id
-            WHERE XacNhanChiPhi.NgayXacNhan BETWEEN ? AND ?
-            """, startday, endday
-        ).fetchone()[0]
-    except:
-        q = 0
-
-    return q
-
-# SQL query thống kê tổng doanh thu theo nội trú, ngoại trú
-def query_confirmed_money_day(day, loai, cursor):
-    try:
-        q = int(cursor.execute(
-            """
-            SELECT  
-            SUM(TiepNhan.TongDoanhThu)
-            FROM TiepNhan
-            INNER JOIN XacNhanChiPhi
-            ON TiepNhan.TiepNhan_Id = XacNhanChiPhi.TiepNhan_Id
-            WHERE XacNhanChiPhi.NgayXacNhan = ?
-            AND Loai=?
-
-            """, day, loai
-        ).fetchone()[0])
-    except:
-        q = 0
-
-    return q
-
-
-# SQL query thời gian update mới nhất doanh thu
-def query_last_money_update(cursor):
-    q = cursor.execute(
-        """
-        SELECT TOP 1 NgayTao
-        FROM XacNhanChiPhi
-        ORDER BY XacNhanChiPhi_Id DESC
-        """
-    ).fetchone()[0]
-
-    return q
-
-# Thống kê doanh thu từng khoa trong khoảng ngày
-def query_between_day_money_department(startday, endday, cursor):
-    q = cursor.execute(
-        """
-        SELECT TenPhongKham, COALESCE(SUM(TongDoanhThu),0) as 'total_money'
-        FROM XacNhanChiPhi
-        INNER JOIN TiepNhan
-        ON TiepNhan.TiepNhan_Id = XacNhanChiPhi.TiepNhan_Id
-        WHERE XacNhanChiPhi.NgayXacNhan BETWEEN ? AND ?
-        GROUP BY TenPhongKham
-        ORDER BY total_money
-        """, startday, endday
-    ).fetchall()
-
-    return q
-
-# Xác nhận chi phí cuối cùng
-def query_last_confirmed(cursor):
-    q = cursor.execute(
-        """
-        SELECT TOP 1
-        SoTiepNhan, XacNhanChiPhi.BenhNhan_Id, ThoiGianTiepNhan, XacNhanChiPhi.NgayTao, TongDoanhThu, Chandoan, Loai, TenPhongKham
-        FROM TiepNhan
-        INNER JOIN XacNhanChiPhi
-        ON TiepNhan.TiepNhan_Id = XacNhanChiPhi.TiepNhan_Id
-        ORDER BY XacNhanChiPhi.XacNhanChiPhi_Id DESC
-        """
-    ).fetchone()
-
-    return q
-
 
 # -------------------------------------------------------------
 
@@ -239,8 +124,6 @@ app.jinja_env.filters['zip'] = zip
 @app.route("/dashboard/<string:day_query>")
 @app.route("/")
 def home(day_query=None):
-
-
     # kết nối database sql server
     cnxn = get_db()
     cursor = cnxn.cursor()
@@ -401,8 +284,8 @@ def revenue(day_query=None):
     
     last_30days_department_money_chart.insert(0, ['Khoa', 'Số tiền'])
 
-    confirmed_visited = query_confirmed_day(today, 'NgoaiTru', cursor)
-    confirmed_hospital = query_confirmed_day(today, 'NoiTru', cursor)
+    confirmed_visited = sql_query.confirmed_loai_day(today, 'NgoaiTru', cursor)
+    confirmed_hospital = sql_query.confirmed_loai_day(today, 'NoiTru', cursor)
     confirmed_total = confirmed_visited + confirmed_hospital
 
     money_visited = sql_query.doanhthu_loai_day(today, 'NgoaiTru', cursor)
@@ -560,12 +443,10 @@ def revenue(day_query=None):
     # Doanh thu theo từng phòng khám, từng khoa
     money_department = sql_query.money_department_day(today, cursor)
     money_department = convert_to_chart(money_department)
-    money_department_chart = money_department.copy()
-
-    last_update_time = query_last_money_update(cursor)
+    last_update_time = sql_query.last_money_update(cursor)
     last_update_time = last_update_time.strftime("%H:%M:%S  %d-%m-%Y")
 
-    last_confirmed = query_last_confirmed(cursor)
+    last_confirmed = sql_query.last_confirmed(cursor)
 
     recent_confirmed_in_day = sql_query.recent_confirmed_review(today, cursor)
 
