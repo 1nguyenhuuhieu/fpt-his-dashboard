@@ -1,5 +1,8 @@
-from datetime import timedelta
+from datetime import timedelta, datetime
 # Thống kê tiền doanh thu trong 1 ngày
+
+
+
 def doanhthu_day(day, cursor):
     try:
         q = cursor.execute(
@@ -299,7 +302,7 @@ def doanhthu_dichvu_duoc_day(day, cursor):
 
 
 # SQL query tổng tiền trong khoảng ngày
-def total_money_between_slow(startday, endday, cursor):
+def total_money_between(startday, endday, cursor):
     try:
         q = cursor.execute(
             """
@@ -318,7 +321,7 @@ def total_money_between_slow(startday, endday, cursor):
     
 
 # SQL query tổng tiền trong khoảng ngày fast dựa trên bảng nhh_revennue từ ngày 2023-02-01 trở về trước 
-def total_money_between(startday, endday, cursor):
+def total_money_between_union(startday, endday, cursor):
     query = """
             SELECT SUM(tongdoanhthu) FROM(
             SELECT
@@ -341,10 +344,16 @@ def total_money_between(startday, endday, cursor):
     except:
         print("Lỗi query total_money_between")
         return None
+    
+# Tổng doanh thu trong khoảng ngày + với giá trị tính trước
+def total_money_between_year(startday, endday, cursor):
+    total_money_after = int(383950334280.523000)
+    break_day = '2023-02-01'
+    break_day = datetime.strptime(break_day, '%Y-%m-%d')
 
 
 # SQL query tổng doanh thu ngoại trú, nội trú trong khoảng ngày
-def doanhthu_loai_between_slow(startday, endday , loai, cursor):
+def doanhthu_loai_between(startday, endday , loai, cursor):
     try:
         q = cursor.execute(
             """
@@ -362,7 +371,7 @@ def doanhthu_loai_between_slow(startday, endday , loai, cursor):
         return None
 
 # SQL query tổng doanh thu ngoại trú trong khoảng ngày union với bảng nhh_revennue_visited từ ngày 2023/02/01 trở về trước
-def doanhthu_visited_between(startday, endday, cursor):
+def doanhthu_visited_between_union(startday, endday, cursor):
     query = """
             SELECT SUM(tongdoanhthu) FROM(
             SELECT
@@ -388,7 +397,7 @@ def doanhthu_visited_between(startday, endday, cursor):
 
 
 # SQL query tổng doanh thu nội trú trong khoảng ngày union với bảng nhh_revennue_visited từ ngày 2023/02/01 trở về trước
-def doanhthu_hospitalized_between(startday, endday, cursor):
+def doanhthu_hospitalized_between_union(startday, endday, cursor):
     query = """
             SELECT SUM(tongdoanhthu) FROM(
             SELECT
@@ -413,7 +422,7 @@ def doanhthu_hospitalized_between(startday, endday, cursor):
         return None
 
 # SQL query trung bình doanh thu mỗi ngày trong khoảng ngày
-def avg_doanhthu_between_slow(startday, endday, cursor):
+def avg_doanhthu_between(startday, endday, cursor):
     try:
         q = cursor.execute(
             """
@@ -434,7 +443,7 @@ def avg_doanhthu_between_slow(startday, endday, cursor):
         return None
     
 # SQL query trung bình doanh thu mỗi ngày trong khoảng ngày UNION với bảng nhh_revenue
-def avg_doanhthu_between(startday, endday, cursor):
+def avg_doanhthu_between_union(startday, endday, cursor):
     query = """
             SELECT AVG(tongdoanhthu) FROM(
             SELECT
@@ -459,7 +468,7 @@ def avg_doanhthu_between(startday, endday, cursor):
         return None
 
 # SQL query trung bình doanh thu mỗi xác nhận
-def avg_doanhthu_confirmed_slow(startday, endday, cursor):
+def avg_doanhthu_confirmed(startday, endday, cursor):
     try:
         q = cursor.execute(
             """
@@ -480,7 +489,7 @@ def avg_doanhthu_confirmed_slow(startday, endday, cursor):
         return None
 
 # SQL query trung bình doanh thu mỗi xác nhận trong khoảng ngày UNION với bảng nhh_revenue_confirmed từ ngày 2023-02-01 trở về trước
-def avg_doanhthu_confirmed(startday, endday, cursor):
+def avg_doanhthu_confirmed_union(startday, endday, cursor):
     query = """
     SELECT AVG(tongdoanhthu) FROM(
     SELECT

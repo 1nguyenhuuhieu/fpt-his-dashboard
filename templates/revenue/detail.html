@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<span class=""><i class="fa-solid fa-file-invoice me-2"></i>{% block title %}Thống kê doanh thu{% endblock %}</span>
+{% endblock %}
+{% block content %}
+{% include 'revenue/detail_chart.html' %}
+<div class="container-fluid">
+
+    <div class="row mt-3 mb-2">
+        <div class="col-12">
+          {% include 'recent.html' %}
+        </div>
+      </div>
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="row">
+                  <!-- Doanh thu thống kê theo tuần, tháng, năm -->
+
+                {% for icon, title, subtitle, money, progressbar_title, progressbar_value, last_money in value.bellow_card %}
+                <div class="col-6">
+                    <div class="card shadow-sm mb-3">
+                        <div class="card-body">
+                            <h6 class="card-subtitle mb-2"><i class="{{ icon }} me-2 fa-fw"></i>{{ title }}
+                                </h5>
+                                <p class="card-text text-muted fst-italic m-0">
+                                    <small>{{ subtitle }}</small>
+                                    </p>
+                            <hr class="my-2">{% for title_money, number in value.bellow_card_money_title|zip(money) %}
+                                <div class="card-text d-flex justify-content-between">
+                                    <span> {{ title_money }}</span>
+                                    <span class="fw-bold">{{"{:,} đ".format(number) }}</span>
+                                </div>
+                            {% endfor %}
+                            <hr class="my-2">
+
+                            <p class="mb-2 align-items-between justify-content-between d-flex"> 
+                                <small>{{progressbar_title}}</small>
+                                <small class=" fw-bold ">{{"{:,} đ".format(last_money) }}</small>
+                             </p>
+                            
+                            <div class="progress" role="progressbar" aria-label="Animated striped example" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
+                                <div class="progress-bar
+                                {% if progressbar_value[0] == False %}
+                                 bg-danger
+                                 {% else %}
+                                 bg-success
+                                 {% endif %}
+                                 " style="width: {{progressbar_value[1]}}%">{{progressbar_value[1]}}%</div>
+                              </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                <!-- End Doanh thu thống kê theo tuần, tháng, năm -->
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<script>
+    const urlGenerator = '/revenue/detail/';
+    const todayURL = "{{ url_for('revenue_detail') }}"
+</script>
+<script src="{{ url_for('static', filename='js/myjs.js')}}"></script>
+{% endblock %}

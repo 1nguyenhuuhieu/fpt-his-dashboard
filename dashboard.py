@@ -280,26 +280,26 @@ def revenue(day_query=None):
     last_first_year_day = day_dict['last_first_year_day']
     end_last_year_day = day_dict['end_last_year_day']
 
+
+   
     # Doanh thu trong ngày
     today_money = sql_query.doanhthu_day(today, cursor)
-
-
     yesterday_money = sql_query.doanhthu_day(yesterday, cursor)
     percent_doanhthu = get_change(today_money, yesterday_money)
     money_card_top = ("Trong ngày này", today_money, percent_doanhthu)
-
+    
+   
     # Doanh thu 30 ngày gần nhất
     last30day = today - timedelta(days=50)
     last_30days_money = sql_query.doanhthu_betweenday(last30day, today, cursor)
     last_30days_money = [[ngayxacnhan.strftime(
         "%A %d-%m-%Y"), int(tongdoanhthu)] for ngayxacnhan, tongdoanhthu in last_30days_money]
     last_30days_money.reverse()
-
+    
 
     # Doanh thu 30 ngày gần nhất theo từng khoa phòng
     last_30days_department_money = sql_query.money_department_betweenday(
         last30day, today, cursor)
-
     # Tạo dữ liệu cho chart
     last_30days_department_money_chart = convert_to_chart(last_30days_department_money)
     
@@ -323,32 +323,27 @@ def revenue(day_query=None):
         ['Nội trú', money_hospital],
     ]
 
-    
-    
-    
 
+    c_time = time()
     # Thống kê trong tuần
     week_money = sql_query.total_money_between(mon_day, today, cursor)
     week_avg_confirmed = sql_query.avg_doanhthu_confirmed(mon_day, today, cursor)
     week_avg_money = sql_query.avg_doanhthu_between(startday=mon_day, endday=today, cursor=cursor)
-    visited_money_week = sql_query.doanhthu_visited_between(
-        mon_day, today, cursor)
-    hospital_money_week = sql_query.doanhthu_hospitalized_between(
-        mon_day, today, cursor)
-
-
+    visited_money_week = sql_query.doanhthu_loai_between(
+        mon_day, today,'NgoaiTru', cursor)
+    hospital_money_week = sql_query.doanhthu_loai_between(
+        mon_day, today,'NoiTru', cursor)
 
     # Thống kê trong tuần trước
     last_week_money = sql_query.total_money_between(
         last_week_monday, last_week_sun_day, cursor)
     last_week_avg_money = sql_query.avg_doanhthu_between(last_week_monday,last_week_sun_day, cursor)
     last_week_avg_confirmed = sql_query.avg_doanhthu_confirmed(last_week_monday,last_week_sun_day, cursor)
-    visited_money_last_week = sql_query.doanhthu_visited_between(
-        last_week_monday, last_week_sun_day, cursor)
-    hospital_money_last_week = sql_query.doanhthu_hospitalized_between(
-        last_week_monday, last_week_sun_day, cursor)
+    visited_money_last_week = sql_query.doanhthu_loai_between(
+        last_week_monday, last_week_sun_day,'NgoaiTru', cursor)
+    hospital_money_last_week = sql_query.doanhthu_loai_between(
+        last_week_monday, last_week_sun_day,'NoiTru', cursor)
 
-        
     week_progress_bar_title = 'So với tuần trước'
     week_progress_bar_value = get_percent(week_money, last_week_money)
 
@@ -357,47 +352,6 @@ def revenue(day_query=None):
         twolast_week_monday, twolast_week_sun_day, cursor)
     last_week_progress_bar_title = 'So với tuần trước'
     last_week_progress_bar_value = get_percent(last_week_money, twolast_week_money)
-
-
-    # Thống kê trong tháng
-    month_money = sql_query.total_money_between(first_month_day, today, cursor)
-
-    month_avg_money = sql_query.avg_doanhthu_between(first_month_day, today, cursor)
-
-    month_avg_confirmed = sql_query.avg_doanhthu_confirmed(first_month_day, today, cursor)
-
-    visited_money_month = sql_query.doanhthu_visited_between(
-        first_month_day, today, cursor)
-    hospital_money_month = sql_query.doanhthu_hospitalized_between(
-        first_month_day, today, cursor)
-
-    last_month_money =  sql_query.total_money_between(
-        last_first_month_day, last_end_month_day, cursor)
-
-
-    month_progress_bar_title = 'So với tháng trước'
-    month_progress_bar_value = get_percent(month_money, last_month_money)
-
-   
-    # Thống kê trong năm
-    year_money = sql_query.total_money_between(first_year_day, today, cursor)
-
-    year_avg_money = sql_query.avg_doanhthu_between(first_year_day, today, cursor)
-
-    year_avg_confirmed = sql_query.avg_doanhthu_confirmed(first_year_day, today, cursor)
-
-    visited_money_year = sql_query.doanhthu_visited_between(
-        first_year_day, today, cursor)
-    hospital_money_year = sql_query.doanhthu_hospitalized_between(
-        first_year_day, today, cursor)
-
-    
-    last_year_money = sql_query.total_money_between(
-        last_first_year_day, end_last_year_day, cursor)
-    year_progress_bar_title = 'So với năm trước'
-    year_progress_bar_value = get_percent(year_money, last_year_money)
-
-
     bellow_card = [
         [
             'fa-solid fa-calendar-week',
@@ -426,34 +380,6 @@ def revenue(day_query=None):
             twolast_week_money
          ],
 
-        [
-            'fa-solid fa-calendar-days',
-            'Trong tháng này',
-            f'ngày {first_month_day.strftime("%d-%m-%Y")} đến {today.strftime("%d-%m-%Y")}',
-         [month_money,
-         visited_money_month,
-          hospital_money_month,
-          month_avg_money,
-          month_avg_confirmed],
-            month_progress_bar_title,
-            month_progress_bar_value,
-            last_month_money,
-            
-         ],
-        [
-            'fa-regular fa-calendar',
-            'Trong năm này',
-            f'ngày {first_year_day.strftime("%d-%m-%Y")} đến {today.strftime("%d-%m-%Y")}',
-         [
-            year_money,
-            visited_money_year,
-            hospital_money_year,
-            year_avg_money,
-            year_avg_confirmed],
-            year_progress_bar_title,
-            year_progress_bar_value,
-            last_year_money
-         ]
     ]
 
     bellow_card_money_title = ['Tổng', 'Ngoại trú', 'Nội trú', 'Trung bình ngày', 'Trung bình mỗi xác nhận' ]
@@ -464,6 +390,7 @@ def revenue(day_query=None):
         ['Nội trú', money_hospital],
     ]
 
+    
     # Doanh thu theo từng phòng khám, từng khoa
     money_department = sql_query.money_department_day(today, cursor)
     money_department = convert_to_chart(money_department)
@@ -504,7 +431,208 @@ def revenue(day_query=None):
     }
     cnxn.close()
 
+    toc = time()
+    print(f'load time: {toc-tic}')
+
     return render_template('revenue/index.html', value=context, title="Doanh thu")
+
+
+
+# Trang doanh thu
+@app.route('/revenue/detail/<string:day_query>')
+@app.route('/revenue/detail')
+def revenue_detail(day_query=None):
+    # kết nối database sql server
+    cnxn = get_db()
+    cursor = cnxn.cursor()
+    
+    # lấy ngày xem dashboard
+    day_dict = get_day(day_query)
+    today = day_dict['today']
+    yesterday = day_dict['yesterday']
+    mon_day = day_dict['mon_day']
+    last_week_monday = day_dict['last_week_monday']
+    last_week_sun_day = day_dict['last_week_sun_day']
+    twolast_week_monday = day_dict['twolast_week_monday']
+    twolast_week_sun_day = day_dict['twolast_week_sun_day']
+    first_month_day = day_dict['first_month_day']
+    last_first_month_day = day_dict['last_first_month_day']
+    last_end_month_day = day_dict['last_end_month_day']
+    first_year_day = day_dict['first_year_day']
+    last_first_year_day = day_dict['last_first_year_day']
+    end_last_year_day = day_dict['end_last_year_day']
+
+    # Thống kê trong tuần
+    week_money = sql_query.total_money_between(mon_day, today, cursor)
+    week_avg_confirmed = sql_query.avg_doanhthu_confirmed(mon_day, today, cursor)
+    week_avg_money = sql_query.avg_doanhthu_between(startday=mon_day, endday=today, cursor=cursor)
+    visited_money_week = sql_query.doanhthu_loai_between(
+        mon_day, today,'NgoaiTru', cursor)
+    hospital_money_week = sql_query.doanhthu_loai_between(
+        mon_day, today,'NoiTru', cursor)
+
+    # Thống kê trong tuần trước
+    last_week_money = sql_query.total_money_between(
+        last_week_monday, last_week_sun_day, cursor)
+    last_week_avg_money = sql_query.avg_doanhthu_between(last_week_monday,last_week_sun_day, cursor)
+    last_week_avg_confirmed = sql_query.avg_doanhthu_confirmed(last_week_monday,last_week_sun_day, cursor)
+    visited_money_last_week = sql_query.doanhthu_loai_between(
+        last_week_monday, last_week_sun_day,'NgoaiTru', cursor)
+    hospital_money_last_week = sql_query.doanhthu_loai_between(
+        last_week_monday, last_week_sun_day,'NoiTru', cursor)
+
+    week_progress_bar_title = 'So với tuần trước'
+    week_progress_bar_value = get_percent(week_money, last_week_money)
+
+
+    twolast_week_money = sql_query.total_money_between(
+        twolast_week_monday, twolast_week_sun_day, cursor)
+    last_week_progress_bar_title = 'So với tuần trước'
+    last_week_progress_bar_value = get_percent(last_week_money, twolast_week_money)
+        
+    
+    # Thống kê trong tháng
+    month_money = sql_query.total_money_between(first_month_day, today, cursor)
+   
+
+    month_avg_money = sql_query.avg_doanhthu_between(first_month_day, today, cursor)
+
+    month_avg_confirmed = sql_query.avg_doanhthu_confirmed(first_month_day, today, cursor)
+
+ 
+    visited_money_month = sql_query.doanhthu_visited_between_union(
+        first_month_day, today, cursor)
+    hospital_money_month = sql_query.doanhthu_hospitalized_between_union(
+        first_month_day, today, cursor)
+    
+
+    last_month_money =  sql_query.total_money_between_union(
+        last_first_month_day, last_end_month_day, cursor)
+
+
+    month_progress_bar_title = 'So với tháng trước'
+    month_progress_bar_value = get_percent(month_money, last_month_money)
+
+    month_card_list =  [
+            'fa-solid fa-calendar-days',
+            'Trong tháng này',
+            f'ngày {first_month_day.strftime("%d-%m-%Y")} đến {today.strftime("%d-%m-%Y")}',
+         [month_money,
+         visited_money_month,
+          hospital_money_month,
+          month_avg_money,
+          month_avg_confirmed],
+            month_progress_bar_title,
+            month_progress_bar_value,
+            last_month_money,
+            
+         ]
+ 
+
+   
+    # Thống kê trong năm
+ 
+    year_money = sql_query.total_money_between_union(first_year_day, today, cursor)
+   
+    year_avg_money = sql_query.avg_doanhthu_between_union(first_year_day, today, cursor)
+    year_avg_confirmed = sql_query.avg_doanhthu_confirmed_union(first_year_day, today, cursor)
+
+ 
+    visited_money_year = sql_query.doanhthu_visited_between_union(
+        first_year_day, today, cursor)
+    hospital_money_year = sql_query.doanhthu_hospitalized_between_union(
+        first_year_day, today, cursor)
+    
+    
+   
+        
+ 
+    last_year_money = sql_query.total_money_between_union(
+        last_first_year_day, end_last_year_day, cursor)
+    
+    
+    year_progress_bar_title = 'So với năm trước'
+    year_progress_bar_value = get_percent(year_money, last_year_money)
+
+    year_card_list =  [
+            'fa-regular fa-calendar',
+            'Trong năm này',
+            f'ngày {first_year_day.strftime("%d-%m-%Y")} đến {today.strftime("%d-%m-%Y")}',
+         [
+            year_money,
+            visited_money_year,
+            hospital_money_year,
+            year_avg_money,
+            year_avg_confirmed],
+            year_progress_bar_title,
+            year_progress_bar_value,
+            last_year_money
+         ]
+    
+    bellow_card = [
+        [
+            'fa-solid fa-calendar-week',
+            'Trong tuần này',
+            f'ngày {mon_day.strftime("%d-%m-%Y")} đến {today.strftime("%d-%m-%Y")}',
+            [week_money,
+             visited_money_week,
+             hospital_money_week,
+             week_avg_money,
+             week_avg_confirmed],
+             week_progress_bar_title,
+             week_progress_bar_value,
+             last_week_money
+         ],
+        [
+            'fa-solid fa-calendar-week',
+            'Trong tuần trước',
+            f'ngày {last_week_monday.strftime("%d-%m-%Y")} đến {last_week_sun_day.strftime("%d-%m-%Y")}',
+         [last_week_money,
+          visited_money_last_week,
+          hospital_money_last_week,
+          last_week_avg_money,
+          last_week_avg_confirmed],
+            last_week_progress_bar_title,
+            last_week_progress_bar_value,
+            twolast_week_money
+         ],
+         month_card_list,
+         year_card_list
+
+    ]
+
+    bellow_card_money_title = ['Tổng', 'Ngoại trú', 'Nội trú', 'Trung bình ngày', 'Trung bình mỗi xác nhận' ]
+
+    # Doanh thu theo từng phòng khám, từng khoa
+    money_department = sql_query.money_department_day(today, cursor)
+    money_department = convert_to_chart(money_department)
+    last_update_time = sql_query.last_money_update(cursor)
+    last_update_time = last_update_time.strftime("%H:%M:%S  %d-%m-%Y")
+
+    last_confirmed = sql_query.last_confirmer(cursor)
+
+    recent_confirmed_in_day = sql_query.recent_confirmed_review(today, cursor)
+
+    recent_confirmed_in_day = ([soxacnhan, thoigian.strftime("%H:%M:%S"), int(doanhthu), int(thanhtoan), nhanvien] for soxacnhan, thoigian, doanhthu, thanhtoan, nhanvien in recent_confirmed_in_day)
+
+    top10_doanhthu = sql_query.top10_doanhthu(today, cursor)
+    top10_doanhthu_table = ([noidung, tenphongkham, count, int(tongdoanhthu)] for noidung, tenphongkham, count, tongdoanhthu in top10_doanhthu)
+
+
+    today = today.strftime("%Y-%m-%d")
+    context = {
+        'today': today,
+        'bellow_card': bellow_card,
+        'bellow_card_money_title': bellow_card_money_title,
+        'money_department': money_department,
+        'last_update_time': last_update_time,
+        'last_confirmed': last_confirmed,
+        'recent_confirmed_in_day': recent_confirmed_in_day,
+        'top10_doanhthu_table': top10_doanhthu_table
+
+    }
+    cnxn.close()
+    return render_template('revenue/detail.html', value=context)
 
 # Xác nhận chi tiết
 @app.route('/confirmed')
