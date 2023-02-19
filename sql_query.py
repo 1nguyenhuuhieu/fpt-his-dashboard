@@ -55,9 +55,6 @@ def total_in_hospital_day(day, cursor):
         print("Lỗi query total_in_hospital_day")
         return None
 
-
-
-
 # Bệnh nhân đang nội trú ra viện trong ngày
 def total_out_hospital_day(day, cursor):
     try:
@@ -638,21 +635,6 @@ def confirmed_loai_day(day, loai, cursor):
         return None
     
 
-# Xác nhận chi phí cuối cùng
-def last_confirmed(cursor):
-    q = cursor.execute(
-        """
-        SELECT TOP 1
-        SoTiepNhan, XacNhanChiPhi.BenhNhan_Id, ThoiGianTiepNhan, XacNhanChiPhi.NgayTao, TongDoanhThu, Chandoan, Loai, TenPhongKham
-        FROM TiepNhan
-        INNER JOIN XacNhanChiPhi
-        ON TiepNhan.TiepNhan_Id = XacNhanChiPhi.TiepNhan_Id
-        ORDER BY XacNhanChiPhi.XacNhanChiPhi_Id DESC
-        """
-    ).fetchone()
-
-    return q
-
 # SQL query thời gian update mới nhất doanh thu
 def last_money_update(cursor):
     q = cursor.execute(
@@ -664,3 +646,72 @@ def last_money_update(cursor):
     ).fetchone()[0]
 
     return q
+
+# Thời gian Tiếp nhận mới nhất
+def last_receiver(cursor):
+    query = """
+    SELECT TOP 1 ThoiGianTiepNhan, TiepNhan_Id
+    FROM TiepNhan
+    ORDER BY TiepNhan_Id DESC
+    """
+    try:
+        q = cursor.execute(query).fetchone()
+        return q
+    except:
+        print("Lỗi query get_last_receiver")
+        return None
+
+
+# Thời gian Xác nhận chi phí mới nhất
+def last_confirmer(cursor):
+    try:
+        query = """
+        SELECT TOP 1 ThoiGianXacNhan, TiepNhan_Id
+        FROM XacNhanChiPhi
+        ORDER BY XacNhanChiPhi_Id DESC
+        """
+        q = cursor.execute(query).fetchone()
+        
+        return q
+    except:
+        print("Lỗi query last_confirmer")
+        return None
+  
+
+# Chi tiết xác nhận theo tiếp nhận id
+def confirmed_detail(tiepnhan_id, cursor):
+    print(tiepnhan_id)
+    try:
+        query = """
+        SELECT
+        SoTiepNhan, ThoiGianTiepNhan, MaYTe, TenBenhNhan
+        FROM TiepNhan
+        INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan]
+        ON TiepNhan.BenhNhan_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan].BenhNhan_Id
+        WHERE TiepNhan.TiepNhan_Id = ?
+        """
+
+        q = cursor.execute(query, tiepnhan_id).fetchone()
+
+        return q
+    except:
+        print("Lỗi query confirmed_detail")
+        return None       
+    
+# Tổng doanh thu dược trong ngày theo phân nhóm: (DV= Dịch vụ, DU = DƯợc)
+def money_phannhom(day, phannhom ,cursor):
+    query = """
+    SELECT 
+    COALESCE(SUM(SoLuong*DonGiaDoanhThu),0) AS 'TongDoanhThu'
+    FROM XacNhanChiPhi
+    INNER JOIN (XacNhanChiPhiChiTiet INNER JOIN VienPhiNoiTru_Loai_IDRef ON XacNhanChiPhiChiTiet.Loai_IDRef=VienPhiNoiTru_Loai_IDRef.Loai_IDRef)
+    ON XacNhanChiPhi.XacNhanChiPhi_Id=XacNhanChiPhiChiTiet.XacNhanChiPhi_Id
+    WHERE NgayXacNhan = ? AND PhanNhom=?
+    GROUP BY PhanNhom
+    """
+    try:
+        q = cursor.execute(query, day, phannhom).fetchone()[0]
+        return int(q)
+    except:
+        print("Lỗi query money_phannhom")
+        return 1      

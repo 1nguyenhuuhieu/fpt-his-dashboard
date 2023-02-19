@@ -1,38 +1,18 @@
 {% extends 'base.html' %}
+
+{% block header %}
+<span class=""><i class="fa-solid fa-file-invoice me-2"></i>{% block title %}Doanh thu{% endblock %}</span>
+{% endblock %}
 {% block content %}
 {% include 'chart/revenue.html' %}
 <div class="container-fluid">
-    <div class="row">
-        {% include 'top_filter.html' %}
 
-        <!-- Update mới nhất -->
-        <!-- Button trigger modal -->
-        <a href="#" class="mb-2 text-end text-decoration-none fst-italic"  data-bs-toggle="modal" data-bs-target="#lastUpdateModal">
-            cập nhập mới nhất: {{ value.last_update_time }}</a> 
-  
-  <!-- Modal -->
-  <div class="modal fade" id="lastUpdateModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <ul>
-            {% for e in value.last_confirmed %}
-            <li>{{e}}</li>
-            {% endfor %}
-          </ul>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+    <div class="row mt-3 mb-2">
+        <div class="col-12">
+          {% include 'recent.html' %}
         </div>
       </div>
-    </div>
-  </div>
-        <!-- End Update mới nhất -->
-
+    <div class="row">
         <div class="col-lg-6">
             <div class="row g-2">
 

@@ -8,7 +8,7 @@
     var data = google.visualization.arrayToDataTable(data_chart);
 
     var options = {
-      title: 'Thống kê lượt khám bệnh trong ngày',
+      title: 'Lượt khám trong ngày',
       legend: { position: 'none' }
     };
 
@@ -37,7 +37,7 @@
     data.addRows(date_chart2);
 
     var options = {
-      title: 'Thống kê số lượt khám 30 ngày gần nhất'
+      title: 'Lượt khám 30 ngày gần nhất'
     };
 
     var chart = new google.visualization.ColumnChart(document.getElementById('chart_soluotkham'));
@@ -65,7 +65,7 @@
     var data = google.visualization.arrayToDataTable(data_chart);
 
     var options = {
-      title: 'Thống kê số bệnh nhân nội trú trong ngày',
+      title: 'Bệnh nhân nội trú trong ngày',
       legend: { position: 'none' }
     };
 
@@ -80,3 +80,8 @@
   });
 </script>
 <!-- End chart bệnh nhân nội trú theo khoa -->
+
+<!-- Money chart -->
+
+
+<!-- Money chart -->

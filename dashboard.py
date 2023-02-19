@@ -111,10 +111,7 @@ huonggiaiquyet = {
     9165: "Khám Thêm Phòng"
 }
 
-
 # -------------------------------------------------------------
-
-
 app = Flask(__name__)
 
 # register zip filter for pararell loop
@@ -127,24 +124,30 @@ def home(day_query=None):
     # kết nối database sql server
     cnxn = get_db()
     cursor = cnxn.cursor()
-
     # lấy ngày xem dashboard
     day_dict = get_day(day_query)
     today = day_dict['today']
     yesterday = day_dict['yesterday']
 
-    # Doanh thu trong 1 ngày
+    # Tổng Doanh thu trong 1 ngày
     today_money = sql_query.doanhthu_day(today, cursor)
-    today_money_thanhtoan = sql_query.thanhtoan_day(today, cursor)
     yesterday_money = sql_query.doanhthu_day(yesterday, cursor)
-    yesterday_money_thanhtoan = sql_query.thanhtoan_day(yesterday, cursor)
     percent_doanhthu = get_change(today_money, yesterday_money)
-    percent_thanhtoan = get_change(today_money_thanhtoan, yesterday_money_thanhtoan)
+    top_card = ('fa-solid fa-money-bill',"Tổng doanh thu", today_money, percent_doanhthu)
 
-    money_card = (
-        ("Doanh thu", today_money, percent_doanhthu),
-        ("Thanh toán", today_money_thanhtoan, percent_thanhtoan)
-    )
+
+    # Tổng Doanh thu dược
+    today_money_medicine = sql_query.money_phannhom(today, 'DU', cursor)
+    percent_duoc = get_percent(today_money_medicine, today_money )
+
+    medicine_card = (today_money_medicine, percent_duoc[1] )
+    
+    # Tổng Doanh thu dịch vụ
+    today_money_service = sql_query.money_phannhom(today, 'DV', cursor)
+    percent_service = get_percent(today_money_service, today_money )
+
+    service_card = (today_money_service, percent_service[1] )
+
 
     # Thống kê bệnh nhân
     patient_card = []
@@ -215,11 +218,25 @@ def home(day_query=None):
 
     last30days_visited.reverse()
 
+    # Cập nhập mới nhất, so sánh giữa thời gian tiếp nhận và thời gian xác nhận
+    if sql_query.last_receiver(cursor)[0] > sql_query.last_confirmer(cursor)[0]:
+        recent_action = sql_query.last_receiver(cursor)
+    else:
+        recent_action = sql_query.last_confirmer(cursor)
+
+    recent_action_time = recent_action[0].strftime("%H:%M %d-%m-%Y")
+    recent_action_tiepnhan_id = recent_action[1]
+
+    recent_detail = sql_query.confirmed_detail(recent_action_tiepnhan_id, cursor)
+
+
     # convert để hiện thị ở top filter
     today = today.strftime("%Y-%m-%d")
 
     context = {
-        'money_card': money_card,
+        'top_card': top_card,
+        'medicine_card': medicine_card,
+        'service_card': service_card,
         'patient_card': patient_card,
         'today': today,
         'soluotkham30ngay': last30days_visited,
@@ -227,10 +244,13 @@ def home(day_query=None):
         'patient_in_department_chart': patient_in_department_chart,
         'visited_in_department': visited_in_department,
         'visited_in_department_chart': visited_in_department_chart,
+        'recent_action_time': recent_action_time,
+        'recent_action_tiepnhan_id': recent_action_tiepnhan_id,
+        'recent_detail': recent_detail
     }
 
     cnxn.close()
-    return render_template('home.html', value=context, title="Dashboard")
+    return render_template('home/index.html', value=context, title="Dashboard")
 
 
 # Trang doanh thu
@@ -446,7 +466,7 @@ def revenue(day_query=None):
     last_update_time = sql_query.last_money_update(cursor)
     last_update_time = last_update_time.strftime("%H:%M:%S  %d-%m-%Y")
 
-    last_confirmed = sql_query.last_confirmed(cursor)
+    last_confirmed = sql_query.last_confirmer(cursor)
 
     recent_confirmed_in_day = sql_query.recent_confirmed_review(today, cursor)
 
@@ -454,10 +474,6 @@ def revenue(day_query=None):
 
     top10_doanhthu = sql_query.top10_doanhthu(today, cursor)
     top10_doanhthu_table = ([noidung, tenphongkham, count, int(tongdoanhthu)] for noidung, tenphongkham, count, tongdoanhthu in top10_doanhthu)
-
-
- 
-
 
 
     today = today.strftime("%Y-%m-%d")
@@ -487,7 +503,7 @@ def revenue(day_query=None):
     toc = time()
     print(toc-tic)
 
-    return render_template('revenue.html', value=context, title="Doanh thu")
+    return render_template('revenue/index.html', value=context, title="Doanh thu")
 
 # Xác nhận chi tiết
 @app.route('/confirmed')
