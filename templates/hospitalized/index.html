@@ -1,38 +1,13 @@
 {% extends 'base.html' %}
+{% block header %}<i class="fa-solid fa-hospital me-2"></i>{% block title %}Bệnh nhân nội trú{% endblock %}{% endblock %}
+
 {% block content %}
 {% include 'chart/hospitalized_js.html' %}
 <div class="container-fluid">
-    <div class="row">
-        {% include 'top_filter.html' %}
-
-        <!-- Update mới nhất -->
-        <!-- Button trigger modal -->
-        <a href="#" class="mb-2 text-end text-decoration-none fst-italic"  data-bs-toggle="modal" data-bs-target="#lastUpdateModal">
-            cập nhập mới nhất:  value.last_update_time</a> 
-  
-  <!-- Modal -->
-  <div class="modal fade" id="lastUpdateModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+    <div class="row mt-3 mb-2">
+        <div class="col-12">
+            {% include 'breadcrumb.html' %}
         </div>
-        <div class="modal-body">
-          <ul>
-            
-            <li>e</li>
-  
-          </ul>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
-        <!-- End Update mới nhất -->
-
 
     </div>
 
@@ -43,7 +18,7 @@
             <div class="row g-2">
                 {% for card in value.card_top %}
                 <div class="col-lg-6">
-                    <div class="card mb-2 shadow-sm h-100">
+                    <div class="card mb-2 shadow-sm h-100 text-bg-warning">
                         <div class="row g-0">
                             <div class="card-body">
                                 <h6 class="card-subtitle"><i class="fa-solid fa-hospital me-2"></i>
@@ -100,9 +75,6 @@
                     <div id="chartHospitalizedDepartment"></div>
                   </div>
                 </div>
- 
-
-
             </div>
             <div class="row g-2 mt-1">
               <div class="col-lg-6">
@@ -154,7 +126,7 @@
             </div>
             <!-- Danh sách bệnh nhân nội trú theo từng khoa -->
               <div class="card shadow-sm mt-3">
-                <div class="card-header text-bg-secondary">
+                <div class="card-header text-bg-warning">
                   <h6 class="m-0">Bệnh nhân nội trú</h6>
                 </div>
                 <ul class="list-group list-group-flush">
@@ -187,8 +159,6 @@
   
 </div>
 
-
-    </div>
     <!-- Nội trú -->
 
 

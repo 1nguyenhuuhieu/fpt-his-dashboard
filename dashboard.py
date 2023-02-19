@@ -157,20 +157,20 @@ def home(day_query=None):
 
     percent_in_hospita = get_change(today_in_hospital, yesterday_in_hospital)
     patient_card.append(
-        ("Bệnh nhân nội trú", 'fa-solid fa-hospital', today_in_hospital, percent_in_hospita))
+        ('hospitalized',"Bệnh nhân nội trú", 'fa-solid fa-hospital', today_in_hospital, percent_in_hospita))
 
     # Số lượt tiếp nhận
     today_visited = sql_query.visited_day(today, cursor)
     yesterday_visited = sql_query.visited_day(yesterday, cursor)
     percent_visited = get_change(today_visited, yesterday_visited)
     patient_card.append(
-        ("Lượt tiếp nhận", 'fa-solid fa-hospital-user', today_visited, percent_visited))
+        ('hospitalized',"Lượt tiếp nhận", 'fa-solid fa-hospital-user', today_visited, percent_visited))
 
     # Số bệnh nhân nhập viện
     today_hospitalize = sql_query.in_hospital_day(today, cursor)
     yesterday_hospitalize = sql_query.in_hospital_day(yesterday, cursor)
     percent_hospitalize = get_change(today_hospitalize, yesterday_hospitalize)
-    patient_card.append(("Nhập viện nội trú", 'fa-solid fa-bed-pulse',
+    patient_card.append(('hospitalized',"Nhập viện nội trú", 'fa-solid fa-bed-pulse',
                         today_hospitalize, percent_hospitalize))
 
     # Lượt chuyển tuyến
@@ -179,21 +179,21 @@ def home(day_query=None):
     percent_transfer = get_change(today_transfer, yesterday_transfer)
 
     patient_card.append(
-        ("Chuyển tuyến", 'fa-solid fa-truck-medical', today_transfer, percent_transfer))
+        ('hospitalized',"Chuyển tuyến", 'fa-solid fa-truck-medical', today_transfer, percent_transfer))
 
 
     today_surgecies = sql_query.surgecies_day(today, cursor)
     yesterday_surgecies = sql_query.surgecies_day(yesterday, cursor)
     percent_surgecies = get_change(today_surgecies, yesterday_surgecies)
     patient_card.append(
-        ("Phẫu thuật, thủ thuật", 'fa-solid fa-kit-medical', today_surgecies, percent_surgecies))
+        ('hospitalized',"Phẫu thuật, thủ thuật", 'fa-solid fa-kit-medical', today_surgecies, percent_surgecies))
 
 
     today_born = sql_query.born_day(today, cursor)
     yesterday_born = sql_query.born_day(yesterday, cursor)
     percent_born = get_change(today_born, yesterday_born)
     patient_card.append(
-        ("Số trẻ sinh", 'fa-solid fa-baby', today_born, percent_born))
+        ('hospitalized',"Số trẻ sinh", 'fa-solid fa-baby', today_born, percent_born))
 
     # Thống kê số lượt khám theo từng phòng khám
     visited_in_department = sql_query.visited_department_day(today, cursor)
@@ -696,8 +696,6 @@ def hospitalized(day_query=None):
     last_first_year_day = day_dict['last_first_year_day']
     end_last_year_day = day_dict['end_last_year_day']
 
-
-
     cnxn = get_db()
     cursor = cnxn.cursor()
 
@@ -748,4 +746,4 @@ def hospitalized(day_query=None):
     }
 
     cnxn.close()
-    return render_template('hospitalized.html', value=context, title="Nội trú")
+    return render_template('hospitalized/index.html', value=context, title="Nội trú")

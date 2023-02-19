@@ -113,7 +113,7 @@
         </div>
       </div>
       <div class="row g-2 mt-1">
-        {% for title, icon, count, percent in value.patient_card %}
+        {% for url, title, icon, count, percent in value.patient_card %}
         <div class="col-6">
           <div class="card shadow-sm">
             <div class="card-body">
@@ -121,7 +121,7 @@
               <hr class="my-2">
               <div class="row">
                 <div class="col-4 align-items-center justify-content-start d-flex">
-                  <a href="{{ url_for('hospitalized') }}" class="text-decoration-none stretched-link link-dark m-0">
+                  <a href="{{ url_for(url, day_query=value.today) }}" class="text-decoration-none stretched-link link-dark m-0">
                     <h5 class="card-title p-0 m-0">{{ count }}</h5>
                   </a>
                 </div>

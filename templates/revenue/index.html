@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% block header %}
-<span class=""><i class="fa-solid fa-file-invoice me-2"></i>{% block title %}Doanh thu{% endblock %}</span>
+<i class="fa-solid fa-file-invoice me-2"></i>{% block title %}Doanh thu{% endblock %}
 {% endblock %}
 {% block content %}
 {% include 'chart/revenue.html' %}
@@ -54,7 +54,7 @@
             <div class="row g-2">
                 <!-- Doanh thu -->
                 <div class="col-lg-6">
-                    <div class="card shadow-sm h-100">
+                    <div class="card shadow-sm h-100 text-bg-warning">
                         <div class="row g-0">
                             <div class="card-body">
                                 <h6 class="card-subtitle d-flex justify-content-between">
