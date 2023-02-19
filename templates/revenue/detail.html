@@ -9,17 +9,55 @@
 
     <div class="row mt-3 mb-2">
         <div class="col-12">
-          {% include 'recent.html' %}
+            <div id="topPage">
+                <nav aria-label="breadcrumb" class="">
+                    <ol class="breadcrumb m-0 ">
+                        <li class="breadcrumb-item"><a href="{{ url_for('home', dayquery=value.today) }}" class="text-decoration-none">Trang chủ</a></li>
+                        <li class="breadcrumb-item"><a href="{{ url_for('revenue', dayquery=value.today) }}" class="text-decoration-none">Doanh thu</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Thống kê chi tiết</li>
+                    </ol>
+                </nav>
+            </div>
+            <hr class="my-2">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+            
+                    <p class="h6 me-3 m-0" id="date_today"></p>
+            
+                    <a href="#" class="m-0 text-end text-decoration-none fst-italic" data-bs-toggle="modal"
+                        data-bs-target="#lastUpdateModal">
+                        Cập nhập mới nhất: {{ value.recent_action_time }}</a>
+               
+            </div>
+            <!-- Modal -->
+            <div class="modal fade" id="lastUpdateModal" tabindex="-1" aria-labelledby="lastUpdateModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="lastUpdateModalLabel">Chi tiết tiếp nhận</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            {% for e in value.recent_detail %}
+                            <p>{{e}}</p>
+                            {% endfor %}
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-primary">Save changes</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
       </div>
     <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="row">
+        <div class="col-lg-7">
+            <div class="row g-3">
                   <!-- Doanh thu thống kê theo tuần, tháng, năm -->
 
                 {% for icon, title, subtitle, money, progressbar_title, progressbar_value, last_money in value.bellow_card %}
                 <div class="col-6">
-                    <div class="card shadow-sm mb-3">
+                    <div class="card shadow-sm mb-1">
                         <div class="card-body">
                             <h6 class="card-subtitle mb-2"><i class="{{ icon }} me-2 fa-fw"></i>{{ title }}
                                 </h5>
@@ -56,7 +94,6 @@
             </div>
         </div>
     </div>
-</div>
 </div>
 <script>
     const urlGenerator = '/revenue/detail/';

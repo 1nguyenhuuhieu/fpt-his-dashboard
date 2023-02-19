@@ -5,14 +5,46 @@
 {% endblock %}
 {% block content %}
 {% include 'home/chartjs.html' %}
-
 <div class="container-fluid ">
   <div class="row mt-3 mb-2">
     <div class="col-12">
-      {% include 'breadcrumb.html' %}
+      <div id="topPage">
+        <nav aria-label="breadcrumb" class="">
+            <ol class="breadcrumb m-0 ">
+                <li class="breadcrumb-item active">Trang chủ</li>
+            </ol>
+        </nav>
+    </div>
+    <hr class="my-2">
+    <div class="d-flex justify-content-between align-items-center mb-1">
+            <p class="h6 me-3 m-0" id="date_today"></p>
+            <a href="#" class="m-0 text-end text-decoration-none fst-italic" data-bs-toggle="modal"
+                data-bs-target="#lastUpdateModal">
+                Cập nhập mới nhất: {{ value.recent_action_time }}</a>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="lastUpdateModal" tabindex="-1" aria-labelledby="lastUpdateModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="lastUpdateModalLabel">Chi tiết tiếp nhận</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    {% for e in value.recent_detail %}
+                    <p>{{e}}</p>
+                    {% endfor %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
     </div>
   </div>
-  <div class="row g-2 ">
+  <div class="row">
     <div class="col-lg-6">
       <div class="row g-2">
         <div class="col-12">
@@ -23,7 +55,7 @@
               <div class="card shadow-sm text-bg-warning h-100">
                 <div class="card-body">
                   <h6 class="card-subtitle mb-2"><i class="{{value.top_card.0}} me-2"></i> <a
-                      href="{{ url_for('revenue')}}" class="text-reset text-decoration-none stretched-link">{{
+                      href="{{ url_for('revenue', day_query=value.today)}}" class="text-reset text-decoration-none stretched-link">{{
                       value.top_card.1 }}</a></h6>
                   <hr class="my-2">
                   <h3 class="card-title">{{ "{:,} đ".format(value.top_card.2) }} </h3>
@@ -79,9 +111,8 @@
 
           <!-- Top card-->
         </div>
-
-
-
+      </div>
+      <div class="row g-2 mt-1">
         {% for title, icon, count, percent in value.patient_card %}
         <div class="col-6">
           <div class="card shadow-sm">
@@ -96,7 +127,6 @@
                 </div>
                 <div class="col-8 align-items-center justify-content-end d-flex">
                   <p class="text-muted card-text p-0 m-0">
-
                     <span>
                       {% if percent[0]%}
                       <i class="fa-solid fa-arrow-trend-up me-1 fw-bold text-success"></i>
@@ -104,9 +134,7 @@
                       <i class="fa-solid fa-arrow-trend-down me-1 fw-bold text-danger"></i>
                       {% endif %}
                       {{ percent[1] }}%</span>
-
                     <span>hôm trước</span>
-
                   </p>
                 </div>
               </div>
@@ -114,11 +142,10 @@
           </div>
         </div>
         {% endfor %}
-
       </div>
-      <div class="row g-2">
+      <div class="row g-2 mt-1">
         <div class="col-lg-6">
-          <div class="card shadow-sm mt-2">
+          <div class="card shadow-sm">
             <div class="card-header text-bg-warning">
               <h6 class="m-0">Lượt khám bệnh</h6>
             </div>
@@ -138,7 +165,7 @@
 
         </div>
         <div class="col-lg-6">
-          <div class="card shadow-sm mt-2">
+          <div class="card shadow-sm">
             <div class="card-header text-bg-warning">
               <h6 class="m-0">Bệnh nhân nội trú</h6>
             </div>
@@ -154,7 +181,6 @@
               {% endfor %}
             </ul>
           </div>
-
         </div>
 
       </div>
