@@ -295,6 +295,7 @@ def revenue(day_query=None):
         "%A %d-%m-%Y"), int(tongdoanhthu)] for ngayxacnhan, tongdoanhthu in last_30days_money]
     last_30days_money.reverse()
 
+
     # Doanh thu 30 ngày gần nhất theo từng khoa phòng
     last_30days_department_money = sql_query.money_department_betweenday(
         last30day, today, cursor)
@@ -322,14 +323,18 @@ def revenue(day_query=None):
         ['Nội trú', money_hospital],
     ]
 
+    
+    
+    
+
     # Thống kê trong tuần
     week_money = sql_query.total_money_between(mon_day, today, cursor)
     week_avg_confirmed = sql_query.avg_doanhthu_confirmed(mon_day, today, cursor)
     week_avg_money = sql_query.avg_doanhthu_between(startday=mon_day, endday=today, cursor=cursor)
-    visited_money_week = sql_query.doanhthu_loai_between(
-        mon_day, today, 'NgoaiTru', cursor)
-    hospital_money_week = sql_query.doanhthu_loai_between(
-        mon_day, today, 'NoiTru', cursor)
+    visited_money_week = sql_query.doanhthu_visited_between(
+        mon_day, today, cursor)
+    hospital_money_week = sql_query.doanhthu_hospitalized_between(
+        mon_day, today, cursor)
 
 
 
@@ -338,10 +343,10 @@ def revenue(day_query=None):
         last_week_monday, last_week_sun_day, cursor)
     last_week_avg_money = sql_query.avg_doanhthu_between(last_week_monday,last_week_sun_day, cursor)
     last_week_avg_confirmed = sql_query.avg_doanhthu_confirmed(last_week_monday,last_week_sun_day, cursor)
-    visited_money_last_week = sql_query.doanhthu_loai_between(
-        last_week_monday, last_week_sun_day, 'NgoaiTru', cursor)
-    hospital_money_last_week = sql_query.doanhthu_loai_between(
-        last_week_monday, last_week_sun_day, 'NoiTru', cursor)
+    visited_money_last_week = sql_query.doanhthu_visited_between(
+        last_week_monday, last_week_sun_day, cursor)
+    hospital_money_last_week = sql_query.doanhthu_hospitalized_between(
+        last_week_monday, last_week_sun_day, cursor)
 
         
     week_progress_bar_title = 'So với tuần trước'
@@ -354,8 +359,6 @@ def revenue(day_query=None):
     last_week_progress_bar_value = get_percent(last_week_money, twolast_week_money)
 
 
-
-
     # Thống kê trong tháng
     month_money = sql_query.total_money_between(first_month_day, today, cursor)
 
@@ -363,10 +366,10 @@ def revenue(day_query=None):
 
     month_avg_confirmed = sql_query.avg_doanhthu_confirmed(first_month_day, today, cursor)
 
-    visited_money_month = sql_query.doanhthu_loai_between(
-        first_month_day, today, 'NgoaiTru', cursor)
-    hospital_money_month = sql_query.doanhthu_loai_between(
-        first_month_day, today, 'NoiTru', cursor)
+    visited_money_month = sql_query.doanhthu_visited_between(
+        first_month_day, today, cursor)
+    hospital_money_month = sql_query.doanhthu_hospitalized_between(
+        first_month_day, today, cursor)
 
     last_month_money =  sql_query.total_money_between(
         last_first_month_day, last_end_month_day, cursor)
@@ -383,16 +386,17 @@ def revenue(day_query=None):
 
     year_avg_confirmed = sql_query.avg_doanhthu_confirmed(first_year_day, today, cursor)
 
-    visited_money_year = sql_query.doanhthu_loai_between(
-        first_year_day, today, 'NgoaiTru', cursor)
-    hospital_money_year = sql_query.doanhthu_loai_between(
-        first_year_day, today, 'NoiTru', cursor)
+    visited_money_year = sql_query.doanhthu_visited_between(
+        first_year_day, today, cursor)
+    hospital_money_year = sql_query.doanhthu_hospitalized_between(
+        first_year_day, today, cursor)
 
     
     last_year_money = sql_query.total_money_between(
         last_first_year_day, end_last_year_day, cursor)
     year_progress_bar_title = 'So với năm trước'
     year_progress_bar_value = get_percent(year_money, last_year_money)
+
 
     bellow_card = [
         [
@@ -500,9 +504,6 @@ def revenue(day_query=None):
     }
     cnxn.close()
 
-    toc = time()
-    print(toc-tic)
-
     return render_template('revenue/index.html', value=context, title="Doanh thu")
 
 # Xác nhận chi tiết
@@ -607,14 +608,6 @@ def hospitalized(day_query=None):
     # Bệnh nhân vừa nhập viện
     recent_hospitalized_in_day = sql_query.recent_confirmed_review(today, cursor)
 
-
-
-    a = {
-        'et': 'asdads'
-    }
-
-    print(a['et'])
-    
     today = today.strftime("%Y-%m-%d")
     context = {
         'today': today,

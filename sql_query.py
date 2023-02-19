@@ -299,7 +299,7 @@ def doanhthu_dichvu_duoc_day(day, cursor):
 
 
 # SQL query tổng tiền trong khoảng ngày
-def total_money_between(startday, endday, cursor):
+def total_money_between_slow(startday, endday, cursor):
     try:
         q = cursor.execute(
             """
@@ -315,18 +315,27 @@ def total_money_between(startday, endday, cursor):
     except:
         print("Lỗi query total_money_between")
         return None
+    
 
-
-# SQL query tổng tiền trong khoảng ngày trước ngày 17/2, dựa trên bảng nhh_revenue_day
-def total_money_between_fast(startday, endday, cursor):
-    try:
-        q = cursor.execute(
-            """
-            SELECT COALESCE(SUM(tongdoanhthu),0)
-            FROM nhh_revenue_day
+# SQL query tổng tiền trong khoảng ngày fast dựa trên bảng nhh_revennue từ ngày 2023-02-01 trở về trước 
+def total_money_between(startday, endday, cursor):
+    query = """
+            SELECT SUM(tongdoanhthu) FROM(
+            SELECT
+            COALESCE(SUM(SoLuong*DonGiaDoanhThu),0) as 'tongdoanhthu', NgayXacNhan
+            FROM
+            (XacNhanChiPhi INNER JOIN XacNhanChiPhiChiTiet
+            ON XacNhanChiPhi.XacNhanChiPhi_Id = XacNhanChiPhiChiTiet.XacNhanChiPhi_Id
+            AND NgayXacNhan > '2023-01-31')
+            GROUP BY NgayXacNhan
+            UNION
+            (SELECT tongdoanhthu, NgayXacNhan
+            FROM nhh_revenue)
+            ) AS T
             WHERE NgayXacNhan BETWEEN ? AND ?
-            """, startday, endday
-        ).fetchone()[0]
+            """
+    try:
+        q = cursor.execute(query, startday, endday).fetchone()[0]
 
         return int(q)
     except:
@@ -335,7 +344,7 @@ def total_money_between_fast(startday, endday, cursor):
 
 
 # SQL query tổng doanh thu ngoại trú, nội trú trong khoảng ngày
-def doanhthu_loai_between(startday, endday , loai, cursor):
+def doanhthu_loai_between_slow(startday, endday , loai, cursor):
     try:
         q = cursor.execute(
             """
@@ -352,9 +361,59 @@ def doanhthu_loai_between(startday, endday , loai, cursor):
         print("Lỗi query doanhthu_visited_day")
         return None
 
+# SQL query tổng doanh thu ngoại trú trong khoảng ngày union với bảng nhh_revennue_visited từ ngày 2023/02/01 trở về trước
+def doanhthu_visited_between(startday, endday, cursor):
+    query = """
+            SELECT SUM(tongdoanhthu) FROM(
+            SELECT
+            COALESCE(SUM(SoLuong*DonGiaDoanhThu),0) as 'tongdoanhthu', NgayXacNhan
+            FROM
+            (XacNhanChiPhi INNER JOIN XacNhanChiPhiChiTiet
+            ON XacNhanChiPhi.XacNhanChiPhi_Id = XacNhanChiPhiChiTiet.XacNhanChiPhi_Id
+            AND NgayXacNhan > '2023-01-31' AND XacNhanChiPhi.Loai = 'NgoaiTru')
+            GROUP BY NgayXacNhan
+            UNION
+            (SELECT tongdoanhthu, NgayXacNhan
+            FROM nhh_revenue_visited)
+            ) AS T
+            WHERE NgayXacNhan BETWEEN ? AND ?
+            """
+    try:
+        q = cursor.execute(query, startday, endday).fetchone()[0]
+
+        return int(q)
+    except:
+        print("Lỗi query doanhthu_visited_between")
+        return None
+
+
+# SQL query tổng doanh thu nội trú trong khoảng ngày union với bảng nhh_revennue_visited từ ngày 2023/02/01 trở về trước
+def doanhthu_hospitalized_between(startday, endday, cursor):
+    query = """
+            SELECT SUM(tongdoanhthu) FROM(
+            SELECT
+            COALESCE(SUM(SoLuong*DonGiaDoanhThu),0) as 'tongdoanhthu', NgayXacNhan
+            FROM
+            (XacNhanChiPhi INNER JOIN XacNhanChiPhiChiTiet
+            ON XacNhanChiPhi.XacNhanChiPhi_Id = XacNhanChiPhiChiTiet.XacNhanChiPhi_Id
+            AND NgayXacNhan > '2023-01-31' AND XacNhanChiPhi.Loai = 'NoiTru')
+            GROUP BY NgayXacNhan
+            UNION
+            (SELECT tongdoanhthu, NgayXacNhan
+            FROM nhh_revenue_hospitalized)
+            ) AS T
+            WHERE NgayXacNhan BETWEEN ? AND ?
+            """
+    try:
+        q = cursor.execute(query, startday, endday).fetchone()[0]
+
+        return int(q)
+    except:
+        print("Lỗi query doanhthu_hospitalized_between")
+        return None
 
 # SQL query trung bình doanh thu mỗi ngày trong khoảng ngày
-def avg_doanhthu_between(startday, endday, cursor):
+def avg_doanhthu_between_slow(startday, endday, cursor):
     try:
         q = cursor.execute(
             """
@@ -373,9 +432,34 @@ def avg_doanhthu_between(startday, endday, cursor):
     except:
         print("Lỗi query avg_doanhthu_between")
         return None
+    
+# SQL query trung bình doanh thu mỗi ngày trong khoảng ngày UNION với bảng nhh_revenue
+def avg_doanhthu_between(startday, endday, cursor):
+    query = """
+            SELECT AVG(tongdoanhthu) FROM(
+            SELECT
+            COALESCE(SUM(SoLuong*DonGiaDoanhThu),0) as 'tongdoanhthu', NgayXacNhan
+            FROM
+            (XacNhanChiPhi INNER JOIN XacNhanChiPhiChiTiet
+            ON XacNhanChiPhi.XacNhanChiPhi_Id = XacNhanChiPhiChiTiet.XacNhanChiPhi_Id
+            AND NgayXacNhan > '2023-01-31')
+            GROUP BY NgayXacNhan
+            UNION
+            (SELECT tongdoanhthu, NgayXacNhan
+            FROM nhh_revenue)
+            ) AS T
+            WHERE NgayXacNhan BETWEEN ? AND ?
+            """
+    try:
+        q = cursor.execute(query, startday, endday).fetchone()[0]
+
+        return int(q)
+    except:
+        print("Lỗi query avg_doanhthu_between")
+        return None
 
 # SQL query trung bình doanh thu mỗi xác nhận
-def avg_doanhthu_confirmed(startday, endday, cursor):
+def avg_doanhthu_confirmed_slow(startday, endday, cursor):
     try:
         q = cursor.execute(
             """
@@ -389,6 +473,31 @@ def avg_doanhthu_confirmed(startday, endday, cursor):
             GROUP BY XacNhanChiPhi.XacNhanChiPhi_Id) as avg_total_confirmed
             """, startday, endday
         ).fetchone()[0]
+
+        return int(q)
+    except:
+        print("Lỗi query avg_doanhthu_confirmed")
+        return None
+
+# SQL query trung bình doanh thu mỗi xác nhận trong khoảng ngày UNION với bảng nhh_revenue_confirmed từ ngày 2023-02-01 trở về trước
+def avg_doanhthu_confirmed(startday, endday, cursor):
+    query = """
+    SELECT AVG(tongdoanhthu) FROM(
+    SELECT
+    COALESCE(SUM(SoLuong*DonGiaDoanhThu),0) as 'tongdoanhthu', XacNhanChiPhi.XacNhanChiPhi_Id, XacNhanChiPhi.NgayXacNhan
+    FROM
+    (XacNhanChiPhi INNER JOIN XacNhanChiPhiChiTiet
+    ON XacNhanChiPhi.XacNhanChiPhi_Id = XacNhanChiPhiChiTiet.XacNhanChiPhi_Id
+    AND NgayXacNhan > '2023-01-31')
+    GROUP BY XacNhanChiPhi.XacNhanChiPhi_Id, XacNhanChiPhi.NgayXacNhan
+    UNION
+    (SELECT tongdoanhthu, XacNhanChiPhi_Id, NgayXacNhan
+    FROM nhh_revenue_confirmed)
+    ) AS T
+    WHERE NgayXacNhan BETWEEN ? AND ?
+    """
+    try:
+        q = cursor.execute(query, startday, endday).fetchone()[0]
 
         return int(q)
     except:
