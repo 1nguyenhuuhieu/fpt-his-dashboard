@@ -9,21 +9,23 @@ from flask import jsonify
 
 import sql_query
 
+import textwrap
+
 
 # Kết nối database sql server
-# def get_db():
-#     server = '192.168.123.254'
-#     database = 'eHospital_NgheAn'
-#     username = 'sa'
-#     password = 'toanthang'
-#     cnxn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER=' +
-#                           server+';DATABASE='+database+';UID='+username+';PWD=' + password)
-#     return cnxn
-
 def get_db():
-    cnxn = pyodbc.connect(driver='{ODBC Driver 17 for SQL Server}', server='localhost', database='eHospital_NgheAn',               
-               trusted_connection='yes')
+    server = '192.168.123.254'
+    database = 'eHospital_NgheAn'
+    username = 'sa'
+    password = 'toanthang'
+    cnxn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER=' +
+                          server+';DATABASE='+database+';UID='+username+';PWD=' + password)
     return cnxn
+
+# def get_db():
+#     cnxn = pyodbc.connect(driver='{ODBC Driver 17 for SQL Server}', server='localhost', database='eHospital_NgheAn',               
+#                trusted_connection='yes')
+#     return cnxn
 
 def get_change(current, previous):
     if not current:
@@ -258,7 +260,7 @@ def home(day_query=None):
 @app.route('/revenue')
 def revenue(day_query=None):
 
-    tic = time()
+   
 
     # kết nối database sql server
     cnxn = get_db()
@@ -430,9 +432,6 @@ def revenue(day_query=None):
 
     }
     cnxn.close()
-
-    toc = time()
-    print(f'load time: {toc-tic}')
 
     return render_template('revenue/index.html', value=context, title="Doanh thu")
 
@@ -720,6 +719,9 @@ def hospitalized(day_query=None):
     patient_in_department = convert_to_chart(patient_in_department)
     patient_in_department_chart = patient_in_department.copy()
     patient_in_department_chart.insert(0, ["Khoa", 'Bệnh nhân'])
+    
+    # Thống kê Số bệnh nhân nội trú nhập mới từng khoa
+    patient_in_department_today = sql_query.in_hostpital_department_in_day(today, cursor)
 
     # chart số bệnh nhân nội trú 30 ngày gần nhất
     last_30_day_chart = []
@@ -733,16 +735,43 @@ def hospitalized(day_query=None):
 
     # Bệnh nhân vừa nhập viện
     recent_hospitalized_in_day = sql_query.recent_confirmed_review(today, cursor)
+    last_patients = sql_query.last_in_hospitalized(today, cursor)
+    last_patients = ([time_in_department.strftime("%H:%M %d/%m/%Y"), patient_name, department] for time_in_department, patient_name, department in last_patients)
+
+    card_bellow = []
+    this_week = sql_query.total_in_hospital_between(mon_day, today, cursor)
+    this_month = sql_query.total_in_hospital_between(first_month_day, today, cursor)
+    this_year = sql_query.total_in_hospital_between(first_year_day, today, cursor)
+
+    last_week = sql_query.total_in_hospital_between(last_week_monday, last_week_sun_day, cursor)
+    last_month = sql_query.total_in_hospital_between(last_first_month_day, last_end_month_day, cursor)
+    last_year = sql_query.total_in_hospital_between(last_first_year_day, end_last_year_day, cursor)
+
+    week_percent = get_percent(this_week, last_week)
+    month_percent = get_percent(this_month, last_month)
+    year_percent = get_percent(this_year, last_year)
+
+    card_bellow.append(['Tuần này', this_week, 'Tuần trước', last_week, week_percent])
+    card_bellow.append(['Tháng này', this_month, 'Tháng trước', last_month, month_percent])
+    card_bellow.append(['Năm này', this_year, 'Năm trước', last_year, year_percent])
+
+    tic = time()
+    t = sql_query.total_in_hospital_between(last_first_year_day, today, cursor)
+    
+    print(f'load time: {time()-tic}')
 
     today = today.strftime("%Y-%m-%d")
     context = {
         'today': today,
         'card_top': card_top,
+        'card_bellow': card_bellow,
         'card_top_body': card_top_body,
         'patient_in_department': patient_in_department,
+        'patient_in_department_today': patient_in_department_today,
         'patient_in_department_chart': patient_in_department_chart,
         'last_30_day_chart': last_30_day_chart,
-        'recent_hospitalized_in_day': recent_hospitalized_in_day
+        'recent_hospitalized_in_day': recent_hospitalized_in_day,
+        'last_patients': last_patients
     }
 
     cnxn.close()

@@ -1,172 +1,164 @@
 {% extends 'base.html' %}
-{% block header %}<i class="fa-solid fa-hospital me-2"></i>{% block title %}Bệnh nhân nội trú{% endblock %}{% endblock %}
-
+{% block header %}<i class="fa-solid fa-hospital me-2"></i>
+{% block title %}Bệnh nhân nội trú{% endblock %}{% endblock %}
 {% block content %}
 {% include 'chart/hospitalized_js.html' %}
 <div class="container-fluid">
-    <div class="row mt-3 mb-2">
-        <div class="col-12">
-            {% include 'breadcrumb.html' %}
-        </div>
-
+  <div class="row mt-3 mb-2">
+    <div class="col-12">
+      {% include 'breadcrumb.html' %}
     </div>
-
-    <!-- Nội trú -->
-    <div class="row">
-        <!-- Top card  -->
+  </div>
+  <!-- Nội trú -->
+  <div class="row">
+    <!-- Top card  -->
+    <div class="col-lg-6">
+      <div class="row g-2">
+        {% for card in value.card_top %}
         <div class="col-lg-6">
-            <div class="row g-2">
-                {% for card in value.card_top %}
-                <div class="col-lg-6">
-                    <div class="card mb-2 shadow-sm h-100 text-bg-warning">
-                        <div class="row g-0">
-                            <div class="card-body">
-                                <h6 class="card-subtitle"><i class="fa-solid fa-hospital me-2"></i>
-                                    {{ card.0 }} </h6>
-                                <hr class="my-2">
-                                <div class="d-flex justify-content-between align-items-center">
-                                <h3 class="card-title m-0">{{ card.1 }}</h3>
-                                <p class="text-muted card-text">
-                                    <span>
-                                      {% if card.2.0 == True %}
-                                        <i class="fa-solid fa-arrow-trend-up me-1 fw-bold text-success"></i>
-                                        {% else %}
-                                        <i class="fa-solid fa-arrow-trend-down me-1 fw-bold text-danger"></i>
-                                        {% endif %}
-                                 {{ card.2.1 }}%</span>
-                                    <span>hôm trước</span>
-                                </p>
-
-
-                                </div>
-
-                                <p class="mb-2 align-items-center justify-content-end d-flex"> 
-                                  <small class=" fw-bold ">{{card.4}}</small>
-                               </p>
-                              
-                              <div class="progress" role="progressbar" aria-label="Animated striped example" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
-                                  <div class="progress-bar
+          <div class="card mb-2 shadow-sm h-100 text-bg-warning">
+            <div class="row g-0">
+              <div class="card-body">
+                <h6 class="card-subtitle"><i class="fa-solid fa-hospital me-2"></i>
+                  {{ card.0 }} </h6>
+                <hr class="my-2">
+                <div class="mb-2 align-items-end justify-content-between d-flex">
+                  <h3 class="card-title m-0">{{ card.1 }}</h3>
+                  <div class="d-flex justify-content-end align-items-center">
+                    <p class="text-muted card-text m-0">
+                      <span>
+                        {% if card.2.0 == True %}
+                        <i class="fa-solid fa-arrow-trend-up me-1 fw-bold text-success"></i>
+                        {% else %}
+                        <i class="fa-solid fa-arrow-trend-down me-1 fw-bold text-danger"></i>
+                        {% endif %}
+                        {{ card.2.1 }}%</span>
+                      <span>hôm trước</span>
+                    </p>
+                    <span class="fw-bold ms-1">{{card.4}}</span>
+                  </div>
+                </div>
+                <div class="progress" role="progressbar" aria-label="Animated striped example" aria-valuenow="75"
+                  aria-valuemin="0" aria-valuemax="100">
+                  <div class="progress-bar
                                   {% if card.3.0 == False %}
                                    bg-danger
                                    {% else %}
                                    bg-success
                                    {% endif %}
                                    " style="width: {{card.3.1}}%">{{card.3.1}}%</div>
-                                </div>
-
-                                <hr>
-                                {% for card in value.card_top_body %}
-        
-                                <div class="card-text d-flex justify-content-between">
-                                    <span>{{ card.0 }}</span>
-                                    <span class="fw-bold">{{ card.1 }}</span>
-                                </div>
-                                {% endfor %}
-        
-                            </div>
-                        </div>
-                    </div>
-
+                </div>
+                <hr>
+                {% for card in value.card_top_body %}
+                <div class="card-text d-flex justify-content-between">
+                  <span>{{ card.0 }}</span>
+                  <span class="fw-bold">{{ card.1 }}</span>
                 </div>
                 {% endfor %}
-
-                <div class="col-6">
-                  <div class="border rounded shadow-sm p-2 bg-white h-100">
-                    <div id="chartHospitalizedDepartment"></div>
-                  </div>
-                </div>
-            </div>
-            <div class="row g-2 mt-1">
-              <div class="col-lg-6">
-                <div class="card mb-2 shadow-sm h-100">
-                  <div class="row g-0">
-                      <div class="card-body">
-                          <h6 class="card-subtitle"><i class="fa-solid fa-hospital me-2"></i>
-                              Lượt nhập viện nội trú</h6>
-                          <hr class="my-2">
-                          <div class="d-flex justify-content-between align-items-center">
-                          <h3 class="card-title m-0">card.1 </h3>
-                          <p class="text-muted card-text">
-                              <span>
-                                {% if 'sdf' == True %}
-                                  <i class="fa-solid fa-arrow-trend-up me-1 fw-bold text-success"></i>
-                                  {% else %}
-                                  <i class="fa-solid fa-arrow-trend-down me-1 fw-bold text-danger"></i>
-                                  {% endif %}
-                            card.2.1%</span>
-                              <span>hôm trước</span>
-                          </p>
-
-
-                          </div>
-
-                          <p class="mb-2 align-items-center justify-content-end d-flex"> 
-                            <small class=" fw-bold ">card.4</small>
-                         </p>
-                        
-                        <div class="progress" role="progressbar" aria-label="Animated striped example" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
-                            <div class="progress-bar
-                            {% if 'dfg' == False %}
-                             bg-danger
-                             {% else %}
-                             bg-success
-                             {% endif %}
-                             " style="width: 40%">card.3.1%</div>
-                          </div>
-
-  
-                      </div>
-                  </div>
-              </div>
-
-              </div>
-              <div class="col-lg-6">
-                <h1>dfsd</h1>
               </div>
             </div>
-            <!-- Danh sách bệnh nhân nội trú theo từng khoa -->
-              <div class="card shadow-sm mt-3">
-                <div class="card-header text-bg-warning">
-                  <h6 class="m-0">Bệnh nhân nội trú</h6>
-                </div>
-                <ul class="list-group list-group-flush">
-                  {% for department in value.patient_in_department %}
-                  <a href="$"
-                    class="list-group-item list-group-item-action d-flex justify-content-between align-items-start ">
-    
-                    {{ department[0] }}
-                    <span class="fw-bold ms-2">{{ department[1]}}</span>
-    
-                  </a>
-                  {% endfor %}
-                </ul>
-              </div>
-            <!-- Danh sách bệnh nhân nội trú theo từng khoa -->
-
-    
-
+          </div>
         </div>
-         <!-- Top card  -->
-<div class="col-lg-6">
-
-  {% include 'table/hospitalized_mini.html' %}
-
-
-  <div class="border rounded shadow-sm p-2 bg-white mt-2">
-    <div id="last30daysChart"></div>
-  </div>
-
-  
-</div>
-
+        {% endfor %}
+        <div class="col-6">
+          <div class="border rounded shadow-sm p-2 bg-white h-100">
+            <div id="chartHospitalizedDepartment"></div>
+          </div>
+        </div>
+      </div>
+      <div class="row g-2 mt-1">
+        <div class="col-lg-12">
+          <div class="card mb-2 shadow-sm">
+            <div class="row g-0">
+              <div class="card-body">
+                <h6 class="card-subtitle"><i class="fa-solid fa-chart-line me-2"></i>
+                  Thống kê lượt nhập viện nội trú</h6>
+                <hr class="my-2">
+                {% for title1, count1, title2, count2, percent in value.card_bellow %}
+                <div class="row g-2 align-items-center py-1">
+                  <div class="col-3">
+                    <div class="card-text d-flex align-items-center justify-content-between">
+                      <span>{{ title1 }}</span>
+                      <span class="fw-bold">{{ count1 }}</span>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="progress" role="progressbar" aria-label="Example with label" aria-valuenow="25"
+                      aria-valuemin="0" aria-valuemax="100">
+                      <div class="progress-bar
+                      {% if percent[0] == True %}
+                      bg-success
+                      {% else %}
+                      bg-danger
+                      {% endif %}
+                      " style="width: {{percent[1]}}%">{{percent[1]}}%</div>
+                    </div>
+                  </div>
+                  <div class="col-3">
+                    <div class="card-text d-flex justify-content-between align-items-center m-0">
+                      <span>{{ title2 }}</span>
+                      <span class="fw-bold">{{ count2 }}</span>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row g-2">
+        <div class="col-lg-6">
+          <!-- Danh sách bệnh nhân nội trú theo từng khoa -->
+          <div class="card shadow-sm mt-3">
+            <div class="card-header text-bg-warning">
+              <h6 class="m-0">Bệnh nhân hiện có</h6>
+            </div>
+            <ul class="list-group list-group-flush">
+              {% for department in value.patient_in_department %}
+              <a href="$"
+                class="list-group-item list-group-item-action d-flex justify-content-between align-items-start ">
+                {{ department[0] }}
+                <span class="fw-bold ms-2">{{ department[1]}}</span>
+              </a>
+              {% endfor %}
+            </ul>
+          </div>
+          <!-- Danh sách bệnh nhân nội trú theo từng khoa -->
+        </div>
+        <div class="col-lg-6">
+          <!-- Danh sách bệnh nhân nội trú theo từng khoa -->
+          <div class="card shadow-sm mt-3">
+            <div class="card-header text-bg-warning">
+              <h6 class="m-0">Bệnh nhân nhập mới</h6>
+            </div>
+            <ul class="list-group list-group-flush">
+              {% for department in value.patient_in_department_today %}
+              <a href="$"
+                class="list-group-item list-group-item-action d-flex justify-content-between align-items-start ">
+                {{ department[0] }}
+                <span class="fw-bold ms-2">{{ department[1]}}</span>
+              </a>
+              {% endfor %}
+            </ul>
+          </div>
+          <!-- Danh sách bệnh nhân nội trú theo từng khoa -->
+        </div>
+      </div>
+    </div>
+    <!-- Top card  -->
+    <div class="col-lg-6">
+      {% include 'hospitalized/last_patients_table.html' %}
+      <div class="border rounded shadow-sm p-2 bg-white mt-2">
+        <div id="last30daysChart"></div>
+      </div>
+    </div>
     <!-- Nội trú -->
-
-
-</div>
+  </div>
 </div>
 <script>
-    const urlGenerator = '/hospitalized/';
-    const todayURL = "{{ url_for('hospitalized') }}"
+  const urlGenerator = '/hospitalized/';
+  const todayURL = "{{ url_for('hospitalized') }}"
 </script>
 <script src="{{ url_for('static', filename='js/myjs.js')}}"></script>
 {% endblock %}
