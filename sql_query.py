@@ -70,7 +70,7 @@ def total_out_hospital_day(day, cursor):
 
         return int(q)
     except:
-        print("Lỗi query total_in_hospital_day")
+        print("Lỗi query total_out_hospital_day")
         return None
 
 
@@ -94,9 +94,9 @@ def in_hospital_day(day, cursor):
     try:
         q = cursor.execute("""SELECT
         COALESCE(COUNT(BenhAn_Id),0)
-        FROM dbo.BenhAn
-        WHERE NgayVaoVien=? 
-        """,day
+        FROM BenhAn
+        WHERE NgayVaoVien=?
+        """, day
         ).fetchone()[0]
 
         return q

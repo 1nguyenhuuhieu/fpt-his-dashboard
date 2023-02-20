@@ -9,23 +9,25 @@ from flask import jsonify
 
 import sql_query
 
+from sqlquery import hospitalized as query_hospitalized
+
 import textwrap
 
 
 # Kết nối database sql server
-def get_db():
-    server = '192.168.123.254'
-    database = 'eHospital_NgheAn'
-    username = 'sa'
-    password = 'toanthang'
-    cnxn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER=' +
-                          server+';DATABASE='+database+';UID='+username+';PWD=' + password)
-    return cnxn
-
 # def get_db():
-#     cnxn = pyodbc.connect(driver='{ODBC Driver 17 for SQL Server}', server='localhost', database='eHospital_NgheAn',               
-#                trusted_connection='yes')
+#     server = '192.168.123.254'
+#     database = 'eHospital_NgheAn'
+#     username = 'sa'
+#     password = 'toanthang'
+#     cnxn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER=' +
+#                           server+';DATABASE='+database+';UID='+username+';PWD=' + password)
 #     return cnxn
+
+def get_db():
+    cnxn = pyodbc.connect(driver='{ODBC Driver 17 for SQL Server}', server='localhost', database='eHospital_NgheAn',               
+               trusted_connection='yes')
+    return cnxn
 
 def get_change(current, previous):
     if not current:
@@ -58,6 +60,16 @@ def convert_to_chart(list):
     chart = [[k, int(v)] for k, v in chart.items()]
 
     return chart
+
+
+# Convert to google chart data with first param = date
+def convert_to_chart_date(list):
+
+    chart = dict(list)
+    chart = [[k.strftime("%A %Y-%m-%d"), int(v)] for k, v in chart.items()]
+
+    return chart
+
 
 # get day of week, month, year
 def get_day(day):
@@ -756,7 +768,10 @@ def hospitalized(day_query=None):
     card_bellow.append(['Năm này', this_year, 'Năm trước', last_year, year_percent])
 
     tic = time()
-    t = sql_query.total_in_hospital_between(last_first_year_day, today, cursor)
+    last_50_day = today + timedelta(days=-50)
+    last_30_day_in_hostpital_chart = query_hospitalized.in_hospital_betweenday(last_50_day, today, cursor)
+    last_30_day_in_hostpital_chart = convert_to_chart_date(last_30_day_in_hostpital_chart)
+    print(last_30_day_in_hostpital_chart)
     
     print(f'load time: {time()-tic}')
 
@@ -770,6 +785,7 @@ def hospitalized(day_query=None):
         'patient_in_department_today': patient_in_department_today,
         'patient_in_department_chart': patient_in_department_chart,
         'last_30_day_chart': last_30_day_chart,
+        'last_30_day_in_hostpital_chart': last_30_day_in_hostpital_chart,
         'recent_hospitalized_in_day': recent_hospitalized_in_day,
         'last_patients': last_patients
     }
