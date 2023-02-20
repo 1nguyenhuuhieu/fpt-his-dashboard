@@ -1,39 +1,13 @@
 <div id="topPage">
     <nav aria-label="breadcrumb" class="">
         <ol class="breadcrumb m-0 ">
-            <li class="breadcrumb-item"><a href="#" class="text-decoration-none">Home</a></li>
-            <li class="breadcrumb-item"><a href="#" class="text-decoration-none">Library</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Data</li>
+            {%- for breadcrumb in breadcrumbs -%}
+            {% if loop.last %}
+            <li class="breadcrumb-item active" aria-current="page">{{ breadcrumb.text }}</li>
+            {% else %}
+            <li class="breadcrumb-item"><a href="{{ breadcrumb.url }}" class="text-decoration-none">{{ breadcrumb.text }}</a></li>
+            {% endif %}
+            {%- endfor -%}
         </ol>
     </nav>
-</div>
-<hr class="my-2">
-<div class="d-flex justify-content-between align-items-center mb-1">
-
-        <p class="h6 me-3 m-0" id="date_today"></p>
-
-        <a href="#" class="m-0 text-end text-decoration-none fst-italic" data-bs-toggle="modal"
-            data-bs-target="#lastUpdateModal">
-            Cập nhập mới nhất: {{ value.recent_action_time }}</a>
-   
-</div>
-<!-- Modal -->
-<div class="modal fade" id="lastUpdateModal" tabindex="-1" aria-labelledby="lastUpdateModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="lastUpdateModalLabel">Chi tiết tiếp nhận</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                {% for e in value.recent_detail %}
-                <p>{{e}}</p>
-                {% endfor %}
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
-            </div>
-        </div>
-    </div>
 </div>

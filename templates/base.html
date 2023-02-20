@@ -51,11 +51,18 @@
               <div class="btn-group">
                 <a href="#" class="btn btn-sm btn-outline-secondary" id="yesterdayLink"><i
                     class="fa-solid fa-caret-left me-2"></i>Hôm trước</a>
+                <a href="#" class="btn btn-sm btn-outline-secondary" id="tomorrowLink">Hôm sau<i
+                  class="fa-solid fa-caret-right ms-2"></i></a>
+                </div>
+                <div class="btn-group ms-1">
+
                 <a href="{{ url_for('home') }}" class="btn btn-sm btn-outline-secondary" id="todayLink">Hôm nay</a>
-                <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle dropdown-toggle-split"
+
+                
+                  <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle dropdown-toggle-split"
                   data-bs-toggle="dropdown" aria-expanded="false">
                 </button>
-                <ul class="dropdown-menu">
+                <ul class="dropdown-menu dropdown-menu-end">
                   <li><a class="dropdown-item" href="#">Tuần này</a></li>
                   <li><a class="dropdown-item" href="#">Tuần trước</a></li>
                   <li><a class="dropdown-item" href="#">Tháng này</a></li>

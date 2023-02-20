@@ -7,49 +7,12 @@
 <div class="container-fluid">
     <div class="row mt-3 mb-2">
         <div class="col-12">
-            <!-- Breadcrumb -->
-            <div id="topPage">
-                <nav aria-label="breadcrumb" class="">
-                    <ol class="breadcrumb m-0 ">
-                        <li class="breadcrumb-item"><a href="{{ url_for('home', day_query=value.today) }}" class="text-decoration-none">Trang chủ</a></li>
-                        <li class="breadcrumb-item active">Doanh thu</li>
-                    </ol>
-                </nav>
-            </div>
+            {% include 'breadcrumb.html' %}
             <hr class="my-2">
-            <div class="d-flex justify-content-between align-items-center mb-1">
-            
-                    <p class="h6 me-3 m-0" id="date_today"></p>
-            
-                    <a href="#" class="m-0 text-end text-decoration-none fst-italic" data-bs-toggle="modal"
-                        data-bs-target="#lastUpdateModal">
-                        Cập nhập mới nhất: {{ value.recent_action_time }}</a>
-               
-            </div>
-            <!-- Modal -->
-            <div class="modal fade" id="lastUpdateModal" tabindex="-1" aria-labelledby="lastUpdateModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h1 class="modal-title fs-5" id="lastUpdateModalLabel">Chi tiết tiếp nhận</h1>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            {% for e in value.recent_detail %}
-                            <p>{{e}}</p>
-                            {% endfor %}
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary">Save changes</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Breadcrumb -->
+            {% include 'recent.html' %}
         </div>
     </div>
-    <div class="row g-2">
+    <div class="row">
         <div class="col-lg-6">
             <div class="row g-2">
                 <!-- Doanh thu -->
@@ -192,9 +155,9 @@
             </div>
         </div>
         <div class="col-lg-6">
-            {% include 'table/revenue_mini.html' %}
+            {% include 'revenue/last5_table.html' %}
             <!-- Biểu đồ 30 lượt khám -->
-            <div class="card mb-2 shadow-sm p-1">
+            <div class="card mb-2 shadow-sm p-1 mt-2">
                 <div id="chart2"></div>
             </div>
             <!-- End Biểu đồ 30 lượt khám -->
