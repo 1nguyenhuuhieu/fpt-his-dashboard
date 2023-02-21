@@ -1,7 +1,7 @@
 <div class="border bg-white shadow-sm rounded table-responsive px-3 py-3">
     <div class="d-flex justify-content-between" >
     <h6 class=""><i class="fa-solid fa-clipboard-check me-2"></i>5 lượt xác nhận gần nhất</h6>
-    <a href="{{ url_for('confirmed') }}" class="text-decoration-none">Xem tất cả<i class="fa-solid fa-up-right-from-square ms-2"></i></a>
+    <a href="{{ url_for('confirmed', day_query=value.today) }}" class="text-decoration-none">Xem tất cả<i class="fa-solid fa-up-right-from-square ms-2"></i></a>
     </div>
     <hr class="mt-1 mb-0">
     <table class="table table-borderless table-hover table-sm m-0 p-0">
