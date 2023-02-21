@@ -20,7 +20,8 @@
                       href="{{ url_for('revenue', day_query=value.today)}}" class="text-reset text-decoration-none stretched-link">{{
                       value.top_card.1 }}</a>
                     </div>
-                    <i class="fa-solid fa-up-right-from-square text-muted"></i>
+                    <small><i class="fa-solid fa-up-right-from-square text-muted"></i></small>
+                    
                     </h6>
                   <hr class="my-2">
                   <h3 class="card-title">{{ "{:,} đ".format(value.top_card.2) }} </h3>
@@ -85,7 +86,7 @@
                 <div>
                 <i class="{{ icon }} me-2 fa-fw"></i>{{ title }}
                 </div>
-                <i class="fa-solid fa-up-right-from-square text-muted"></i>
+            <small> <i class="fa-solid fa-up-right-from-square text-muted"></i></small>   
 
               </h6>
               <hr class="my-2">
