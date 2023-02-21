@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block header %}
+<i class="fa-solid fa-table me-2"></i>{% block title %}Xác nhận thanh toán{% endblock %}
+{% endblock %}
+{% block content %}
+
+{% include 'include/table.html' %}
+
+<script>
+    const urlGenerator = '/revenue/confirmed/';
+    const todayURL = "{{ url_for('confirmed') }}";
+  </script>
+  
+{% endblock %}

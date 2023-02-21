@@ -1,0 +1,108 @@
+
+{% block content %}
+
+<div class="p-3 border mt-3 rounded bg-white shadow-sm  ">
+
+    <table id="myTable" class="table table-striped bg-white  " style="width:100%">
+        <thead>
+            <tr>
+                {% for title in value.table_column_title %}
+                <th>{{ title }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in value.all_confirmed %}
+            <tr>
+                {% for col in row %}
+                <td>{{ col }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+  <!-- Modal -->
+  <div class="modal fade" id="confirmedDetail" tabindex="-1" aria-labelledby="confirmedModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="confirmedModalLabel">ss</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <h1 id="benhNhanID"></h1>
+          <p id="confirmedBody"></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    
+    function renderConfirmedtoModal(data){
+        const h1exampleModalLabel = document.getElementById('confirmedModalLabel');
+        const confirmedBody = document.getElementById('confirmedBody');
+        confirmedBody.textContent = ''
+        h1exampleModalLabel.textContent = 'Số xác nhận: ' + data.SoXacNhan;
+  
+        for(i in data){
+            const para = document.createElement("p");
+            para.textContent = i + ' : ' + data[i];
+            
+            confirmedBody.appendChild(para);
+        }
+        const benhNhanID = document.getElementById('benhNhanID');
+
+        console.log(data)
+    }
+
+
+    function openDetailConfirmed(event) {
+        fetch('http://127.0.0.1:5000/confirmed/detail/'+ event.innerText)
+        .then((response) => response.json())
+        .then((data) => renderConfirmedtoModal(data)
+        );
+
+    }
+
+  </script>
+
+<script>
+    $(document).ready(function() {
+    $('#myTable').DataTable( {
+        language: {
+            decimal: '*',
+            thousands: '*',
+        },
+        dom: 'Bfrtip',
+
+        order: [[0, 'desc']],
+        buttons: [
+            'copy', 'csv', 'excel', 'pdf', 'print'
+        ]
+        
+    } );
+} );
+
+</script>
+
+<script src="https://cdn.datatables.net/buttons/2.3.4/js/dataTables.buttons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.4/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.4/js/buttons.print.min.js"></script>
+
+
+
+
+
+
+  
+{% endblock %}

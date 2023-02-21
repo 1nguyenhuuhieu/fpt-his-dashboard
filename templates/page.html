@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block header %}
+<span class=""><i class="fa-solid fa-chart-simple me-2"></i>{% block title %}Dashboard{% endblock %}</span>
+{% endblock %}
+{% block content %}
+<div class="container-fluid ">
+  <div class="row mt-3 mb-2">
+    <div class="col-12">
+      {% include 'breadcrumb.html' %}
+      <hr class="my-2">
+      {% include 'recent.html' %}
+    </div>
+  </div>
+
+
+</div>
+
+
+<script src="{{ url_for('static', filename='js/myjs.js')}}"></script>
+
+
+
+{% endblock %}

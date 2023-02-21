@@ -277,7 +277,7 @@ def home(day_query=None):
 # Trang doanh thu
 @app.route('/revenue/<string:day_query>')
 @app.route('/revenue')
-@register_breadcrumb(app, './revenue', 'Doanh thu')
+@register_breadcrumb(app, '..revenue', 'Doanh thu')
 def revenue(day_query=None):
 
     # kết nối database sql server
@@ -456,7 +456,7 @@ def revenue(day_query=None):
 # Trang doanh thu
 @app.route('/revenue/detail/<string:day_query>')
 @app.route('/revenue/detail')
-@register_breadcrumb(app, '././.', 'Thống kê doanh thu')
+@register_breadcrumb(app, '..revenue.detail', 'Thống kê doanh thu')
 def revenue_detail(day_query=None):
     # kết nối database sql server
     cnxn = get_db()
@@ -618,33 +618,38 @@ def revenue_detail(day_query=None):
     cnxn.close()
     return render_template('revenue/detail.html', value=context)
 
-# Xác nhận chi tiết
-@app.route('/confirmed')
-@app.route('/confirmed/<string:day_query>')
+# Danh sách xác nhận thanh toán
+@app.route('/revenue/confirmed')
+@app.route('/revenue/confirmed/<string:day_query>')
+@register_breadcrumb(app, '..revenue.confirmed', 'Danh sách xác nhận')
 def confirmed(day_query=None):
     cnxn = get_db()
     cursor = cnxn.cursor()
 
-    today = get_day_query(day_query)
+    day_dict = get_day(day_query)
+    today = day_dict['today']
 
-    all_confirmed = sql_query.all_confirmed(today, cursor)
-    all_confirmed = ([thoigian.strftime("%H:%M:%S %d-%m-%Y"),soxacnhan,benhnhan_id,  int(doanhthu), int(thanhtoan), phongkham,nhanvien] for thoigian,soxacnhan, benhnhan_id, doanhthu, thanhtoan,phongkham, nhanvien in all_confirmed)
+    all_confirmed = query_confirmed.list(today, cursor)
+    all_confirmed = ([thoigian.strftime("%H:%M:%S %d-%m-%Y"),soxacnhan,benhnhan_id,  f'{int(doanhthu):,}', int(thanhtoan), phongkham,nhanvien] for thoigian,soxacnhan, benhnhan_id, doanhthu, thanhtoan,phongkham, nhanvien in all_confirmed)
+
+    table_column_title = ['Thời gian', 'Số xác nhận', 'ID Bệnh nhân', 'Doanh thu', 'Thanh toán', 'Phòng khám', 'Nhân viên']
 
     today = today.strftime("%Y-%m-%d")
 
 
     context = {
+        'today': today,
         'all_confirmed': all_confirmed,
-        'today': today
+        'table_column_title': table_column_title
     }
 
     cnxn.close()
     
 
-    return render_template('confirmed.html', value=context, title="Xác nhận")
+    return render_template('revenue/confirmed_list.html', value=context, title="Xác nhận")
 
 @app.route('/confirmed/detail/<string:SoXacNhan_Id>')
-@register_breadcrumb(app, '././.', 'Chi tiết xác nhận')
+@register_breadcrumb(app, './revenue/detail', 'Chi tiết xác nhận')
 def confirmed_detail(SoXacNhan_Id):
     cnxn = get_db()
     cursor = cnxn.cursor()
@@ -686,10 +691,10 @@ def hospitalized(day_query=None):
 
     card_top = []
 
-    today_in_hospital = sql_query.total_in_hospital_day(today, cursor)
-    recent_today_in_hospital = sql_query.in_hospital_day(today, cursor)
-    yesterday_in_hostpital = sql_query.total_in_hospital_day(yesterday, cursor)
-    out_hospital_day = sql_query.total_out_hospital_day(today, cursor)
+    today_in_hospital = query_hospitalized.total_day(today, cursor)
+    recent_today_in_hospital = query_hospitalized.in_day(today, cursor)
+    yesterday_in_hostpital = query_hospitalized.total_day(yesterday, cursor)
+    out_hospital_day = query_hospitalized.out_day(today, cursor)
     percent_change = get_change(today_in_hospital,yesterday_in_hostpital)
     percent = get_percent(today_in_hospital,yesterday_in_hostpital)
 
@@ -700,20 +705,20 @@ def hospitalized(day_query=None):
     card_top_body.append(['Ra viện', out_hospital_day])
 
     # Thống kê Số bệnh nhân nội trú từng khoa
-    patient_in_department = sql_query.in_hostpital_department(today, cursor)
+    patient_in_department = query_hospitalized.total_department(today, cursor)
 
     patient_in_department = convert_to_chart(patient_in_department)
     patient_in_department_chart = patient_in_department.copy()
     patient_in_department_chart.insert(0, ["Khoa", 'Bệnh nhân'])
     
     # Thống kê Số bệnh nhân nội trú nhập mới từng khoa
-    patient_in_department_today = sql_query.in_hostpital_department_in_day(today, cursor)
+    patient_in_department_today = query_hospitalized.in_department_day(today, cursor)
 
     # chart số bệnh nhân nội trú 30 ngày gần nhất
     last_30_day_chart = []
     for day in range(30):
         day_q = today - timedelta(days=day)
-        count_patient = sql_query.total_in_hospital_day(day_q, cursor)
+        count_patient = query_hospitalized.total_day(day_q, cursor)
         
         last_30_day_chart.append([day_q.strftime("%A %d-%m-%Y"),count_patient])
     
@@ -725,13 +730,13 @@ def hospitalized(day_query=None):
     last_patients = ([time_in_department.strftime("%H:%M %d/%m/%Y"), patient_name, department] for time_in_department, patient_name, department in last_patients)
 
     card_bellow = []
-    this_week = sql_query.total_in_hospital_between(mon_day, today, cursor)
-    this_month = sql_query.total_in_hospital_between(first_month_day, today, cursor)
-    this_year = sql_query.total_in_hospital_between(first_year_day, today, cursor)
+    this_week = query_hospitalized.total_in_between(mon_day, today, cursor)
+    this_month = query_hospitalized.total_in_between(first_month_day, today, cursor)
+    this_year = query_hospitalized.total_in_between(first_year_day, today, cursor)
 
-    last_week = sql_query.total_in_hospital_between(last_week_monday, last_week_sun_day, cursor)
-    last_month = sql_query.total_in_hospital_between(last_first_month_day, last_end_month_day, cursor)
-    last_year = sql_query.total_in_hospital_between(last_first_year_day, end_last_year_day, cursor)
+    last_week = query_hospitalized.total_in_between(last_week_monday, last_week_sun_day, cursor)
+    last_month = query_hospitalized.total_in_between(last_first_month_day, last_end_month_day, cursor)
+    last_year = query_hospitalized.total_in_between(last_first_year_day, end_last_year_day, cursor)
 
     week_percent = get_percent(this_week, last_week)
     month_percent = get_percent(this_month, last_month)
@@ -743,7 +748,7 @@ def hospitalized(day_query=None):
 
     tic = time()
     last_50_day = today + timedelta(days=-50)
-    last_30_day_in_hostpital_chart = query_hospitalized.in_hospital_betweenday(last_50_day, today, cursor)
+    last_30_day_in_hostpital_chart = query_hospitalized.in_betweenday(last_50_day, today, cursor)
     last_30_day_in_hostpital_chart = convert_to_chart_date(last_30_day_in_hostpital_chart)
     print(last_30_day_in_hostpital_chart)
     

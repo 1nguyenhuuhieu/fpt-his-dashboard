@@ -6,6 +6,7 @@ const todayLink = document.getElementById("todayLink");
 const toDayString = dateQuery.value;
 
 
+
 todayLink.href = todayURL;
 let dateYesterday = new Date(toDayString);
 let dateTomorrow = new Date(toDayString);

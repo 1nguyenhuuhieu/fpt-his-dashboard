@@ -17,6 +17,9 @@
   <link href="{{ url_for('static', filename='css/solid.css')}}" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css')}}">
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.2/css/dataTables.bootstrap5.min.css">
+
+  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.3.4/css/buttons.dataTables.min.css">
+
 </head>
 <body class="bg-light">
   <header class="navbar sticky-top flex-md-nowrap p-0  shadow-sm  bg-warning ">
@@ -83,8 +86,17 @@
     <div class="row">
       {% include 'sidebar.html' %}
       <main class="col-md-9 ms-sm-auto col-lg-10 bg-light ">
+        <div class="container-fluid">
+          <div class="row mt-3 mb-2">
+            <div class="col-12">
+              {% include 'breadcrumb.html' %}
+              <hr class="my-2">
+              {% include 'recent.html' %}
+            </div>
+          </div>
         {% block content %}
         {% endblock %}
+      </div>
         {% include 'footer.html' %}
       </main>
     </div>
@@ -101,6 +113,7 @@
     crossorigin="anonymous"></script>
   <script src="{{url_for('static', filename='js/dashboard.js')}}"></script>
   <script src="{{url_for('static', filename='js/myjs.js')}}"></script>
+
 
   <script>
     const dateToday = document.getElementById('date_today');

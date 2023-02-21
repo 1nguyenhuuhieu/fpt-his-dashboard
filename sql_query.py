@@ -19,41 +19,8 @@ def thanhtoan_day(day, cursor):
         print('Lỗi query thanhtoan_day')
         return None
 
-# Bệnh nhân đang nội trú ra viện trong ngày
-def total_out_hospital_day(day, cursor):
-    try:
-        q = cursor.execute("""SELECT
-        COALESCE(COUNT(BenhAn_Id),0)
-        FROM dbo.BenhAn
-        WHERE NgayRaVien = ?
-        """,day
-        ).fetchone()[0]
-
-        return int(q)
-    except:
-        print("Lỗi query total_out_hospital_day")
-        return None
 
 
-# Thống kê số lượng bệnh nhân nhập viện nội trú từng khoa trong ngày
-def in_hostpital_department_in_day(day, cursor):
-    try:
-        q = cursor.execute(
-        """
-        SELECT TenPhongBan, COALESCE(COUNT(BenhAn.BenhAn_Id),0) AS 'count'
-        FROM [eHospital_NgheAn_Dictionary].[dbo].[DM_PhongBan]
-        INNER JOIN BenhAn
-        ON BenhAn.KhoaVao_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_PhongBan].PhongBan_Id
-        WHERE NgayVaoVien = ?
-        GROUP BY TenPhongBan
-        ORDER BY count DESC
-        """, day
-        ).fetchall()
-
-        return q
-    except:
-        print("Lỗi query in_hostpital_department_in_day")
-        return None
 
     
      
@@ -88,47 +55,6 @@ def recent_confirmed_review(day, cursor):
     except:
         print("Lỗi query confirmed_detail")
         return None
-
-     
-# SQL số lượt xác nhận trong ngày
-def all_confirmed(day, cursor):
-    try:
-        q = cursor.execute(
-            """
-            SELECT
-            XacNhanChiPhi.NgayTao,
-            XacNhanChiPhi.SoXacNhan,
-
-            BenhNhan_Id,
-            COALESCE(SUM(SoLuong*DonGiaDoanhThu), 0) as 'tongdoanhthu',
-            COALESCE(SUM(SoLuong*DonGiaThanhToan), 0) as 'tongthanhtoan',
-            XacNhanChiPhi.TenPhongKham,
-            nhh_staff.TenNhanVien
-
-            FROM XacNhanChiPhiChiTiet
-            INNER JOIN
-            (XacNhanChiPhi INNER JOIN nhh_staff
-            ON XacNhanChiPhi.NguoiTao_Id=nhh_staff.User_Id)
-            ON XacNhanChiPhiChiTiet.XacNhanChiPhi_Id=XacNhanChiPhi.XacNhanChiPhi_Id
-            WHERE XacNhanChiPhi.NgayXacNhan = ?
-            GROUP BY
-            XacNhanChiPhiChiTiet.XacNhanChiPhi_Id,
-            XacNhanChiPhi.NgayTao,
-            XacNhanChiPhi.TenPhongKham,
-            XacNhanChiPhi.NguoiTao_Id,
-            BenhNhan_Id,
-            nhh_staff.TenNhanVien,
-            XacNhanChiPhi.SoXacNhan
-            ORDER BY XacNhanChiPhi.SoXacNhan DESC
-
-            """, day
-        ).fetchall()
-
-        return q
-    except:
-        print("Lỗi query all_confirmed")
-        return None
-
 
      
 # SQL chi tiết xác nhận
@@ -169,20 +95,7 @@ def confirmed_detail(soxacnhan_id, cursor):
         print("Lỗi query confirmed_detail")
         return None
 
-# SQL query thống kê số lượt nhập viện nội trú trong khoảng ngày
-def total_in_hospital_between(startday, endday, cursor):
-    query = """
-            SELECT
-            COALESCE(COUNT(BenhAn_Id), 0)
-            FROM BenhAn
-            WHERE NgayVaoVien BETWEEN ? AND ?
-            """
-    try:
-        q = cursor.execute(query, startday, endday).fetchone()[0]
-        return q
-    except:
-        print("Lỗi query total_in_hospital_between")
-        return None
+
 
 
 

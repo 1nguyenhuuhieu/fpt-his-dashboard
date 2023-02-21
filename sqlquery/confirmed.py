@@ -38,3 +38,44 @@ def visited_hospitalized_day(day, loai, cursor):
         print("Lỗi query confirmed.visited_hospitalized_day")
         return None
     
+
+     
+# SQL số lượt xác nhận trong ngày
+def list(day, cursor):
+    try:
+        q = cursor.execute(
+            """
+            SELECT
+            XacNhanChiPhi.NgayTao,
+            XacNhanChiPhi.SoXacNhan,
+
+            BenhNhan_Id,
+            COALESCE(SUM(SoLuong*DonGiaDoanhThu), 0) as 'tongdoanhthu',
+            COALESCE(SUM(SoLuong*DonGiaThanhToan), 0) as 'tongthanhtoan',
+            XacNhanChiPhi.TenPhongKham,
+            nhh_staff.TenNhanVien
+
+            FROM XacNhanChiPhiChiTiet
+            INNER JOIN
+            (XacNhanChiPhi INNER JOIN nhh_staff
+            ON XacNhanChiPhi.NguoiTao_Id=nhh_staff.User_Id)
+            ON XacNhanChiPhiChiTiet.XacNhanChiPhi_Id=XacNhanChiPhi.XacNhanChiPhi_Id
+            WHERE XacNhanChiPhi.NgayXacNhan = ?
+            GROUP BY
+            XacNhanChiPhiChiTiet.XacNhanChiPhi_Id,
+            XacNhanChiPhi.NgayTao,
+            XacNhanChiPhi.TenPhongKham,
+            XacNhanChiPhi.NguoiTao_Id,
+            BenhNhan_Id,
+            nhh_staff.TenNhanVien,
+            XacNhanChiPhi.SoXacNhan
+            ORDER BY XacNhanChiPhi.SoXacNhan DESC
+
+            """, day
+        ).fetchall()
+
+        return q
+    except:
+        print("Lỗi query confirmed.list")
+        return None
+
