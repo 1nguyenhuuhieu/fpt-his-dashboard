@@ -1,12 +1,9 @@
 {% extends "base.html" %}
-
 {% block header %}
 <span class=""><i class="fa-solid fa-chart-simple me-2"></i>{% block title %}Dashboard{% endblock %}</span>
 {% endblock %}
 {% block content %}
 {% include 'home/chartjs.html' %}
-
-
   <div class="row">
     <div class="col-lg-6">
       <div class="row g-2">
@@ -17,12 +14,16 @@
               <!-- Money card -->
               <div class="card shadow-sm text-bg-warning h-100">
                 <div class="card-body">
-                  <h6 class="card-subtitle mb-2"><i class="{{value.top_card.0}} me-2"></i> <a
+                  <h6 class="card-subtitle mb-2 d-flex justify-content-between align-items-center">
+                    <div>
+                      <i class="{{value.top_card.0}} me-2"></i> <a
                       href="{{ url_for('revenue', day_query=value.today)}}" class="text-reset text-decoration-none stretched-link">{{
-                      value.top_card.1 }}</a></h6>
+                      value.top_card.1 }}</a>
+                    </div>
+                    <i class="fa-solid fa-up-right-from-square text-muted"></i>
+                    </h6>
                   <hr class="my-2">
                   <h3 class="card-title">{{ "{:,} đ".format(value.top_card.2) }} </h3>
-
                   <p class="text-muted card-text">
                     <span class="">
                       {% if value.top_card.3.0 %}
@@ -43,8 +44,8 @@
                 <div class="card-body">
                   <div class="mb-2">
                     <p class="mt-0 mb-1 d-flex justify-content-between">
-                      <a href="$" class="fw-bolder text-decoration-none link-dark"><i
-                          class="fa-solid fa-pills me-1 fa-fw"></i>Dược</a>
+                      <a href="$" class="fw-bolder text-decoration-none"><i
+                          class="fa-solid fa-pills me-1 fa-fw"></i>Dược<i class="fa-solid fa-caret-right ms-1"></i></a> 
                       <span class="fw-bolder">{{ "{:,} đ".format(value.medicine_card[0]) }}</span>
                     </p>
                     <div class="progress" role="progressbar" aria-label="Example with label" aria-valuenow="25"
@@ -55,8 +56,8 @@
                   </div>
                   <div>
                     <p class="mt-0 mb-1 d-flex justify-content-between">
-                      <a href="#" class="fw-bolder text-decoration-none link-dark"><i
-                          class="fa-solid fa-stethoscope me-1 fa-fw"></i>Dịch vụ</a>
+                      <a href="#" class="fw-bolder text-decoration-none"><i
+                          class="fa-solid fa-stethoscope me-1 fa-fw"></i>Dịch vụ<i class="fa-solid fa-caret-right ms-1"></i></a>
                       <span  class="fw-bolder">{{ "{:,} đ".format(value.service_card[0]) }}</span>
                     </p>
                     <div class="progress" role="progressbar" aria-label="Example with label" aria-valuenow="25"
@@ -80,7 +81,13 @@
         <div class="col-6">
           <div class="card shadow-sm">
             <div class="card-body">
-              <h6 class="card-subtitle mb-2"><i class="{{ icon }} me-2 fa-fw"></i>{{ title }}</h6>
+              <h6 class="card-subtitle mb-2  d-flex justify-content-between align-items-center">
+                <div>
+                <i class="{{ icon }} me-2 fa-fw"></i>{{ title }}
+                </div>
+                <i class="fa-solid fa-up-right-from-square text-muted"></i>
+
+              </h6>
               <hr class="my-2">
               <div class="row">
                 <div class="col-4 align-items-center justify-content-start d-flex">

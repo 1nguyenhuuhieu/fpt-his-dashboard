@@ -47,7 +47,14 @@
                 <hr>
                 {% for card in value.card_top_body %}
                 <div class="card-text d-flex justify-content-between">
-                  <span>{{ card.0 }}</span>
+                  <span> <a href="
+                    {% if loop.first %}
+                    {{ url_for('new_patients', day_query=value.today) }}
+                    {% else %}
+                    {{ url_for('out_patients', day_query=value.today) }}
+                    {% endif %}
+                    
+                    " class="text-decoration-none">{{ card.0 }} <i class="fa-solid fa-caret-right"></i></a></span>
                   <span class="fw-bold">{{ card.1 }}</span>
                 </div>
                 {% endfor %}

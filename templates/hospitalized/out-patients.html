@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block header %}
+<i class="fa-solid fa-table me-2"></i>{% block title %}Bệnh nhân nội trú{% endblock %}
+{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-lg-12">
+        <div class="bg-white rounded border shadow-sm p-2">
+            <div id="chart_div"></div>
+        </div>
+    </div>
+</div>
+{% include 'include/table.html' %}
+
+<script>
+    const urlGenerator = '/hospitalized/new-patients/';
+    const todayURL = "{{ url_for('new_patients') }}";
+    google.charts.load('current', { packages: ['corechart', 'bar'] });
+    google.charts.setOnLoadCallback(drawBasic);
+
+    function drawBasic() {
+        const data_chart = {{ value.chart|tojson }}
+    var data = google.visualization.arrayToDataTable(data_chart);
+    var options = {
+        title: 'Số bệnh nhân ra viện trong ngày',
+    };
+    var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
+    chart.draw(data, options);
+    }
+</script>
+{% endblock %}

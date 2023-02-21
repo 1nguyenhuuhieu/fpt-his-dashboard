@@ -1,7 +1,7 @@
 <div class="border bg-white shadow-sm rounded table-responsive px-3 py-3">
     <div class="d-flex justify-content-between">
         <h6 class=""><i class="fa-solid fa-clipboard-check me-2"></i>5 lượt nhập viện gần nhất</h6>
-        <a href="{{ url_for('confirmed') }}" class="text-decoration-none">Xem tất cả<i
+        <a href="{{ url_for('new_patients', day_query=value.today) }}" class="text-decoration-none">Xem tất cả<i
                 class="fa-solid fa-up-right-from-square ms-2"></i></a>
     </div>
     <hr class="mt-1 mb-0">
@@ -10,7 +10,7 @@
             <tr>
                 <th scope="col">Thời gian</th>
                 <th scope="col">Tên bệnh nhân</th>
-                <th scope="col">Chẩn đoán</th>
+                <th scope="col">Khoa</th>
             </tr>
         </thead>
         <tbody>
