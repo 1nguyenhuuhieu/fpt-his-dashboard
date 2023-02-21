@@ -136,13 +136,8 @@ def staff_confirmed(day, cursor):
             [eHospital_NgheAn_Dictionary].[dbo].[NhanVien].TenNhanVien,
             COUNT(XacNhanChiPhi.XacNhanChiPhi_Id) as 'confirmed'
             FROM
-            (XacNhanChiPhi
+            XacNhanChiPhi
             INNER JOIN
-            XacNhanChiPhiChiTiet
-            ON XacNhanChiPhi.XacNhanChiPhi_Id = XacNhanChiPhiChiTiet.XacNhanChiPhi_Id)
-
-            INNER JOIN
-
             ([eHospital_NgheAn_Dictionary].[dbo].[NhanVien]
             INNER JOIN
             [eHospital_NgheAn_Dictionary].[dbo].[NhanVien_User_Mapping]

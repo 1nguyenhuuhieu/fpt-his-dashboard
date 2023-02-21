@@ -5,7 +5,7 @@
 {% block content %}
 <div class="row">
     <div class="col-lg-5">
-        <div class="table-responsive bg-white p-2 rounded shadow-sm border">
+        <div class="table-responsive text-bg-warning p-2 rounded shadow-sm border h-100">
         <table class="table table-sm table-borderless">
             <thead>
               <tr>
@@ -18,6 +18,7 @@
                 {% for staff in value.staff_money %}
               <tr>
                 {% for i in staff %}
+              
                 <td>{{ i }}</td>
                 {% endfor %}
               </tr>
@@ -28,7 +29,17 @@
         </div>
         
     </div>
-    <div class="col-lg-6"></div>
+    <div class="col-lg-7">
+
+        <div class="bg-white rounded border shadow-sm p-2">
+        <div id="chart_div"></div>
+
+
+        </div>
+
+
+
+    </div>
 </div>
 
 {% include 'include/table.html' %}
@@ -36,6 +47,31 @@
 <script>
     const urlGenerator = '/revenue/confirmed/';
     const todayURL = "{{ url_for('confirmed') }}";
+
+
+
+
+
+
+    google.charts.load('current', {packages: ['corechart', 'bar']});
+google.charts.setOnLoadCallback(drawBasic);
+
+function drawBasic() {
+    const data_chart = {{ value.staff_confirmed_chart|tojson }}
+
+      var data = google.visualization.arrayToDataTable(data_chart);
+
+      var options = {
+        title: 'Số lượt xác nhận',
+      };
+
+      var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
+
+      chart.draw(data, options);
+    }
+
+
+
   </script>
   
 {% endblock %}

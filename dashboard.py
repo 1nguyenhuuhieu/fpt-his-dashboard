@@ -638,7 +638,8 @@ def confirmed(day_query=None):
     staff_money = list([staff, f'{int(money1):,}',f'{int(money2):,}'] for money1, money2, staff in staff_money)
 
     staff_confirmed = query_confirmed.staff_confirmed(today, cursor)
-    print(staff_confirmed)
+    staff_confirmed_chart = list([i,j] for i,j in staff_confirmed)
+    staff_confirmed_chart.insert(0,['Tên nhân viên', 'Số lượt xác nhận'])
 
     today = today.strftime("%Y-%m-%d")
 
@@ -647,7 +648,8 @@ def confirmed(day_query=None):
         'today': today,
         'all_confirmed': all_confirmed,
         'table_column_title': table_column_title,
-        'staff_money': staff_money
+        'staff_money': staff_money,
+        'staff_confirmed_chart': staff_confirmed_chart
     }
 
     cnxn.close()
