@@ -23,19 +23,19 @@ from flask_breadcrumbs import Breadcrumbs, register_breadcrumb
 
 
 # Kết nối database sql server
-# def get_db():
-#     server = '192.168.123.254'
-#     database = 'eHospital_NgheAn'
-#     username = 'sa'
-#     password = 'toanthang'
-#     cnxn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER=' +
-#                           server+';DATABASE='+database+';UID='+username+';PWD=' + password)
-#     return cnxn
-
 def get_db():
-    cnxn = pyodbc.connect(driver='{ODBC Driver 17 for SQL Server}', server='localhost', database='eHospital_NgheAn',               
-               trusted_connection='yes')
+    server = '192.168.123.254'
+    database = 'eHospital_NgheAn'
+    username = 'sa'
+    password = 'toanthang'
+    cnxn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER=' +
+                          server+';DATABASE='+database+';UID='+username+';PWD=' + password)
     return cnxn
+
+# def get_db():
+#     cnxn = pyodbc.connect(driver='{ODBC Driver 17 for SQL Server}', server='localhost', database='eHospital_NgheAn',               
+#                trusted_connection='yes')
+#     return cnxn
 
 def get_change(current, previous):
     if not current:
@@ -630,9 +630,15 @@ def confirmed(day_query=None):
     today = day_dict['today']
 
     all_confirmed = query_confirmed.list(today, cursor)
-    all_confirmed = ([thoigian.strftime("%H:%M:%S %d-%m-%Y"),soxacnhan,benhnhan_id,  f'{int(doanhthu):,}', f'{int(thanhtoan):,}', phongkham,nhanvien] for thoigian,soxacnhan, benhnhan_id, doanhthu, thanhtoan,phongkham, nhanvien in all_confirmed)
+    all_confirmed = ([thoigian.strftime("%H:%M:%S %d-%m-%Y"),soxacnhan,benhnhan_id, loai ,f'{int(doanhthu):,}', f'{int(thanhtoan):,}', nhanvien] for thoigian,soxacnhan, benhnhan_id,loai, doanhthu, thanhtoan, nhanvien in all_confirmed)
 
-    table_column_title = ['Thời gian', 'Số xác nhận', 'ID Bệnh nhân', 'Doanh thu', 'Thanh toán', 'Phòng khám', 'Nhân viên']
+    table_column_title = ['Thời gian', 'Số xác nhận', 'Mã y tế', 'Loại', 'Doanh thu', 'Thanh toán', 'Nhân viên']
+
+    staff_money = query_confirmed.staff_money(today, cursor)
+    staff_money = list([staff, f'{int(money1):,}',f'{int(money2):,}'] for money1, money2, staff in staff_money)
+
+    staff_confirmed = query_confirmed.staff_confirmed(today, cursor)
+    print(staff_confirmed)
 
     today = today.strftime("%Y-%m-%d")
 
@@ -640,7 +646,8 @@ def confirmed(day_query=None):
     context = {
         'today': today,
         'all_confirmed': all_confirmed,
-        'table_column_title': table_column_title
+        'table_column_title': table_column_title,
+        'staff_money': staff_money
     }
 
     cnxn.close()
@@ -663,7 +670,6 @@ def confirmed_detail(SoXacNhan_Id):
         TenPhongKham = detail[5],
         TenNhanVien = detail[6]
     )
-    print(detail_json)
     cnxn.close()
     return detail_json
 

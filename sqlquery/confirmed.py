@@ -36,41 +36,48 @@ def visited_hospitalized_day(day, loai, cursor):
         return q
     except:
         print("Lỗi query confirmed.visited_hospitalized_day")
-        return None
-    
-
+        return None   
      
 # SQL số lượt xác nhận trong ngày
 def list(day, cursor):
     try:
         q = cursor.execute(
             """
+            
             SELECT
             XacNhanChiPhi.NgayTao,
             XacNhanChiPhi.SoXacNhan,
-
-            BenhNhan_Id,
-            COALESCE(SUM(SoLuong*DonGiaDoanhThu), 0) as 'tongdoanhthu',
-            COALESCE(SUM(SoLuong*DonGiaThanhToan), 0) as 'tongthanhtoan',
-            XacNhanChiPhi.TenPhongKham,
-            nhh_staff.TenNhanVien
-
-            FROM XacNhanChiPhiChiTiet
+            MaYTe,
+            XacNhanChiPhi.Loai,
+            SUM(SoLuong*DonGiaDoanhThu) as 'doanhthu',
+            SUM(SoLuong*DonGiaThanhToan) as 'thanhtoan',
+            [eHospital_NgheAn_Dictionary].[dbo].[NhanVien].TenNhanVien
+            FROM
+            (XacNhanChiPhi
             INNER JOIN
-            (XacNhanChiPhi INNER JOIN nhh_staff
-            ON XacNhanChiPhi.NguoiTao_Id=nhh_staff.User_Id)
-            ON XacNhanChiPhiChiTiet.XacNhanChiPhi_Id=XacNhanChiPhi.XacNhanChiPhi_Id
-            WHERE XacNhanChiPhi.NgayXacNhan = ?
-            GROUP BY
-            XacNhanChiPhiChiTiet.XacNhanChiPhi_Id,
-            XacNhanChiPhi.NgayTao,
-            XacNhanChiPhi.TenPhongKham,
-            XacNhanChiPhi.NguoiTao_Id,
-            BenhNhan_Id,
-            nhh_staff.TenNhanVien,
-            XacNhanChiPhi.SoXacNhan
-            ORDER BY XacNhanChiPhi.SoXacNhan DESC
+            XacNhanChiPhiChiTiet
+            ON XacNhanChiPhi.XacNhanChiPhi_Id = XacNhanChiPhiChiTiet.XacNhanChiPhi_Id)
 
+            INNER JOIN
+
+            ([eHospital_NgheAn_Dictionary].[dbo].[NhanVien]
+            INNER JOIN
+            [eHospital_NgheAn_Dictionary].[dbo].[NhanVien_User_Mapping]
+            ON [eHospital_NgheAn_Dictionary].[dbo].[NhanVien].NhanVien_Id = [eHospital_NgheAn_Dictionary].[dbo].[NhanVien_User_Mapping].NhanVien_Id)
+
+            ON XacNhanChiPhi.NguoiTao_Id = [eHospital_NgheAn_Dictionary].[dbo].[NhanVien_User_Mapping].User_Id
+
+            INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan]
+            ON [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan].BenhNhan_Id = XacNhanChiPhi.BenhNhan_Id
+
+            WHERE XacNhanChiPhi.NgayXacNhan = ?
+
+            GROUP BY
+            XacNhanChiPhi.BenhNhan_Id,
+            MaYTe,
+            XacNhanChiPhi.NgayTao, XacNhanChiPhi.Loai,
+            [eHospital_NgheAn_Dictionary].[dbo].[NhanVien].TenNhanVien,
+            XacNhanChiPhi.SoXacNhan
             """, day
         ).fetchall()
 
@@ -78,4 +85,87 @@ def list(day, cursor):
     except:
         print("Lỗi query confirmed.list")
         return None
+
+# SQL số lượt xác nhận trong ngày
+def staff_money(day, cursor):
+    try:
+        q = cursor.execute(
+            """
+            SELECT
+            SUM(SoLuong*DonGiaDoanhThu) as 'doanhthu',
+            SUM(SoLuong*DonGiaThanhToan) as 'thanhtoan',
+            [eHospital_NgheAn_Dictionary].[dbo].[NhanVien].TenNhanVien
+            FROM
+            (XacNhanChiPhi
+            INNER JOIN
+            XacNhanChiPhiChiTiet
+            ON XacNhanChiPhi.XacNhanChiPhi_Id = XacNhanChiPhiChiTiet.XacNhanChiPhi_Id)
+
+            INNER JOIN
+
+            ([eHospital_NgheAn_Dictionary].[dbo].[NhanVien]
+            INNER JOIN
+            [eHospital_NgheAn_Dictionary].[dbo].[NhanVien_User_Mapping]
+            ON [eHospital_NgheAn_Dictionary].[dbo].[NhanVien].NhanVien_Id = [eHospital_NgheAn_Dictionary].[dbo].[NhanVien_User_Mapping].NhanVien_Id)
+
+            ON XacNhanChiPhi.NguoiTao_Id = [eHospital_NgheAn_Dictionary].[dbo].[NhanVien_User_Mapping].User_Id
+
+            INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan]
+            ON [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan].BenhNhan_Id = XacNhanChiPhi.BenhNhan_Id
+
+            WHERE XacNhanChiPhi.NgayXacNhan = ?
+
+            GROUP BY
+            [eHospital_NgheAn_Dictionary].[dbo].[NhanVien].TenNhanVien
+
+            ORDER BY doanhthu DESC
+            """, day
+        ).fetchall()
+
+        return q
+    except:
+        print("Lỗi query confirmed.staff_money")
+        return None
+
+# SQL số lượt xác nhận trong ngày
+def staff_confirmed(day, cursor):
+    try:
+        q = cursor.execute(
+            """
+            SELECT
+            [eHospital_NgheAn_Dictionary].[dbo].[NhanVien].TenNhanVien,
+            COUNT(XacNhanChiPhi.XacNhanChiPhi_Id) as 'confirmed'
+            FROM
+            (XacNhanChiPhi
+            INNER JOIN
+            XacNhanChiPhiChiTiet
+            ON XacNhanChiPhi.XacNhanChiPhi_Id = XacNhanChiPhiChiTiet.XacNhanChiPhi_Id)
+
+            INNER JOIN
+
+            ([eHospital_NgheAn_Dictionary].[dbo].[NhanVien]
+            INNER JOIN
+            [eHospital_NgheAn_Dictionary].[dbo].[NhanVien_User_Mapping]
+            ON [eHospital_NgheAn_Dictionary].[dbo].[NhanVien].NhanVien_Id = [eHospital_NgheAn_Dictionary].[dbo].[NhanVien_User_Mapping].NhanVien_Id)
+
+            ON XacNhanChiPhi.NguoiTao_Id = [eHospital_NgheAn_Dictionary].[dbo].[NhanVien_User_Mapping].User_Id
+
+            INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan]
+            ON [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan].BenhNhan_Id = XacNhanChiPhi.BenhNhan_Id
+
+            WHERE XacNhanChiPhi.NgayXacNhan = ?
+
+            GROUP BY
+            [eHospital_NgheAn_Dictionary].[dbo].[NhanVien].TenNhanVien
+
+            ORDER BY confirmed DESC
+            """, day
+        ).fetchall()
+
+        return q
+    except:
+        print("Lỗi query confirmed.staff_confirmed")
+        return None
+
+
 

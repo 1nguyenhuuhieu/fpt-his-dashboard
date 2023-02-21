@@ -3,6 +3,33 @@
 <i class="fa-solid fa-table me-2"></i>{% block title %}Xác nhận thanh toán{% endblock %}
 {% endblock %}
 {% block content %}
+<div class="row">
+    <div class="col-lg-5">
+        <div class="table-responsive bg-white p-2 rounded shadow-sm border">
+        <table class="table table-sm table-borderless">
+            <thead>
+              <tr>
+                <th scope="col">Nhân Viên</th>
+                <th scope="col">Doanh thu</th>
+                <th scope="col">Thanh toán</th>
+              </tr>
+            </thead>
+            <tbody>
+                {% for staff in value.staff_money %}
+              <tr>
+                {% for i in staff %}
+                <td>{{ i }}</td>
+                {% endfor %}
+              </tr>
+              {% endfor %}
+        
+            </tbody>
+          </table>
+        </div>
+        
+    </div>
+    <div class="col-lg-6"></div>
+</div>
 
 {% include 'include/table.html' %}
 
