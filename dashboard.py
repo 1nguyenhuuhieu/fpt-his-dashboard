@@ -23,19 +23,19 @@ from flask_breadcrumbs import Breadcrumbs, register_breadcrumb
 
 
 # Kết nối database sql server
-# def get_db():
-#     server = '192.168.123.254'
-#     database = 'eHospital_NgheAn'
-#     username = 'sa'
-#     password = 'toanthang'
-#     cnxn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER=' +
-#                           server+';DATABASE='+database+';UID='+username+';PWD=' + password)
-#     return cnxn
-
 def get_db():
-    cnxn = pyodbc.connect(driver='{ODBC Driver 17 for SQL Server}', server='localhost', database='eHospital_NgheAn',               
-               trusted_connection='yes')
+    server = '192.168.123.254'
+    database = 'eHospital_NgheAn'
+    username = 'sa'
+    password = 'toanthang'
+    cnxn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER=' +
+                          server+';DATABASE='+database+';UID='+username+';PWD=' + password)
     return cnxn
+
+# def get_db():
+#     cnxn = pyodbc.connect(driver='{ODBC Driver 17 for SQL Server}', server='localhost', database='eHospital_NgheAn',               
+#                trusted_connection='yes')
+#     return cnxn
 
 def get_change(current, previous):
     if not current:
@@ -63,7 +63,6 @@ def get_percent(current, previous):
 
 # Convert to google chart data
 def convert_to_chart(list):
-
     chart = dict(list)
     chart = [[k, int(v)] for k, v in chart.items()]
 
@@ -191,23 +190,23 @@ def home(day_query=None):
     today_hospitalize = query_hospitalized.in_day(today, cursor)
     yesterday_hospitalize = query_hospitalized.in_day(yesterday, cursor)
     percent_hospitalize = get_change(today_hospitalize, yesterday_hospitalize)
-    patient_card.append(('hospitalized',"Bệnh nhân nội trú mới", 'fa-solid fa-bed-pulse',
+    patient_card.append(('new_patients',"Bệnh nhân nội trú mới", 'fa-solid fa-bed-pulse',
                         today_hospitalize, percent_hospitalize))
 
     # Lượt chuyển tuyến
-    today_transfer = query_transfer.total_day(today, cursor)
-    yesterday_transfer = query_transfer.total_day(yesterday, cursor)
+    today_transfer = query_transfer.total_day(today, cursor) + query_transfer.total_department_day(today, cursor)
+    yesterday_transfer = query_transfer.total_day(yesterday, cursor) + query_transfer.total_department_day(yesterday, cursor)
     percent_transfer = get_change(today_transfer, yesterday_transfer)
 
     patient_card.append(
-        ('hospitalized',"Chuyển tuyến", 'fa-solid fa-truck-medical', today_transfer, percent_transfer))
+        ('transfer',"Chuyển tuyến", 'fa-solid fa-truck-medical', today_transfer, percent_transfer))
 
     # Số ca phẫu thuật thủ thuật
     today_surgecies = query_surgery.total_day(today, cursor)
     yesterday_surgecies = query_surgery.total_day(yesterday, cursor)
     percent_surgecies = get_change(today_surgecies, yesterday_surgecies)
     patient_card.append(
-        ('hospitalized',"Phẫu thuật, thủ thuật", 'fa-solid fa-kit-medical', today_surgecies, percent_surgecies))
+        ('surgery',"Phẫu thuật, thủ thuật", 'fa-solid fa-kit-medical', today_surgecies, percent_surgecies))
 
     # Số ca đẻ
     today_born = query_born.total_day(today, cursor)
@@ -709,6 +708,8 @@ def hospitalized(day_query=None):
 
     card_top.append(["Bệnh nhân nội trú", today_in_hospital, percent_change, percent, yesterday_in_hostpital])
 
+    transfer_day = query_transfer.total_day(today, cursor)
+
     card_top_body = []
     card_top_body.append(['Nhập mới', recent_today_in_hospital])
     card_top_body.append(['Ra viện', out_hospital_day])
@@ -735,7 +736,7 @@ def hospitalized(day_query=None):
 
     # Bệnh nhân vừa nhập viện
     recent_hospitalized_in_day = sql_query.recent_confirmed_review(today, cursor)
-    last_patients = sql_query.last_in_hospitalized(today, cursor)
+    last_patients = query_hospitalized.last5(today, cursor)
     last_patients = ([time_in_department.strftime("%H:%M %d/%m/%Y"), patient_name, department] for time_in_department, patient_name, department in last_patients)
 
     card_bellow = []
@@ -759,8 +760,7 @@ def hospitalized(day_query=None):
     last_50_day = today + timedelta(days=-50)
     last_30_day_in_hostpital_chart = query_hospitalized.in_betweenday(last_50_day, today, cursor)
     last_30_day_in_hostpital_chart = convert_to_chart_date(last_30_day_in_hostpital_chart)
-    print(last_30_day_in_hostpital_chart)
-    
+
     print(f'load time: {time()-tic}')
 
     today = today.strftime("%Y-%m-%d")
@@ -856,7 +856,7 @@ def out_patients(day_query=None):
     end_last_year_day = day_dict['end_last_year_day']
 
 
-    table_column_title = ['Thời gian', 'Số bệnh án', 'Mã y tế', 'Chẩn đoán vào viện','Chẩn đoán ra viện', 'Lí do', 'Khoa']
+    table_column_title = ['Thời gian', 'Số bệnh án', 'Mã y tế', 'Chẩn đoán ra viện', 'Lí do','Bác sĩ', 'Khoa']
 
     list_patients = query_hospitalized.out_list(today, cursor)
 
@@ -881,8 +881,49 @@ def out_patients(day_query=None):
     cnxn.close()
     return render_template('hospitalized/out-patients.html', value=context)
 
+# Danh sách bệnh nhân chuyển viện trong ngày
+@app.route('/transfer/<string:day_query>')
+@app.route('/transfer')
+@register_breadcrumb(app, '..transfer', 'Bệnh nhân chuyển viện')
+def transfer(day_query=None):
 
-# Danh sách bệnh nhân nội trú ra viện trong ngày
+    cnxn = get_db()
+    cursor = cnxn.cursor()
+
+    day_dict = get_day(day_query)
+    today = day_dict['today']
+    yesterday = day_dict['yesterday']
+    mon_day = day_dict['mon_day']
+    last_week_monday = day_dict['last_week_monday']
+    last_week_sun_day = day_dict['last_week_sun_day']
+    twolast_week_monday = day_dict['twolast_week_monday']
+    twolast_week_sun_day = day_dict['twolast_week_sun_day']
+    first_month_day = day_dict['first_month_day']
+    last_first_month_day = day_dict['last_first_month_day']
+    last_end_month_day = day_dict['last_end_month_day']
+    first_year_day = day_dict['first_year_day']
+    last_first_year_day = day_dict['last_first_year_day']
+    end_last_year_day = day_dict['end_last_year_day']
+
+
+    table_column_title = ['Thời gian', 'Mã y tế', 'Tên bệnh nhân','Chẩn đoán ra viện','Bác sĩ' ,'Khoa phòng']
+
+    list_patients = query_transfer.transfer(today, cursor)
+
+    list_patients = list([e1.strftime("%H:%M %d-%m-%Y"), e2,e3,e7,e4,e5] for e1,e2,e3,e7,e4,e5 in list_patients)
+
+
+    today = today.strftime("%Y-%m-%d")
+    context = {
+        'today': today,
+        'list': list_patients,
+        'table_column_title': table_column_title
+    }
+    cnxn.close()
+    return render_template('hospitalized/transfer.html', value=context)
+
+
+# Danh sách bệnh nhân nội trú
 @app.route('/hospitalized/patients/<string:day_query>')
 @app.route('/hospitalized/patients')
 @register_breadcrumb(app, '..hospitalized.patients', 'Bệnh nhân đang nội trú')
@@ -997,7 +1038,7 @@ def visited(day_query=None):
 
     # Bệnh nhân vừa nhập viện
     recent_hospitalized_in_day = sql_query.recent_confirmed_review(today, cursor)
-    last_patients = sql_query.last_in_hospitalized(today, cursor)
+    last_patients = query_visited.last5(today, cursor)
     last_patients = ([time_in_department.strftime("%H:%M %d/%m/%Y"), patient_name, department] for time_in_department, patient_name, department in last_patients)
 
     card_bellow = []
@@ -1097,3 +1138,105 @@ def visited_patients(day_query=None):
     cnxn.close()
     return render_template('visited/patients.html', value=context)
 
+
+
+# Trang phẫu thuật thủ thuật
+@app.route('/surgery/<string:day_query>')
+@app.route('/surgery')
+@register_breadcrumb(app, '..surgery', 'Phẫu thuật, thủ thuật')
+def surgery(day_query=None):
+
+    cnxn = get_db()
+    cursor = cnxn.cursor()
+
+    day_dict = get_day(day_query)
+    today = day_dict['today']
+    yesterday = day_dict['yesterday']
+    mon_day = day_dict['mon_day']
+    last_week_monday = day_dict['last_week_monday']
+    last_week_sun_day = day_dict['last_week_sun_day']
+    twolast_week_monday = day_dict['twolast_week_monday']
+    twolast_week_sun_day = day_dict['twolast_week_sun_day']
+    first_month_day = day_dict['first_month_day']
+    last_first_month_day = day_dict['last_first_month_day']
+    last_end_month_day = day_dict['last_end_month_day']
+    first_year_day = day_dict['first_year_day']
+    last_first_year_day = day_dict['last_first_year_day']
+    end_last_year_day = day_dict['end_last_year_day']
+
+
+    table_column_title = ['Thời gian khám', 'Mã y tế', 'Tên bệnh nhân', 'Chẩn đoán trong khoa','Bác sĩ', 'Khoa']
+
+    list_patients = query_visited.patients(today, cursor)
+    list_patients = list([e1.strftime("%H:%M %d-%m-%Y"), e2,e3,e4,e5,e6] for e1,e2,e3,e4,e5,e6 in list_patients)
+
+    chart = query_visited.department_day(today, cursor)
+    chart = list([i,j] for i,j in chart)
+
+    chart.insert(0,['Khoa', 'Số bệnh nhân'])
+    total = query_visited.total_day(today, cursor)
+
+    today = today.strftime("%Y-%m-%d")
+
+
+    context = {
+        'today': today,
+        'list': list_patients,
+        'table_column_title': table_column_title,
+        'chart': chart,
+        'total': total
+
+
+    }
+    cnxn.close()
+    return render_template('surgery/index.html', value=context)
+
+
+# Trang phẫu thuật thủ thuật
+@app.route('/surgery/list/<string:day_query>')
+@app.route('/surgery/list')
+@register_breadcrumb(app, '..surgery.list', 'Danh sách phẫu thuật, thủ thuật')
+def surgery_list(day_query=None):
+
+    cnxn = get_db()
+    cursor = cnxn.cursor()
+
+    day_dict = get_day(day_query)
+    today = day_dict['today']
+    yesterday = day_dict['yesterday']
+    mon_day = day_dict['mon_day']
+    last_week_monday = day_dict['last_week_monday']
+    last_week_sun_day = day_dict['last_week_sun_day']
+    twolast_week_monday = day_dict['twolast_week_monday']
+    twolast_week_sun_day = day_dict['twolast_week_sun_day']
+    first_month_day = day_dict['first_month_day']
+    last_first_month_day = day_dict['last_first_month_day']
+    last_end_month_day = day_dict['last_end_month_day']
+    first_year_day = day_dict['first_year_day']
+    last_first_year_day = day_dict['last_first_year_day']
+    end_last_year_day = day_dict['end_last_year_day']
+
+
+    table_column_title = ['Thời gian kết thúc', 'Mã y tế', 'Tên bệnh nhân', 'Can thiệp','Loại', 'Nơi thực hiện']
+
+    list_patients = query_surgery.list(today, cursor)
+    list_patients = list([e1.strftime("%H:%M %d-%m-%Y"), e2,e3,e4,e5,e6] for e1,e2,e3,e4,e5,e6 in list_patients)
+
+    chart = query_visited.department_day(today, cursor)
+    chart = list([i,j] for i,j in chart)
+
+    chart.insert(0,['Khoa', 'Số bệnh nhân'])
+    total = query_visited.total_day(today, cursor)
+
+    today = today.strftime("%Y-%m-%d")
+
+
+    context = {
+        'today': today,
+        'list': list_patients,
+        'table_column_title': table_column_title,
+        'chart': chart,
+        'total': total
+    }
+    cnxn.close()
+    return render_template('surgery/list.html', value=context)

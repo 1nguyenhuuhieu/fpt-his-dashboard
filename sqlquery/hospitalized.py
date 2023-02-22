@@ -167,18 +167,18 @@ def new_list(day, cursor):
 def out_list(day, cursor):
     query = """
             SELECT
-            ThoiGianRaVien, SoBenhAn, MaYTe,ChanDoanVaoKhoa, ChanDoanRaVien, Dictionary_Name ,TenPhongBan
+            ThoiGianRaVien, SoBenhAn, MaYTe, ChanDoanRaVien, Dictionary_Name ,TenNhanVien,TenPhongBan
             FROM BenhAn
             INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan]
             ON BenhAn.BenhNhan_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan].BenhNhan_Id
             INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_PhongBan]
             ON BenhAn.KhoaVao_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_PhongBan].PhongBan_Id
             INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[NhanVien]
-            ON BenhAn.NguoiLap_Id = [eHospital_NgheAn_Dictionary].[dbo].[NhanVien].NhanVien_Id
+            ON BenhAn.BacSiDieuTri_Id = [eHospital_NgheAn_Dictionary].[dbo].[NhanVien].NhanVien_Id
             INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[Lst_Dictionary]
             ON LyDoXuatVien_Id = [eHospital_NgheAn_Dictionary].[dbo].[Lst_Dictionary].Dictionary_Id
             WHERE NgayRaVien = ?
-            GROUP BY ThoiGianRaVien, SoBenhAn, MaYTe,ChanDoanRaVien, TenPhongBan, ChanDoanVaoKhoa, Dictionary_Name
+            GROUP BY ThoiGianRaVien, SoBenhAn, MaYTe,ChanDoanRaVien, TenPhongBan, TenNhanVien, Dictionary_Name
             """
     try:
         q = cursor.execute(query, day).fetchall()
@@ -209,6 +209,7 @@ def out_department_day(day, cursor):
     except:
         print("Lỗi query hospitalized.out_department_day")
         return None
+
 
 def patients(day,cursor):
     tomorrow = day + timedelta(days=1)
@@ -249,4 +250,27 @@ def patients(day,cursor):
         return q
     except:
         print("Lỗi query hospitalized.patients")
+        return None
+
+
+# 5 lượt nhập viện điều trị gần nhất trong ngày
+def last5(day, cursor):
+    query = """
+            SELECT TOP 5
+            ThoiGianVaoKhoa,TenBenhNhan,TenPhongBan
+            FROM BenhAn
+            INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan]
+            ON BenhAN.BenhNhan_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan].BenhNhan_Id
+            INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_PhongBan]
+            ON BenhAn.KhoaVao_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_PhongBan].PhongBan_Id
+            WHERE NgayVaoVien = ?
+            ORDER BY BenhAn_Id DESC
+            """
+    try:
+        q = cursor.execute(query, day).fetchall()
+
+        return q
+    
+    except:
+        print("Lỗi query last_in_hospitalized")
         return None

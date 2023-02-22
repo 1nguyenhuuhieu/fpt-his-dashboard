@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block header %}
+<i class="fa-solid fa-truck-medical me-2"></i>{% block title %}Bệnh nhân chuyển viện{% endblock %}
+{% endblock %}
+{% block content %}
+
+{% include 'include/table.html' %}
+
+<script>
+    const urlGenerator = '/hospitalized/transfer/';
+    const todayURL = "{{ url_for('transfer') }}";
+</script>
+
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block header %}
+<i class="fa-solid fa-kit-medical me-2"></i>{% block title %}Phẫu thuật, thủ thuật{% endblock %}
+{% endblock %}
+{% block content %}
+<div class="row">
+
+    <div class="col-lg-6">
+
+    </div>
+    
+    <div class="col-lg-6">
+        <a href="{{ url_for('surgery_list', day_query=value.today)}}">list</a>
+    </div>
+
+</div>
+
+<script>
+    const urlGenerator = '/surgery/';
+    const todayURL = "{{ url_for('surgery') }}";
+</script>
+{% endblock %}

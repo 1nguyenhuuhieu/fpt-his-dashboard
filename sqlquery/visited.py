@@ -97,3 +97,25 @@ def patients(day, cursor):
     except:
         print("Lỗi query visited.patients")
         return None
+
+# 5 lượt khám bệnh gần nhất trong ngày
+def last5(day, cursor):
+    query = """
+            SELECT TOP 5
+            ThoiGianKham,TenBenhNhan,TenPhongBan
+            FROM KhamBenh
+            INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan]
+            ON KhamBenh.BenhNhan_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan].BenhNhan_Id
+            INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_PhongBan]
+            ON KhamBenh.PhongBan_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_PhongBan].PhongBan_Id
+            WHERE NgayKham = ?
+            ORDER BY KhamBenh_ID DESC
+            """
+    try:
+        q = cursor.execute(query, day).fetchall()
+
+        return q
+    
+    except:
+        print("Lỗi query visited.last5")
+        return None

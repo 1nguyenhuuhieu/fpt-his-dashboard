@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block header %}
+<i class="fa-solid fa-kit-medical me-2"></i>{% block title %}Danh sách phẫu thuật, thủ thuật{% endblock %}
+{% endblock %}
+{% block content %}
+{% include 'include/table.html' %}
+<script>
+    const urlGenerator = '/surgery/';
+    const todayURL = "{{ url_for('surgery') }}";
+</script>
+{% endblock %}
