@@ -75,3 +75,25 @@ def department_day(day, cursor):
     except:
         print("Lỗi query visited.department_day")
         return None
+
+# Danh sách khám bệnh trong ngày
+def patients(day, cursor):
+    query = """
+    SELECT
+    ThoiGianKham, MaYTe, TenBenhNhan,  ChanDoanKhoaKham,TenNhanVien, TenPhongBan
+    FROM KhamBenh
+    INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan]
+    ON KhamBenh.BenhNhan_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan].BenhNhan_Id
+    INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_PhongBan]
+    ON KhamBenh.PhongBan_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_PhongBan].PhongBan_Id
+    INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].NhanVien
+    ON KhamBenh.BacSiKham_Id = [eHospital_NgheAn_Dictionary].[dbo].NhanVien.NhanVien_Id
+    WHERE NgayKham = ?
+    GROUP BY ThoiGianKham, MaYTe, TenBenhNhan, TenNhanVien, ChanDoanKhoaKham, TenPhongBan
+    """
+    try:
+        q = cursor.execute(query, day).fetchall()
+        return q
+    except:
+        print("Lỗi query visited.patients")
+        return None

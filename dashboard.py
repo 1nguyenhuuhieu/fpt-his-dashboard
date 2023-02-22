@@ -23,19 +23,19 @@ from flask_breadcrumbs import Breadcrumbs, register_breadcrumb
 
 
 # Kết nối database sql server
-def get_db():
-    server = '192.168.123.254'
-    database = 'eHospital_NgheAn'
-    username = 'sa'
-    password = 'toanthang'
-    cnxn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER=' +
-                          server+';DATABASE='+database+';UID='+username+';PWD=' + password)
-    return cnxn
-
 # def get_db():
-#     cnxn = pyodbc.connect(driver='{ODBC Driver 17 for SQL Server}', server='localhost', database='eHospital_NgheAn',               
-#                trusted_connection='yes')
+#     server = '192.168.123.254'
+#     database = 'eHospital_NgheAn'
+#     username = 'sa'
+#     password = 'toanthang'
+#     cnxn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER=' +
+#                           server+';DATABASE='+database+';UID='+username+';PWD=' + password)
 #     return cnxn
+
+def get_db():
+    cnxn = pyodbc.connect(driver='{ODBC Driver 17 for SQL Server}', server='localhost', database='eHospital_NgheAn',               
+               trusted_connection='yes')
+    return cnxn
 
 def get_change(current, previous):
     if not current:
@@ -1044,3 +1044,56 @@ def visited(day_query=None):
 
     cnxn.close()
     return render_template('visited/index.html', value=context)
+
+
+# Danh sách bệnh nhân ngoại trú trong ngày
+@app.route('/visited/patients/<string:day_query>')
+@app.route('/visited/patients')
+@register_breadcrumb(app, '..visited.patients', 'Bệnh nhân ngoại trú')
+def visited_patients(day_query=None):
+
+    cnxn = get_db()
+    cursor = cnxn.cursor()
+
+    day_dict = get_day(day_query)
+    today = day_dict['today']
+    yesterday = day_dict['yesterday']
+    mon_day = day_dict['mon_day']
+    last_week_monday = day_dict['last_week_monday']
+    last_week_sun_day = day_dict['last_week_sun_day']
+    twolast_week_monday = day_dict['twolast_week_monday']
+    twolast_week_sun_day = day_dict['twolast_week_sun_day']
+    first_month_day = day_dict['first_month_day']
+    last_first_month_day = day_dict['last_first_month_day']
+    last_end_month_day = day_dict['last_end_month_day']
+    first_year_day = day_dict['first_year_day']
+    last_first_year_day = day_dict['last_first_year_day']
+    end_last_year_day = day_dict['end_last_year_day']
+
+
+    table_column_title = ['Thời gian khám', 'Mã y tế', 'Tên bệnh nhân', 'Chẩn đoán trong khoa','Bác sĩ', 'Khoa']
+
+    list_patients = query_visited.patients(today, cursor)
+    list_patients = list([e1.strftime("%H:%M %d-%m-%Y"), e2,e3,e4,e5,e6] for e1,e2,e3,e4,e5,e6 in list_patients)
+
+    chart = query_visited.department_day(today, cursor)
+    chart = list([i,j] for i,j in chart)
+
+    chart.insert(0,['Khoa', 'Số bệnh nhân'])
+    total = query_visited.total_day(today, cursor)
+
+    today = today.strftime("%Y-%m-%d")
+
+
+    context = {
+        'today': today,
+        'list': list_patients,
+        'table_column_title': table_column_title,
+        'chart': chart,
+        'total': total
+
+
+    }
+    cnxn.close()
+    return render_template('visited/patients.html', value=context)
+
