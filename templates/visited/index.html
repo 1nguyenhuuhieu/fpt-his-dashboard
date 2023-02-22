@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
-{% block header %}<i class="fa-solid fa-hospital me-2"></i>
-{% block title %}Bệnh nhân nội trú{% endblock %}{% endblock %}
+{% block header %}<i class="fa-solid fa-hospital-user me-2"></i>
+{% block title %}Bệnh nhân ngoại trú{% endblock %}{% endblock %}
 {% block content %}
-{% include 'hospitalized/chartjs.html' %}
+{% include 'visited/chartjs.html' %}
 
 
   <!-- Nội trú -->
@@ -17,7 +17,7 @@
               <div class="card-body">
                 <a href="{{ url_for('patients', day_query=value.today) }}" class="link-dark text-decoration-none"><h6 class="card-subtitle d-flex justify-content-between align-items-center">
                   <div>
-                    <i class="fa-solid fa-hospital me-2"></i>
+                    <i class="fa-solid fa-hospital-user me-2"></i>
                     {{ card.0 }}
                   </div>
           
@@ -82,7 +82,7 @@
             <div class="row g-0">
               <div class="card-body">
                 <h6 class="card-subtitle"><i class="fa-solid fa-chart-line me-2"></i>
-                  Thống kê lượt nhập viện nội trú</h6>
+                  Thống kê lượt khám bệnh ngoại trú</h6>
                 <hr class="my-2">
                 {% for title1, count1, title2, count2, percent in value.card_bellow %}
                 <div class="row g-2 align-items-center py-1">
@@ -118,32 +118,14 @@
         </div>
       </div>
       <div class="row g-2">
-        <div class="col-lg-6">
-          <!-- Danh sách bệnh nhân nội trú theo từng khoa -->
+        <div class="col-lg-12">
+          <!-- Danh sách bệnh nhân ngoại trú theo từng phòng -->
           <div class="card shadow-sm mt-2">
             <div class="card-header text-bg-warning">
-              <h6 class="m-0">Bệnh nhân hiện có</h6>
+              <h6 class="m-0">Bệnh nhân ngoại trú</h6>
             </div>
             <ul class="list-group list-group-flush">
               {% for department in value.patient_in_department %}
-              <a href="$"
-                class="list-group-item list-group-item-action d-flex justify-content-between align-items-start ">
-                {{ department[0] }}
-                <span class="fw-bold ms-2">{{ department[1]}}</span>
-              </a>
-              {% endfor %}
-            </ul>
-          </div>
-          <!-- Danh sách bệnh nhân nội trú theo từng khoa -->
-        </div>
-        <div class="col-lg-6">
-          <!-- Danh sách bệnh nhân nội trú theo từng khoa -->
-          <div class="card shadow-sm mt-2">
-            <div class="card-header text-bg-warning">
-              <h6 class="m-0">Bệnh nhân nhập mới</h6>
-            </div>
-            <ul class="list-group list-group-flush">
-              {% for department in value.patient_in_department_today %}
               <a href="$"
                 class="list-group-item list-group-item-action d-flex justify-content-between align-items-start ">
                 {{ department[0] }}
@@ -158,7 +140,7 @@
     </div>
     <!-- Top card  -->
     <div class="col-lg-6">
-      {% include 'hospitalized/last_patients_table.html' %}
+      {% include 'visited/last_patients_table.html' %}
       <div class="border rounded shadow-sm p-2 bg-white mt-2">
         <div id="last30daysChart"></div>
       </div>
@@ -170,7 +152,7 @@
   </div>
 
 <script>
-  const urlGenerator = '/hospitalized/';
-  const todayURL = "{{ url_for('hospitalized') }}"
+  const urlGenerator = '/visited/';
+  const todayURL = "{{ url_for('visited') }}"
 </script>
 {% endblock %}

@@ -130,7 +130,7 @@ def total_in_between(startday, endday, cursor):
 def new_list(day, cursor):
     query = """
             SELECT
-            ThoiGianVaoKhoa, SoBenhAn, MaYTe,ChanDoanVaoKhoa, TenPhongBan, TenNhanVien
+            ThoiGianVaoKhoa, SoBenhAn, MaYTe,TenBenhNhan,ChanDoanVaoKhoa, TenPhongBan, TenNhanVien
             FROM BenhAn
             INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan]
             ON BenhAn.BenhNhan_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan].BenhNhan_Id
@@ -139,19 +139,19 @@ def new_list(day, cursor):
             INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[NhanVien]
             ON BenhAn.NguoiLap_Id = [eHospital_NgheAn_Dictionary].[dbo].[NhanVien].NhanVien_Id
             WHERE NgayVaoVien = ?
-            GROUP BY ThoiGianVaoKhoa, SoBenhAn, MaYTe,ChanDoanVaoKhoa, TenPhongBan, TenNhanVien
+            GROUP BY ThoiGianVaoKhoa, SoBenhAn, MaYTe,ChanDoanVaoKhoa, TenPhongBan, TenNhanVien, TenBenhNhan
 
             UNION
 
             SELECT
-            ThoiGianVaoKhoa, SoBenhAn, MaYTe,ChanDoanVaoKhoa, TenPhongBan, TenBenhNhan
+            ThoiGianVaoKhoa, SoBenhAn, MaYTe,TenBenhNhan,ChanDoanVaoKhoa, TenPhongBan, TenPhongBan
             FROM BenhAn
             INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan]
             ON BenhAn.BenhNhan_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan].BenhNhan_Id
             INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_PhongBan]
             ON BenhAn.KhoaVao_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_PhongBan].PhongBan_Id
             WHERE NgayVaoVien = ? AND NguoiLap_Id IS NULL
-            GROUP BY ThoiGianVaoKhoa, SoBenhAn, MaYTe,ChanDoanVaoKhoa, TenPhongBan, TenBenhNhan
+            GROUP BY ThoiGianVaoKhoa, SoBenhAn, MaYTe,ChanDoanVaoKhoa, TenPhongBan, TenPhongBan,TenBenhNhan
 
             """
     try:
@@ -208,4 +208,45 @@ def out_department_day(day, cursor):
         return q
     except:
         print("Lỗi query hospitalized.out_department_day")
+        return None
+
+def patients(day,cursor):
+    tomorrow = day + timedelta(days=1)
+    query = """
+        SELECT
+        ThoiGianVaoKhoa, SoBenhAn, MaYTe,TenBenhNhan,ChanDoanRaVien, TenNhanVien, TenPhongBan
+        FROM BenhAn
+        INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan]
+        ON BenhAn.BenhNhan_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan].BenhNhan_Id
+        INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_PhongBan]
+        ON BenhAn.KhoaVao_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_PhongBan].PhongBan_Id
+        INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[NhanVien]
+        ON BenhAn.BacSiDieuTri_Id = [eHospital_NgheAn_Dictionary].[dbo].[NhanVien].NhanVien_Id
+        WHERE (NgayRaVien IS NULL
+                OR NgayRaVien > ?)
+                AND NgayVaoVien < ?
+        GROUP BY ThoiGianVaoKhoa, SoBenhAn, MaYTe,ChanDoanRaVien, TenPhongBan, TenNhanVien,TenBenhNhan
+
+        UNION
+
+        SELECT
+        ThoiGianVaoKhoa, SoBenhAn, MaYTe,TenBenhNhan,ChanDoanRaVien,TenPhongBan, TenPhongBan
+        FROM BenhAn
+        INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan]
+        ON BenhAn.BenhNhan_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan].BenhNhan_Id
+        INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_PhongBan]
+        ON BenhAn.KhoaVao_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_PhongBan].PhongBan_Id
+
+        WHERE (NgayRaVien IS NULL
+                OR NgayRaVien > ?)
+                AND NgayVaoVien < ?
+                AND BacSiDieuTri_Id IS NULL
+        GROUP BY ThoiGianVaoKhoa, SoBenhAn, MaYTe,ChanDoanRaVien, TenPhongBan, TenPhongBan,TenBenhNhan
+            """
+    try:
+        q = cursor.execute(query, day, tomorrow, day, tomorrow).fetchall()
+
+        return q
+    except:
+        print("Lỗi query hospitalized.patients")
         return None

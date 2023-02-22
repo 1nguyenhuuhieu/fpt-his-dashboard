@@ -13,7 +13,7 @@ def total_day(day, cursor):
         print("Lỗi query visited.total_day")
         return None
 
-# Số lượt khám mỗi ngày từ ngày start tới ngày end
+# Số lượt khám mỗi ngày từ ngày start tới ngày end lấy 30 ngày
 def day_betweenday(startday, endday, cursor):
     try:
         q = cursor.execute(
@@ -30,6 +30,21 @@ def day_betweenday(startday, endday, cursor):
         return q
     except:
         print("Lỗi query visited.perday_betweenday")
+        return None
+# Số lượt khám mỗi ngày từ ngày start tới ngày end lấy 30 ngày
+def total_betweenday(startday, endday, cursor):
+    try:
+        q = cursor.execute(
+            """
+            SELECT COUNT(KhamBenh_Id)
+            FROM KhamBenh
+            WHERE NgayKham BETWEEN ? AND ?
+            """, startday, endday
+        ).fetchone()[0]
+
+        return q
+    except:
+        print("Lỗi query visited.total_betweenday")
         return None
 
 # Số lượt khám bệnh theo từng khoa phòng trong ngày

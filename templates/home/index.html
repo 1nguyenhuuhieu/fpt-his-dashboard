@@ -20,7 +20,6 @@
                       href="{{ url_for('revenue', day_query=value.today)}}" class="text-reset text-decoration-none stretched-link">{{
                       value.top_card.1 }}</a>
                     </div>
-                    <small><i class="fa-solid fa-up-right-from-square text-muted"></i></small>
                     
                     </h6>
                   <hr class="my-2">
@@ -45,8 +44,8 @@
                 <div class="card-body">
                   <div class="mb-2">
                     <p class="mt-0 mb-1 d-flex justify-content-between">
-                      <a href="$" class="fw-bolder text-decoration-none"><i
-                          class="fa-solid fa-pills me-1 fa-fw"></i>Dược<i class="fa-solid fa-caret-right ms-1"></i></a> 
+                      <a href="{{ url_for('patients', day_query=value.today) }}" class="fw-bolder text-decoration-none"><i
+                          class="fa-solid fa-pills me-1 fa-fw"></i>Dược</a> 
                       <span class="fw-bolder">{{ "{:,} đ".format(value.medicine_card[0]) }}</span>
                     </p>
                     <div class="progress" role="progressbar" aria-label="Example with label" aria-valuenow="25"
@@ -58,7 +57,7 @@
                   <div>
                     <p class="mt-0 mb-1 d-flex justify-content-between">
                       <a href="#" class="fw-bolder text-decoration-none"><i
-                          class="fa-solid fa-stethoscope me-1 fa-fw"></i>Dịch vụ<i class="fa-solid fa-caret-right ms-1"></i></a>
+                          class="fa-solid fa-stethoscope me-1 fa-fw"></i>Dịch vụ</a>
                       <span  class="fw-bolder">{{ "{:,} đ".format(value.service_card[0]) }}</span>
                     </p>
                     <div class="progress" role="progressbar" aria-label="Example with label" aria-valuenow="25"
@@ -86,8 +85,6 @@
                 <div>
                 <i class="{{ icon }} me-2 fa-fw"></i>{{ title }}
                 </div>
-            <small> <i class="fa-solid fa-up-right-from-square text-muted"></i></small>   
-
               </h6>
               <hr class="my-2">
               <div class="row">

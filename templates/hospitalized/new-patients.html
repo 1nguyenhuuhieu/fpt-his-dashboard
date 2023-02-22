@@ -22,7 +22,7 @@
         const data_chart = {{ value.chart|tojson }}
     var data = google.visualization.arrayToDataTable(data_chart);
     var options = {
-        title: 'Số bệnh nhân nhập mới trong ngày',
+        title: 'Số bệnh nhân nhập mới trong ngày: {{value.total}}',
     };
     var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
     chart.draw(data, options);
