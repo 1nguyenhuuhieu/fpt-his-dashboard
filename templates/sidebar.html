@@ -3,37 +3,25 @@
       <ul class="nav flex-column" id="ulSidebar">
         <li class="nav-item">
           <a class="nav-link {{ 'active' if active=='home'}}" href="{{ url_for('home', day_query=value.today) }}">
-            <i class="fa-solid fa-chart-simple fa-fw"></i>
+            <i class="fa-solid fa-chart-simple" style="width: 22px;"></i>
             Trang chủ
           </a>
         </li>
         <li class="nav-item">
           <a class="nav-link {{ 'active' if active=='revenue'}}" href="{{ url_for('revenue', day_query=value.today) }}">
-            <i class="fa-solid fa-file-invoice fa-fw"></i>
+            <i class="fa-solid fa-file-invoice" style="width: 22px;"></i>
             Doanh thu
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">
-            <span data-feather="shopping-cart" class="align-text-bottom"></span>
-            Dược
+          <a class="nav-link {{ 'active' if active=='visited'}} " href="{{ url_for('visited', day_query=value.today) }}">
+            <i class="fa-solid fa-hospital-user"  style="width: 22px;"></i>
+            Khám bệnh
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">
-            <span data-feather="users" class="align-text-bottom"></span>
-            Cận lâm sàng
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">
-            <span data-feather="bar-chart-2" class="align-text-bottom"></span>
-            Ngoại trú
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#">
-            <span data-feather="layers" class="align-text-bottom"></span>
+          <a class="nav-link {{ 'active' if active=='hospitalized'}}"  href="{{ url_for('hospitalized', day_query=value.today) }}">
+            <i class="fa-solid fa-bed-pulse"  style="width: 22px;"></i>
             Nội trú
           </a>
         </li>

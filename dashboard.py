@@ -204,14 +204,14 @@ def home(day_query=None):
     yesterday_surgecies = query_surgery.total_day(yesterday, cursor)
     percent_surgecies = get_change(today_surgecies, yesterday_surgecies)
     patient_card.append(
-        ('surgery',"Phẫu thuật, thủ thuật", 'fa-solid fa-kit-medical', today_surgecies, percent_surgecies))
+        ('surgery_list',"Phẫu thuật, thủ thuật", 'fa-solid fa-kit-medical', today_surgecies, percent_surgecies))
 
     # Số ca đẻ
     today_born = query_born.total_day(today, cursor)
     yesterday_born = query_born.total_day(yesterday, cursor)
     percent_born = get_change(today_born, yesterday_born)
     patient_card.append(
-        ('hospitalized',"Số trẻ sinh", 'fa-solid fa-baby', today_born, percent_born))
+        ('born',"Số trẻ sinh", 'fa-solid fa-baby', today_born, percent_born))
 
     # Thống kê số lượt khám theo từng phòng khám
     visited_in_department = query_visited.department_day(today, cursor)
@@ -775,7 +775,7 @@ def hospitalized(day_query=None):
     }
 
     cnxn.close()
-    return render_template('hospitalized/index.html', value=context, title="Nội trú")
+    return render_template('hospitalized/index.html', value=context, active="hospitalized")
 
 
 # Danh sách bệnh nhân nội trú mới trong ngày
@@ -972,7 +972,7 @@ def patients(day_query=None):
     return render_template('hospitalized/patients.html', value=context)
 
 
-# Trang bệnh nhân ngoại trú trú
+# Trang bệnh nhân ngoại trú
 @app.route('/visited/<string:day_query>')
 @app.route('/visited')
 @register_breadcrumb(app, '.visited', 'Khám bệnh')
@@ -1080,7 +1080,7 @@ def visited(day_query=None):
     }
 
     cnxn.close()
-    return render_template('visited/index.html', value=context)
+    return render_template('visited/index.html', value=context, active='visited')
 
 
 # Danh sách bệnh nhân ngoại trú trong ngày
@@ -1236,3 +1236,54 @@ def surgery_list(day_query=None):
     }
     cnxn.close()
     return render_template('surgery/list.html', value=context)
+
+
+
+# Số trẻ sinh
+@app.route('/born/<string:day_query>')
+@app.route('/born')
+@register_breadcrumb(app, '..born', 'Trẻ sinh')
+def born(day_query=None):
+
+    cnxn = get_db()
+    cursor = cnxn.cursor()
+
+    day_dict = get_day(day_query)
+    today = day_dict['today']
+    yesterday = day_dict['yesterday']
+    mon_day = day_dict['mon_day']
+    last_week_monday = day_dict['last_week_monday']
+    last_week_sun_day = day_dict['last_week_sun_day']
+    twolast_week_monday = day_dict['twolast_week_monday']
+    twolast_week_sun_day = day_dict['twolast_week_sun_day']
+    first_month_day = day_dict['first_month_day']
+    last_first_month_day = day_dict['last_first_month_day']
+    last_end_month_day = day_dict['last_end_month_day']
+    first_year_day = day_dict['first_year_day']
+    last_first_year_day = day_dict['last_first_year_day']
+    end_last_year_day = day_dict['end_last_year_day']
+
+
+    table_column_title = ['Thời gian kết thúc', 'Số bệnh án', 'Tên bệnh nhân', 'Mô tả']
+
+    list_patients = query_born.list(today, cursor)
+    list_patients = list([e1.strftime("%H:%M %d-%m-%Y"), e2,e3,e4] for e1,e2,e3,e4 in list_patients)
+
+    chart = query_visited.department_day(today, cursor)
+    chart = list([i,j] for i,j in chart)
+
+    chart.insert(0,['Khoa', 'Số bệnh nhân'])
+    total = query_visited.total_day(today, cursor)
+
+    today = today.strftime("%Y-%m-%d")
+
+
+    context = {
+        'today': today,
+        'list': list_patients,
+        'table_column_title': table_column_title,
+        'chart': chart,
+        'total': total
+    }
+    cnxn.close()
+    return render_template('born/index.html', value=context)

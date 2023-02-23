@@ -83,7 +83,7 @@
                 <!-- Doanh thu thống kê theo tuần, tháng, năm -->
                 {% for icon, title, subtitle, money, progressbar_title, progressbar_value, last_money in
                 value.bellow_card %}
-                <div class="col-6">
+                <div class="col-lg-6">
                     <div class="card shadow-sm">
                         <div class="card-body">
                             <h6 class="card-subtitle mb-2"><i class="{{ icon }} me-2 fa-fw"></i>{{ title }}
@@ -146,7 +146,7 @@
                 <!-- End Doanh thu theo từng khoa, phòng khám -->
             </div>
         </div>
-        <div class="col-lg-6">
+        <div class="col-lg-6 pt-sm-0 pt-2">
             {% include 'revenue/last5_table.html' %}
             <!-- Biểu đồ 30 lượt khám -->
             <div class="card mb-2 shadow-sm p-1 mt-2">

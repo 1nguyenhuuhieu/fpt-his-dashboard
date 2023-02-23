@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block header %}
+<i class="fa-solid fa-baby me-2"></i>{% block title %}Trẻ sinh{% endblock %}
+{% endblock %}
+{% block content %}
+
+{% include 'include/table.html' %}
+
+<script>
+    const urlGenerator = '/born/';
+    const todayURL = "{{ url_for('born') }}";
+</script>
+
+{% endblock %}
