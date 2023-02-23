@@ -22,12 +22,10 @@
   <link rel="stylesheet" href="https://cdn.datatables.net/searchpanes/2.1.1/css/searchPanes.dataTables.min.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/select/1.6.0/css/select.dataTables.min.css">
 
-  
-
 </head>
 <body class="bg-light">
-  <header class="navbar sticky-top flex-md-nowrap p-0  shadow-sm  bg-warning ">
-    <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 py-0 d-flex text-bg-warning m-0  " href="{{ url_for('home', day_query=value.today) }}">
+  <header class="navbar sticky-top flex-md-nowrap p-0  shadow-sm  bg-warning">
+    <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 pt-2 pb-3 py-md-0 d-flex text-bg-warning m-0" href="{{ url_for('home', day_query=value.today) }}">
       <img src="{{ url_for('static', filename='imgs/logo.png')}}" height="30px" alt="">
       <span class="fw-bold  ms-2">TTYT Anh Sơn</span>
     </a>
@@ -36,7 +34,8 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="w-100 bg-white m-0 ">
-      <div class="col-12 ">
+      <!-- Header on desktop -->
+      <div class="col-12 d-none d-md-block  ">
         <div class="d-flex justify-content-between align-items-center px-4 py-2">
           <div>
             <h5 class="m-0 p-0" >
@@ -54,7 +53,7 @@
                 id="dateQuery" value="{{ value.today }}">
               <a href="#" class="btn btn-success d-none " id="dateQueryLink">Xem</a>
             </div>
-            <div class="">
+            <div class="d-none d-sm-block">
               <div class="btn-group">
                 <a href="#" class="btn btn-sm btn-outline-secondary" id="yesterdayLink"><i
                     class="fa-solid fa-caret-left me-2"></i>Hôm trước</a>
@@ -62,10 +61,7 @@
                   class="fa-solid fa-caret-right ms-2"></i></a>
                 </div>
                 <div class="btn-group ms-1">
-
                 <a href="{{ url_for('home') }}" class="btn btn-sm btn-warning" id="todayLink">Hôm nay</a>
-
-                
                   <button type="button" class="btn btn-sm btn-warning dropdown-toggle dropdown-toggle-split"
                   data-bs-toggle="dropdown" aria-expanded="false">
                 </button>
@@ -84,6 +80,47 @@
           </div>
         </div>
       </div>
+   <!-- Header on desktop -->
+
+    <!-- Header on mobile -->
+            <div class="col-12 d-md-none">
+        <div class="d-flex justify-content-between px-4 py-2">
+            <div>
+              <input type="date" class="border border-secondary rounded-1 py-1 px-2 me-2 border-secondary text-muted"
+                id="dateQuery" value="{{ value.today }}">
+              <a href="#" class="btn btn-success d-none " id="dateQueryLink">Xem</a>
+            </div>
+
+            <div>
+
+         
+              <div class="btn-group">
+                <a href="#" class="btn btn-sm btn-warning" id="yesterdayLink"><i
+                    class="fa-solid fa-caret-left mx-2"></i></a>
+                <a href="#" class="btn btn-sm btn-warning" id="tomorrowLink"><i
+                  class="fa-solid fa-caret-right mx-2"></i></a>
+                </div>
+                <div class="btn-group ms-1">
+                <a href="{{ url_for('home') }}" class="btn btn-sm btn-warning" id="todayLink">Hôm nay</a>
+                  <button type="button" class="btn btn-sm btn-warning dropdown-toggle dropdown-toggle-split"
+                  data-bs-toggle="dropdown" aria-expanded="false">
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                  <li><a class="dropdown-item disabled" href="#">Tuần này</a></li>
+                  <li><a class="dropdown-item disabled" href="#">Tuần trước</a></li>
+                  <li><a class="dropdown-item disabled" href="#">Tháng này</a></li>
+                  <li><a class="dropdown-item disabled" href="#">Tháng trước</a></li>
+                  <li>
+                    <hr class="dropdown-divider">
+                  </li>
+                  <li><a class="dropdown-item disabled" href="#">Tùy chỉnh</a></li>
+                </ul>
+              </div>
+            </div>
+  
+        </div>
+      </div>
+       <!-- Header on mobile -->
     </div>
   </header>
   <div class="container-fluid">

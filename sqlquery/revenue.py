@@ -32,7 +32,7 @@ def service_medicine_day(day, phannhom ,cursor):
         return int(q)
     except:
         print("Lỗi query service_medicine_day")
-        return 1     
+        return 0    
 
 # SQL query tổng doanh thu trong khoảng ngày
 def day_betweenday(startday, endday, cursor):

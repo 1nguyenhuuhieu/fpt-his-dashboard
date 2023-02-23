@@ -1,6 +1,5 @@
 # Chi tiết xác nhận theo tiếp nhận id
 def detail(tiepnhan_id, cursor):
-    print(tiepnhan_id)
     try:
         query = """
         SELECT

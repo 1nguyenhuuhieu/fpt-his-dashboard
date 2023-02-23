@@ -21,19 +21,19 @@ from flask_breadcrumbs import Breadcrumbs, register_breadcrumb
 
 
 # Kết nối database sql server
-# def get_db():
-#     server = '192.168.123.254'
-#     database = 'eHospital_NgheAn'
-#     username = 'sa'
-#     password = 'toanthang'
-#     cnxn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER=' +
-#                           server+';DATABASE='+database+';UID='+username+';PWD=' + password)
-#     return cnxn
-
 def get_db():
-    cnxn = pyodbc.connect(driver='{ODBC Driver 17 for SQL Server}', server='localhost', database='eHospital_NgheAn',               
-               trusted_connection='yes')
+    server = '192.168.123.254'
+    database = 'eHospital_NgheAn'
+    username = 'sa'
+    password = 'toanthang'
+    cnxn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER=' +
+                          server+';DATABASE='+database+';UID='+username+';PWD=' + password)
     return cnxn
+
+# def get_db():
+#     cnxn = pyodbc.connect(driver='{ODBC Driver 17 for SQL Server}', server='localhost', database='eHospital_NgheAn',               
+#                trusted_connection='yes')
+#     return cnxn
 
 def get_change(current, previous):
     if not current:
@@ -182,7 +182,7 @@ def home(day_query=None):
     yesterday_visited = query_visited.total_day(yesterday, cursor)
     percent_visited = get_change(today_visited, yesterday_visited)
     patient_card.append(
-        ('visited',"Bệnh nhân ngoại trú", 'fa-solid fa-hospital-user', today_visited, percent_visited))
+        ('visited',"Số lượt khám bệnh", 'fa-solid fa-hospital-user', today_visited, percent_visited))
 
     # Số bệnh nhân nhập viện
     today_hospitalize = query_hospitalized.in_day(today, cursor)
@@ -268,7 +268,7 @@ def home(day_query=None):
     }
 
     cnxn.close()
-    return render_template('home/index.html', value=context, title="Dashboard")
+    return render_template('home/index.html', value=context,  active="home")
 
 
 # Trang doanh thu
@@ -446,7 +446,7 @@ def revenue(day_query=None):
     }
     cnxn.close()
 
-    return render_template('revenue/index.html', value=context, title="Doanh thu")
+    return render_template('revenue/index.html', value=context, active="revenue")
 
 
 
@@ -677,6 +677,7 @@ def confirmed_detail(SoXacNhan_Id):
 @app.route('/hospitalized')
 @register_breadcrumb(app, '.hospitalized', 'Nội trú')
 def hospitalized(day_query=None):
+
     day_dict = get_day(day_query)
     today = day_dict['today']
     yesterday = day_dict['yesterday']
@@ -754,12 +755,9 @@ def hospitalized(day_query=None):
     card_bellow.append(['Tháng này', this_month, 'Tháng trước', last_month, month_percent])
     card_bellow.append(['Năm này', this_year, 'Năm trước', last_year, year_percent])
 
-    tic = time()
     last_50_day = today + timedelta(days=-50)
     last_30_day_in_hostpital_chart = query_hospitalized.in_betweenday(last_50_day, today, cursor)
     last_30_day_in_hostpital_chart = convert_to_chart_date(last_30_day_in_hostpital_chart)
-
-    print(f'load time: {time()-tic}')
 
     today = today.strftime("%Y-%m-%d")
     context = {
@@ -977,7 +975,7 @@ def patients(day_query=None):
 # Trang bệnh nhân ngoại trú trú
 @app.route('/visited/<string:day_query>')
 @app.route('/visited')
-@register_breadcrumb(app, '.visited', 'Ngoại trú')
+@register_breadcrumb(app, '.visited', 'Khám bệnh')
 def visited(day_query=None):
     day_dict = get_day(day_query)
     today = day_dict['today']
@@ -1007,7 +1005,7 @@ def visited(day_query=None):
     percent_change = get_change(total,yesterday_visited)
     percent = get_percent(total,yesterday_visited)
 
-    card_top.append(["Bệnh nhân ngoại trú", total, percent_change, percent, yesterday_visited])
+    card_top.append(["Số lượt khám bệnh", total, percent_change, percent, yesterday_visited])
 
     card_top_body = []
     card_top_body.append(['Nhập mới', recent_today_in_hospital])
