@@ -404,3 +404,66 @@ def avg_confirmed_union(startday, endday, cursor):
     except:
         print("Lỗi query revenue.avg_confirmed_union")
         return None
+
+
+# SQL top 10 khoa phòng nhiều doanh thu nhất trong ngày
+def services(day, cursor):
+    try:
+        q = cursor.execute(
+            """
+            SELECT
+            XacNhanChiPhiChiTiet.NoiDung,
+            Loai_IDRef_Name,
+            XacNhanChiPhi.TenPhongKham,
+            COALESCE(COUNT(XacNhanChiPhiChiTiet_Id),0) as 'count',
+            COALESCE(SUM(SoLuong*DonGiaDoanhThu), 0) as 'tongdoanhthu'
+            FROM XacNhanChiPhiChiTiet
+            INNER JOIN XacNhanChiPhi 
+            ON XacNhanChiPhiChiTiet.XacNhanChiPhi_Id=XacNhanChiPhi.XacNhanChiPhi_Id
+            INNER JOIN VienPhiNoiTru_Loai_IDRef
+            ON XacNhanChiPhiChiTiet.Loai_IDRef = VienPhiNoiTru_Loai_IDRef.Loai_IDRef
+            WHERE XacNhanChiPhi.NgayXacNhan = ?
+            GROUP BY
+            XacNhanChiPhiChiTiet.NoiDung,
+            Loai_IDRef_Name,
+            XacNhanChiPhi.TenPhongKham
+
+            ORDER BY tongdoanhthu DESC
+            """, day
+        ).fetchall()
+
+        return q
+    except:
+        print("Lỗi query revenue.top_service")
+        return None
+
+
+def services_type(day,type, cursor):
+    try:
+        q = cursor.execute(
+            """
+            SELECT
+            XacNhanChiPhiChiTiet.NoiDung,
+            Loai_IDRef_Name,
+            XacNhanChiPhi.TenPhongKham,
+            COALESCE(COUNT(XacNhanChiPhiChiTiet_Id),0) as 'count',
+            COALESCE(SUM(SoLuong*DonGiaDoanhThu), 0) as 'tongdoanhthu'
+            FROM XacNhanChiPhiChiTiet
+            INNER JOIN XacNhanChiPhi 
+            ON XacNhanChiPhiChiTiet.XacNhanChiPhi_Id=XacNhanChiPhi.XacNhanChiPhi_Id
+            INNER JOIN VienPhiNoiTru_Loai_IDRef
+            ON XacNhanChiPhiChiTiet.Loai_IDRef = VienPhiNoiTru_Loai_IDRef.Loai_IDRef
+            WHERE XacNhanChiPhi.NgayXacNhan = ? AND PhanNhom = ?
+            GROUP BY
+            XacNhanChiPhiChiTiet.NoiDung,
+            Loai_IDRef_Name,
+            XacNhanChiPhi.TenPhongKham
+
+            ORDER BY tongdoanhthu DESC
+            """, day, type
+        ).fetchall()
+
+        return q
+    except:
+        print("Lỗi query revenue.top_service")
+        return None

@@ -72,19 +72,40 @@
 
   </script>
 
+{% if order_column %}
+{% set order = order_column %}
+{% else %}
+{% set order = 0 %}
+{% endif %}
 <script>
+  let orderColumn = {{ order|tojson }}
+
   $(document).ready(function () {
     // Create DataTable
     var table = $('#myTable').DataTable({
         dom: 'Bfrtip',
-        order: [[0, 'desc']],
+        order: [[orderColumn, 'desc']],
         pagingType: 'full_numbers',
         
         buttons: [
         'searchPanes','copy', 'csv', 'excel', 'pdf', 'print'
         ]
     });
+
     });
+</script>
+
+<script>
+  let table = document.getElementById('myTable');
+  table.addEventListener('click', getSum);
+  function getSum(){
+    sumVal = 0;
+  for(let i = 1; i < table.rows.length; i++)
+      {
+          sumVal = sumVal + parseInt(table.rows[i].cells[3].innerHTML);
+      }
+      console.log(sumVal)
+  }
 
 </script>
 
@@ -98,6 +119,7 @@
 <script src="https://cdn.datatables.net/searchpanes/2.1.1/js/dataTables.searchPanes.min.js"></script>
 <script src="https://cdn.datatables.net/select/1.6.0/js/dataTables.select.min.js"></script>
 <script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://cdn.datatables.net/plug-ins/1.13.2/api/sum().js"></script>
 
 
   

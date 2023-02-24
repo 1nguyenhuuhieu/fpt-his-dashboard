@@ -453,7 +453,7 @@ def revenue(day_query=None):
 # Trang doanh thu
 @app.route('/revenue/detail/<string:day_query>')
 @app.route('/revenue/detail')
-@register_breadcrumb(app, '..revenue.detail', 'Thống kê doanh thu')
+@register_breadcrumb(app, '..revenue.detail', 'Thống kê')
 def revenue_detail(day_query=None):
     # kết nối database sql server
     cnxn = get_db()
@@ -613,12 +613,12 @@ def revenue_detail(day_query=None):
 
     }
     cnxn.close()
-    return render_template('revenue/detail.html', value=context)
+    return render_template('revenue/detail.html', value=context,active='revenue')
 
 # Danh sách xác nhận thanh toán
 @app.route('/revenue/confirmed')
 @app.route('/revenue/confirmed/<string:day_query>')
-@register_breadcrumb(app, '..revenue.confirmed', 'Danh sách xác nhận')
+@register_breadcrumb(app, '..revenue.confirmed', 'Danh sách')
 def confirmed(day_query=None):
     cnxn = get_db()
     cursor = cnxn.cursor()
@@ -652,10 +652,10 @@ def confirmed(day_query=None):
     cnxn.close()
     
 
-    return render_template('revenue/confirmed_list.html', value=context, title="Xác nhận")
+    return render_template('revenue/confirmed_list.html', value=context,active='revenue')
 
 @app.route('/confirmed/detail/<string:SoXacNhan_Id>')
-@register_breadcrumb(app, './revenue/detail', 'Chi tiết xác nhận')
+@register_breadcrumb(app, './revenue/detail', 'Chi tiết')
 def confirmed_detail(SoXacNhan_Id):
     cnxn = get_db()
     cursor = cnxn.cursor()
@@ -781,7 +781,7 @@ def hospitalized(day_query=None):
 # Danh sách bệnh nhân nội trú mới trong ngày
 @app.route('/hospitalized/new-patients/<string:day_query>')
 @app.route('/hospitalized/new-patients')
-@register_breadcrumb(app, '..hospitalized.new-patients', 'Bệnh nhân nội trú mới')
+@register_breadcrumb(app, '..hospitalized.new-patients', 'Nhập viện mới')
 def new_patients(day_query=None):
 
     cnxn = get_db()
@@ -830,7 +830,7 @@ def new_patients(day_query=None):
 # Danh sách bệnh nhân nội trú ra viện trong ngày
 @app.route('/hospitalized/out-patients/<string:day_query>')
 @app.route('/hospitalized/out-patients')
-@register_breadcrumb(app, '..hospitalized.out-patients', 'Bệnh nhân ra viện trong ngày')
+@register_breadcrumb(app, '..hospitalized.out-patients', 'Ra viện')
 def out_patients(day_query=None):
 
     cnxn = get_db()
@@ -880,7 +880,7 @@ def out_patients(day_query=None):
 # Danh sách bệnh nhân chuyển viện trong ngày
 @app.route('/transfer/<string:day_query>')
 @app.route('/transfer')
-@register_breadcrumb(app, '..transfer', 'Bệnh nhân chuyển viện')
+@register_breadcrumb(app, '..transfer', 'Chuyển viện')
 def transfer(day_query=None):
 
     cnxn = get_db()
@@ -922,7 +922,7 @@ def transfer(day_query=None):
 # Danh sách bệnh nhân nội trú
 @app.route('/hospitalized/patients/<string:day_query>')
 @app.route('/hospitalized/patients')
-@register_breadcrumb(app, '..hospitalized.patients', 'Bệnh nhân đang nội trú')
+@register_breadcrumb(app, '..hospitalized.patients', 'Bệnh nhân')
 def patients(day_query=None):
 
     cnxn = get_db()
@@ -1086,7 +1086,7 @@ def visited(day_query=None):
 # Danh sách bệnh nhân ngoại trú trong ngày
 @app.route('/visited/patients/<string:day_query>')
 @app.route('/visited/patients')
-@register_breadcrumb(app, '..visited.patients', 'Bệnh nhân ngoại trú')
+@register_breadcrumb(app, '..visited.patients', 'Bệnh nhân')
 def visited_patients(day_query=None):
 
     cnxn = get_db()
@@ -1191,7 +1191,7 @@ def surgery(day_query=None):
 # Trang phẫu thuật thủ thuật
 @app.route('/surgery/list/<string:day_query>')
 @app.route('/surgery/list')
-@register_breadcrumb(app, '..surgery.list', 'Danh sách phẫu thuật, thủ thuật')
+@register_breadcrumb(app, '..surgery.list', 'Danh sách')
 def surgery_list(day_query=None):
 
     cnxn = get_db()
@@ -1287,3 +1287,85 @@ def born(day_query=None):
     }
     cnxn.close()
     return render_template('born/index.html', value=context)
+
+
+# Doanh thu theo tên dịch vụ
+@app.route('/revenue/service/<string:day_query>')
+@app.route('/revenue/service')
+@register_breadcrumb(app, '..revenue.service', 'Dịch vụ')
+def service(day_query=None):
+
+    cnxn = get_db()
+    cursor = cnxn.cursor()
+
+    day_dict = get_day(day_query)
+    today = day_dict['today']
+    yesterday = day_dict['yesterday']
+    mon_day = day_dict['mon_day']
+    last_week_monday = day_dict['last_week_monday']
+    last_week_sun_day = day_dict['last_week_sun_day']
+    twolast_week_monday = day_dict['twolast_week_monday']
+    twolast_week_sun_day = day_dict['twolast_week_sun_day']
+    first_month_day = day_dict['first_month_day']
+    last_first_month_day = day_dict['last_first_month_day']
+    last_end_month_day = day_dict['last_end_month_day']
+    first_year_day = day_dict['first_year_day']
+    last_first_year_day = day_dict['last_first_year_day']
+    end_last_year_day = day_dict['end_last_year_day']
+
+
+    table_column_title = ['Nội dung', 'Tên', 'Khoa/Phòng', 'Số lượt', 'Tổng doanh thu']
+
+    list_patients = query_revenue.services(today, cursor)
+
+    today = today.strftime("%Y-%m-%d")
+
+
+    context = {
+        'today': today,
+        'list': list_patients,
+        'table_column_title': table_column_title,
+    }
+    cnxn.close()
+    return render_template('revenue/service.html', value=context, active='revenue', order_column=4)
+
+
+# Doanh thu theo dịch vụ
+@app.route('/revenue/service/medicine/<string:day_query>')
+@app.route('/revenue/service/medicine/')
+@register_breadcrumb(app, '..revenue.service.medicine', 'Dược')
+def medicine(day_query=None):
+
+    cnxn = get_db()
+    cursor = cnxn.cursor()
+
+    day_dict = get_day(day_query)
+    today = day_dict['today']
+    yesterday = day_dict['yesterday']
+    mon_day = day_dict['mon_day']
+    last_week_monday = day_dict['last_week_monday']
+    last_week_sun_day = day_dict['last_week_sun_day']
+    twolast_week_monday = day_dict['twolast_week_monday']
+    twolast_week_sun_day = day_dict['twolast_week_sun_day']
+    first_month_day = day_dict['first_month_day']
+    last_first_month_day = day_dict['last_first_month_day']
+    last_end_month_day = day_dict['last_end_month_day']
+    first_year_day = day_dict['first_year_day']
+    last_first_year_day = day_dict['last_first_year_day']
+    end_last_year_day = day_dict['end_last_year_day']
+
+
+    table_column_title = ['Nội dung', 'Tên', 'Khoa/Phòng', 'Số lượt', 'Tổng doanh thu']
+
+    list_patients = query_revenue.services_type(today,'DU', cursor)
+
+    today = today.strftime("%Y-%m-%d")
+
+
+    context = {
+        'today': today,
+        'list': list_patients,
+        'table_column_title': table_column_title,
+    }
+    cnxn.close()
+    return render_template('revenue/service.html', value=context, active='revenue', order_column=4)
