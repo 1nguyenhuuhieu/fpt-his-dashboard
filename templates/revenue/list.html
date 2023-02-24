@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block header %}
+<i class="fa-solid fa-arrow-up-wide-short me-2"></i>{% block title %}Danh sách doanh thu{% endblock %}
+{% endblock %}
+{% block content %}
+
+{% include 'include/table.html' %}
+
+<script>
+    const urlGenerator = '/revenue/list/';
+    const todayURL = "{{ url_for('list_revenue') }}";
+</script>
+
+
+
+
+{% endblock %}
