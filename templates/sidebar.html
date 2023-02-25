@@ -25,6 +25,12 @@
             Nội trú
           </a>
         </li>
+        <li class="nav-item">
+          <a class="nav-link {{ 'active' if active=='news'}}"  href="{{ url_for('news', day_query=value.today) }}">
+            <i class="fa-solid fa-newspaper"  style="width: 22px;"></i>
+           Thông tin công việc
+          </a>
+        </li>
       </ul>
       <h6
         class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
@@ -59,5 +65,13 @@
           </a>
         </li>
       </ul>
+      <h6
+        class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted text-uppercase">
+        <span>Quản trị</span>
+
+      </h6>
+      <button class="btn btn-outline-primary btn-sm ms-3 mt-3"><i class="fa-solid fa-right-to-bracket me-2"></i>Đăng nhập</button>
+
+
     </div>
   </nav>

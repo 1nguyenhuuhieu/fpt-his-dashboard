@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block header %}
+<i class="fa-solid fa-newspaper me-2"></i>{% block title %}Thông tin công việc{% endblock %}
+{% endblock %}
+{% block content %}
+
+<h1>tin tức</h1>
+
+<script>
+    const urlGenerator = '/news/';
+    const todayURL = "{{ url_for('news') }}";
+</script>
+
+
+
+
+{% endblock %}

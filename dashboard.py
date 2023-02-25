@@ -1000,7 +1000,7 @@ def visited(day_query=None):
     # Bệnh nhân ngoại trú trong ngày
     total = query_visited.total_day(today, cursor)
     recent_today_in_hospital = query_visited.total_day(today, cursor)
-    yesterday_visited = query_hospitalized.total_day(yesterday, cursor)
+    yesterday_visited = query_visited.total_day(yesterday, cursor)
     out_hospital_day = query_hospitalized.out_day(today, cursor)
     percent_change = get_change(total,yesterday_visited)
     percent = get_percent(total,yesterday_visited)
@@ -1371,9 +1371,6 @@ def medicine(day_query=None):
     return render_template('revenue/medicine.html', value=context, active='revenue', order_column=4)
 
 
-
-
-
 # Doanh thu theo dịch vụ
 @app.route('/revenue/service/<string:day_query>')
 @app.route('/revenue/service/')
@@ -1413,3 +1410,44 @@ def service(day_query=None):
     }
     cnxn.close()
     return render_template('revenue/service.html', value=context, active='revenue', order_column=4)
+
+# Trang tin tức
+@app.route('/news/<string:day_query>')
+@app.route('/news')
+@register_breadcrumb(app, '..news', 'Thông tin công việc')
+def news(day_query=None):
+
+    cnxn = get_db()
+    cursor = cnxn.cursor()
+
+    day_dict = get_day(day_query)
+    today = day_dict['today']
+    yesterday = day_dict['yesterday']
+    mon_day = day_dict['mon_day']
+    last_week_monday = day_dict['last_week_monday']
+    last_week_sun_day = day_dict['last_week_sun_day']
+    twolast_week_monday = day_dict['twolast_week_monday']
+    twolast_week_sun_day = day_dict['twolast_week_sun_day']
+    first_month_day = day_dict['first_month_day']
+    last_first_month_day = day_dict['last_first_month_day']
+    last_end_month_day = day_dict['last_end_month_day']
+    first_year_day = day_dict['first_year_day']
+    last_first_year_day = day_dict['last_first_year_day']
+    end_last_year_day = day_dict['end_last_year_day']
+
+
+    table_column_title = ['Nội dung', 'Tên', 'Khoa/Phòng', 'Số lượt', 'Tổng doanh thu']
+
+    list_patients = query_revenue.services_type(today,'DV', cursor)
+
+    today = today.strftime("%Y-%m-%d")
+
+
+    context = {
+        'today': today,
+        'list': list_patients,
+        'table_column_title': table_column_title,
+    }
+    cnxn.close()
+    return render_template('news/index.html', value=context, active='news', order_column=4)
+
