@@ -76,3 +76,40 @@ def hospitalized_history(mayte, cursor):
         print("Lỗi khi query patient.hospitalized_history")
         return None
     
+# Tổng doanh thu của bệnh nhân
+def doanhthu(mayte, cursor):
+    query = """
+    SELECT COALESCE(SUM(SoLuong * DonGiaDoanhThu),0) as 'doanhthu'
+    FROM XacNhanChiPhi
+    INNER JOIN XacNhanChiPhiChiTiet
+    ON XacNhanChiPhi.XacNhanChiPhi_Id = XacNhanChiPhiChiTiet.XacNhanChiPhi_Id
+    INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan]
+    ON XacNhanChiPhi.BenhNhan_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan].BenhNhan_Id
+    WHERE [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan].MaYTe=?
+    """
+    try:
+        q = cursor.execute(query, mayte).fetchone()[0]
+        return int(q)
+    except:
+        print("Lỗi khi query patient.doanhthu")
+        return 0
+        
+    
+# Tổng thanhtoán của bệnh nhân
+def thanhtoan(mayte, cursor):
+    query = """
+    SELECT COALESCE(SUM(SoLuong * DonGiaThanhToan),0) as 'thanhtoan'
+    FROM XacNhanChiPhi
+    INNER JOIN XacNhanChiPhiChiTiet
+    ON XacNhanChiPhi.XacNhanChiPhi_Id = XacNhanChiPhiChiTiet.XacNhanChiPhi_Id
+    INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan]
+    ON XacNhanChiPhi.BenhNhan_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan].BenhNhan_Id
+    WHERE [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan].MaYTe=?
+    """
+    try:
+        q = cursor.execute(query, mayte).fetchone()[0]
+        return int(q)
+    except:
+        print("Lỗi khi query patient.thanhtoan")
+        return 0
+        

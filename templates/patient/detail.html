@@ -4,117 +4,195 @@
 {% endblock %}
 {% block content %}
 <div class="row mt-3">
-    <div class="col-lg-4"><div class="card shadow-sm">
-        <div class="card-body">
-          <h5 class="card-title">Thông tin cá nhân</h5>
-          <hr>
-          <p class="card-text">
-            <div class="row mb-3">
-                <div class="col-4 fw-bolder">Họ và tên</div>
-                <div class="col-8">{{value.detail.0}}</div>
-            </div>
+    <div class="col-lg-4">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="card-title">Thông tin cá nhân</h6>
+                <hr>
+                <p class="card-text">
+                <div class="row mb-2">
+                    <div class="col-4 fw-bolder">Họ và tên</div>
+                    <div class="col-8">{{value.detail.0}} {% if value.detail.2 == 'G' %}<i
+                            class="fa-solid fa-venus text-danger"></i>{% else %}<i
+                            class="fa-solid fa-mars text-primary"></i>{% endif %}</div>
+                </div>
 
-            <div class="row mb-3">
-                <div class="col-4 fw-bolder">Ngày sinh</div>
-                <div class="col-8">{{value.detail.1}}</div>
-            </div>
-            <div class="row mb-3">
-                <div class="col-4 fw-bolder">Địa chỉ</div>
-                <div class="col-8">{{value.detail.3}}</div>
-            </div>
-            <div class="row mb-3">
-                <div class="col-4 fw-bolder">Số điện thoại</div>
-                <div class="col-8">{{value.detail.4}}</div>
-            </div>
-            <div class="row mb-3">
-                <div class="col-4 fw-bolder">ID Bệnh nhân</div>
-                <div class="col-8">{{value.detail.5}}</div>
-            </div>
+                <div class="row mb-2">
+                    <div class="col-4 fw-bolder">Ngày sinh</div>
+                    <div class="col-8"><span id="bornDate"> {% if value.detail.1
+                            %} {% set year_born =  value.detail.1.strftime('%Y')|int %} {{value.detail.1.strftime('%d-%m-%Y')}} {% endif %}</span></div>
+                           
+                    <script>
+                        const yearBorn = {{ year_born }};
+                        const thisYear = new Date().getFullYear();
+                        const age = thisYear - yearBorn;
+                        const spanBorn = document.getElementById('bornDate');
+                        spanBorn.append(`(${age} tuổi)`);
+                    </script>
 
-            <div class="row mb-3">
-                <div class="col-4 fw-bolder">Mã y tế</div>
-                <div class="col-8">{{value.detail.6}}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-4 fw-bolder">Địa chỉ</div>
+                    <div class="col-8">{{value.detail.3}}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-4 fw-bolder">Số điện thoại</div>
+                    <div class="col-8">{{value.detail.4}}</div>
+                </div>
+                <hr class="my-2">
+                <div class="row mb-2">
+                    <div class="col-4 fw-bolder">ID Bệnh nhân</div>
+                    <div class="col-8">{{value.detail.5}}</div>
+                </div>
+
+                <div class="row mb-2">
+                    <div class="col-4 fw-bolder">Mã y tế</div>
+                    <div class="col-8">{{value.detail.6}}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-4 fw-bolder">Ngày tạo</div>
+                    <div class="col-8">{% if value.detail.1 %}{{value.detail.7.strftime('%d-%m-%Y')}} {% endif %}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-4 fw-bolder">Ngày cập nhập</div>
+                    <div class="col-8">{% if value.detail.8 %}{{value.detail.8.strftime('%d-%m-%Y')}} {% endif %}</div>
+                </div>
+                <hr class="my-2">
+                <div class="row mb-2">
+                    <div class="col-4 fw-bolder">Lượt khám bệnh</div>
+                    <div class="col-8">{% if value.history_visited %} {{ value.history_visited|length}}{% else %} 0 {% endif %}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-4 fw-bolder">Lượt nhập viện</div>
+                    <div class="col-8">{% if value.history_hospital %} {{ value.history_hospital|length}}{% else %} 0 {% endif %}</div>
+                </div>
+                <div class="row mb-2">
+                    <div class="col-4 fw-bolder">Tổng tiền khám chữa bệnh</div>
+                    <div class="col-8">{% if value.doanhthu %}{{ "{:,} đ".format(value.doanhthu) }} {% endif %}</div>
+                </div>
+                <div class="row">
+                    <div class="col-4 fw-bolder">Tổng tiền thanh toán</div>
+                    <div class="col-8">{% if value.thanhtoan %}{{ "{:,} đ".format(value.thanhtoan) }} {% endif %}</div>
+                </div>
+
+                </p>
             </div>
-                     <div class="row mb-3">
-                <div class="col-4 fw-bolder">Ngày tạo</div>
-                <div class="col-8">{{value.detail.7}}</div>
-            </div>
-                     <div class="row">
-                <div class="col-4 fw-bolder">Ngày cập nhập</div>
-                <div class="col-8">{{value.detail.8}}</div>
-            </div>
-          </p>
         </div>
-      </div></div>
-      <div class="col-lg-8">
+    </div>
+    <div class="col-lg-8">
         <ul class="nav nav-tabs mt-2 mt-md-0" id="myTab" role="tablist">
             <li class="nav-item " role="presentation">
-              <button class="nav-link active " id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane" type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true"> <h5>Ngoại trú</h5> </button>
+                <button class="nav-link active " id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane"
+                    type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">
+                    <h6>Ngoại trú</h6>
+                </button>
             </li>
             <li class="nav-item" role="presentation">
-              <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane" type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false"><h5>Nhập viện</h5></button>
+                <button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-tab-pane"
+                    type="button" role="tab" aria-controls="profile-tab-pane" aria-selected="false">
+                    <h6>Nhập viện</h6>
+                </button>
             </li>
 
-          </ul>
-          <div class="tab-content  border-bottom border-start border-end" id="myTabContent" style="overflow-y: scroll; max-height:800px;">
-            <div class="tab-pane fade show active " id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab" tabindex="0">
+        </ul>
+        <div class="tab-content  border rounded shadow-sm" id="myTabContent"
+            style="overflow-y: scroll; max-height:800px;">
+            <div class="tab-pane fade show active " id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab"
+                tabindex="0">
                 <div class="list-group list-group-flush">
                     {% if value.history_visited %}
                     {% for visited in value.history_visited %}
-                    <a href="#" class="list-group-item list-group-item-action">
-                      <div class="d-flex justify-content-between">
-                        <div>
-                        <h6 class=""> {{visited.0}} </h6>
-                        <p class="mb-1">{{visited.1}}</p>
-                        <small class="text-muted mb-1">{{visited.3.strftime('%d-%m-%Y')}}</small>
+                    <a href="#" class="list-group-item list-group-item-action" data-bs-toggle="modal"
+                        data-bs-target="#patientVisitedHistory">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="">{{loop.index}}. {{visited.0}} </h6>
+                                <p class="mb-1">{{visited.1}}</p>
+                                <small class="text-muted my-1"><i
+                                        class="fa-regular fa-clock me-1"></i>{{visited.3.strftime('%H:%M
+                                    %d-%m-%Y')}}</small>
 
+                            </div>
+                            <div class="d-flex flex-column justify-content-start align-items-end ms-3" style="min-width: 90px;">
+                                {% if visited.4 == 'Chuyển tuyến'%}
+                                <span class="badge bg-danger m-0">{{ visited.4 }}</span>
+                                {% elif visited.4 == 'Nhập viện'%}
+                                <span class="badge text-bg-warning m-0">{{ visited.4 }}</span>
+                                {% else %}
+                                <span class="badge bg-success m-0">{{ visited.4 }}</span>
+                                {% endif %}
+                                <span class="badge text-bg-primary mt-1">BS.{{visited.2}}</span>
+                                <span class="text-primary"><small>Xem chi tiết<i
+                                    class="fa-solid fa-arrow-right ms-1"></i></small></span>
+                            </div>
                         </div>
-                        <div class="d-flex flex-column justify-content-start align-items-end ms-3">
-                            {% if visited.4 == 'Chuyển tuyến'%}
-                            <span class="badge bg-danger m-0">{{ visited.4 }}</span>
-                            {% elif visited.4 == 'Nhập viện'%}
-                            <span class="badge text-bg-warning m-0">{{ visited.4 }}</span>
-                            {% else %}
-                            <span class="badge bg-success m-0">{{ visited.4 }}</span>
-                            {% endif %}
-                            <span class="badge text-bg-primary mt-1">BS.{{visited.2}}</span>
-                            
-                            
-                         </div>
-                      </div>
                     </a>
                     {% endfor %}
+                    <!-- Modal -->
+                    <div class="modal fade" id="patientVisitedHistory" tabindex="-1" aria-labelledby="exampleModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Lịch sử khám bệnh</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    ...
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Đóng</button>
+                                    <button type="button" class="btn btn-primary">In</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     {% endif %}
-                  </div> 
+                </div>
             </div>
             <div class="tab-pane fade" id="profile-tab-pane" role="tabpanel" aria-labelledby="profile-tab" tabindex="0">
                 <div class="list-group list-group-flush">
                     {% if value.history_hospital %}
                     {% for visited in value.history_hospital %}
                     <a href="#" class="list-group-item list-group-item-action">
-                      <div class="d-flex justify-content-between">
-                        <div>
-                        <h6 class=""> {{visited.0}} <span class="text-muted">Bác sĩ: {{visited.2}}</small>  </h6>
-                      <p class="mb-1">{{visited.1}}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h6 class="">{{loop.index}}. {{visited.0}} </h6>
+                                <p class="mb-1">{{visited.1}}</p>
+                                <small class="text-muted my-1"><i
+                                        class="fa-regular fa-clock me-1"></i>{{visited.3.strftime('%d-%m-%Y')}} {% if
+                                    visited.4 %}đến {{visited.4.strftime('%d-%m-%Y')}} {% else %}(chưa ra viện){% endif
+                                    %}</small>
+
+
+                            </div>
+                            <div class="d-flex flex-column justify-content-start align-items-end ms-3"  style="min-width: 90px;">
+                                {% if visited.4 == 'Chuyển tuyến'%}
+                                <span class="badge bg-danger m-0">{{ visited.5 }}</span>
+                                {% elif visited.4 == 'Nhập viện'%}
+                                <span class="badge text-bg-warning m-0">{{ visited.5 }}</span>
+                                {% else %}
+                                <span class="badge bg-success m-0">{{ visited.5 }}</span>
+                                {% endif %}
+                                <span class="badge text-bg-primary mt-1">BS.{{visited.2}}</span>
+                                <span class="text-primary"><small>Xem chi tiết<i
+                                    class="fa-solid fa-arrow-right ms-1"></i></small></span>
+
+
+                            </div>
                         </div>
-                        <div class="d-flex flex-column justify-content-start align-items-end ms-3">
-                            <small class="text-muted mb-1">{{visited.3.strftime('%d-%m-%Y')}} đến {% if visited.4 %} {{visited.4.strftime('%d-%m-%Y')}} {% endif %} </small>
-                            {% if visited.4 == 'Chuyển tuyến'%}
-                            <span class="badge bg-danger m-0">{{ visited.5 }}</span>
-                            {% elif visited.4 == 'Nhập viện'%}
-                            <span class="badge text-bg-warning m-0">{{ visited.5 }}</span>
-                            {% else %}
-                            <span class="badge bg-success m-0">{{ visited.5 }}</span>
-                            {% endif %}
-                         </div>
-                      </div>
                     </a>
                     {% endfor %}
+
+
                     {% endif %}
-                  </div>
+                </div>
             </div>
-          </div>
-      </div>
+        </div>
+    </div>
 </div>
 
 <script>

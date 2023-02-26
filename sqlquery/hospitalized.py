@@ -276,6 +276,7 @@ def last5(day, cursor):
     
 # Danh sách bệnh nhân nội trú theo khoa
 def list_department(day, department_id, cursor):
+    tomorrow = day + timedelta(days=1)
     query = """
         SELECT ThoiGianVaoVien, MaYTe, TenBenhNhan, ChanDoanVaoKhoa,TenNhanVien
         FROM BenhAn
@@ -283,11 +284,14 @@ def list_department(day, department_id, cursor):
         ON BenhAn.BenhNhan_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan].BenhNhan_Id
         LEFT JOIN [eHospital_NgheAn_Dictionary].[dbo].[NhanVien]
         ON BenhAn.BacSiDieuTri_Id = [eHospital_NgheAn_Dictionary].[dbo].[NhanVien].NhanVien_Id
-        WHERE BenhAn.NgayVaoVien = ? AND BenhAn.KhoaVao_Id = ?
+        WHERE (BenhAn.NgayRaVien IS NULL OR BenhAn.NgayRaVien > ?)
+                AND BenhAn.NgayVaoVien < ?
+        
+        AND BenhAn.KhoaVao_Id = ?
         GROUP BY ThoiGianVaoVien, MaYTe, TenBenhNhan, ChanDoanVaoKhoa,TenNhanVien
         """
     try:
-        q = cursor.execute(query, day, department_id).fetchall()
+        q = cursor.execute(query, day,tomorrow, department_id).fetchall()
         return q
     except:
         print("Lỗi query hospitalized.list_department")

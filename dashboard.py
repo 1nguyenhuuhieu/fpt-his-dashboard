@@ -1559,7 +1559,7 @@ def all_patients():
         'table_column_title': table_column_title
     }
     cnxn.close()
-    return render_template('patient/index.html', value=context, active='hospitalized')
+    return render_template('patient/index.html', value=context, active='patient')
 
 
 
@@ -1577,6 +1577,8 @@ def patient_detail(mayte):
 
     history_visited = query_patient.visited_history(mayte, cursor)
     history_hospital = query_patient.hospitalized_history(mayte, cursor)
+    doanhthu = query_patient.doanhthu(mayte, cursor)
+    thanhtoan = query_patient.thanhtoan(mayte, cursor)
     
 
     today = today.strftime("%Y-%m-%d")
@@ -1586,7 +1588,9 @@ def patient_detail(mayte):
         'mayte': mayte,
         'detail': detail,
         'history_visited': history_visited,
-        'history_hospital': history_hospital
+        'history_hospital': history_hospital,
+        'doanhthu': doanhthu,
+        'thanhtoan': thanhtoan
     }
     cnxn.close()
     return render_template('patient/detail.html', value=context, active='patient')
