@@ -26,6 +26,12 @@
           </a>
         </li>
         <li class="nav-item">
+          <a class="nav-link {{ 'active' if active=='patient'}}"  href="{{ url_for('all_patients') }}">
+            <i class="fa-solid fa-book-medical"  style="width: 22px;"></i>
+            Hồ sơ bệnh nhân
+          </a>
+        </li>
+        <li class="nav-item">
           <a class="nav-link {{ 'active' if active=='news'}}"  href="{{ url_for('news', day_query=value.today) }}">
             <i class="fa-solid fa-newspaper"  style="width: 22px;"></i>
            Thông tin công việc

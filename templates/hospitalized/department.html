@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+{% block header %}
+<i class="fa-solid fa-table me-2"></i>{% block title %}{{ value.department_name }} {% endblock %}
+{% endblock %}
+{% block content %}
+
+{% include 'include/table.html' %}
+
+<script>
+    const urlGenerator = '/hospitalized/' + {{value.department_id}} + '/';
+    const todayURL = "{{ url_for('hospitalized_department', department_id=value.department_id) }}";
+
+</script>
+{% endblock %}

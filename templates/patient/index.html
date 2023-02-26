@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block header %}
+<i class="fa-solid fa-book-medical me-2"></i>{% block title %}Hồ sơ bệnh nhân{% endblock %}
+{% endblock %}
+{% block content %}
+
+<hr>
+<h6>Danh sách 1000 hồ sơ bệnh nhân được cập nhập mới nhất</h6>
+{% include 'include/table.html' %}
+
+<script>
+    const urlGenerator = '/all_patients/';
+    const todayURL = "{{ url_for('all_patients') }}";
+</script>
+{% endblock %}

@@ -45,8 +45,9 @@ def list(day, cursor):
             
             SELECT
             XacNhanChiPhi.NgayTao,
-            XacNhanChiPhi.SoXacNhan,
             MaYTe,
+            XacNhanChiPhi.SoXacNhan,
+            
             XacNhanChiPhi.Loai,
             SUM(SoLuong*DonGiaDoanhThu) as 'doanhthu',
             SUM(SoLuong*DonGiaThanhToan) as 'thanhtoan',

@@ -14,7 +14,7 @@ def total_day(day, cursor):
         return int(q)
     except:
         print('Lỗi query total_day')
-        return None
+        return 0
 
 # Tổng doanh thu dược trong ngày theo phân nhóm: (DV= Dịch vụ, DU = DƯợc)
 def service_medicine_day(day, phannhom ,cursor):
@@ -54,7 +54,7 @@ def day_betweenday(startday, endday, cursor):
         return q
     except:
         print("Lỗi query revenue.perday_betweenday")
-        return None
+        return 0
 
 
 # SQl query thống kê doanh thu theo từng khoa phòng trong khoảng ngày
@@ -87,7 +87,7 @@ def day_department_betweenday(startday, endday, cursor):
         return q
     except:
         print("Lỗi query revenue.day_department_betweenday")
-        return None
+        return 0
 
 # SQL query tổng doanh thu ngoại trú, nội trú trong ngày
 def visited_hospitalized_day(day,loai,cursor):
@@ -105,7 +105,7 @@ def visited_hospitalized_day(day,loai,cursor):
         return int(q)
     except:
         print("Lỗi query revenue.visited_hospitalized_day")
-        return None
+        return 0
 
 
 # SQL Query thống kê doanh thu trong ngày dựa theo từng ten phan nhom
@@ -134,7 +134,7 @@ def tenphanhom_service_medicine_day(day, cursor):
         return q
     except:
         print("Lỗi query doanhthu_dichvu_duoc_day")
-        return None
+        return 0
 
 # SQL query tổng tiền trong khoảng ngày
 def total_between(startday, endday, cursor):
@@ -152,7 +152,7 @@ def total_between(startday, endday, cursor):
         return int(q)
     except:
         print("Lỗi query revenue.total_between")
-        return None
+        return 0
 
 # SQL query trung bình doanh thu mỗi ngày trong khoảng ngày
 def avg_between(startday, endday, cursor):
@@ -173,7 +173,7 @@ def avg_between(startday, endday, cursor):
         return int(q)
     except:
         print("Lỗi query revenue.avg_between")
-        return None
+        return 0
     
 # SQL query trung bình doanh thu mỗi xác nhận
 def avg_confirmed(startday, endday, cursor):
@@ -194,7 +194,7 @@ def avg_confirmed(startday, endday, cursor):
         return int(q)
     except:
         print("Lỗi query revenue.avg_confirmed")
-        return None
+        return 0
 
 # SQL query tổng doanh thu ngoại trú, nội trú trong khoảng ngày
 def visited_hospitalized_between(startday, endday , loai, cursor):
@@ -212,7 +212,7 @@ def visited_hospitalized_between(startday, endday , loai, cursor):
         return int(q)
     except:
         print("Lỗi query revenue.visited_hospitalized_between")
-        return None
+        return 0
 # SQl query thống kê doanh thu theo từng khoa phòng
 def department_day(day, cursor):
     try:
@@ -243,7 +243,7 @@ def department_day(day, cursor):
         return q
     except:
         print("Lỗi query revenue.department_day")
-        return None
+        return 0
 
 
 # SQL top 10 khoa phòng nhiều doanh thu nhất trong ngày
@@ -270,7 +270,7 @@ def top_service(day, cursor):
         return q
     except:
         print("Lỗi query revenue.top_service")
-        return None
+        return 0
 
 
 
@@ -298,7 +298,7 @@ def total_between_union(startday, endday, cursor):
         return int(q)
     except:
         print("Lỗi query revenue.total_between_union")
-        return None
+        return 0
 
 
 # SQL query tổng doanh thu ngoại trú trong khoảng ngày union với bảng nhh_revennue_visited từ ngày 2023/02/01 trở về trước
@@ -324,7 +324,7 @@ def visited_between_union(startday, endday, cursor):
         return int(q)
     except:
         print("Lỗi query revenue.visited_between_union")
-        return None
+        return 0
 
 
 # SQL query tổng doanh thu nội trú trong khoảng ngày union với bảng nhh_revennue_visited từ ngày 2023/02/01 trở về trước
@@ -350,7 +350,7 @@ def hospitalized_between_union(startday, endday, cursor):
         return int(q)
     except:
         print("Lỗi query revenue.hospitalized_between_union")
-        return None
+        return 0
 
 
 # SQL query trung bình doanh thu mỗi ngày trong khoảng ngày UNION với bảng nhh_revenue
@@ -376,7 +376,7 @@ def avg_between_union(startday, endday, cursor):
         return int(q)
     except:
         print("Lỗi query revenue.avg_between_union")
-        return None
+        return 0
 
 
 
@@ -403,7 +403,7 @@ def avg_confirmed_union(startday, endday, cursor):
         return int(q)
     except:
         print("Lỗi query revenue.avg_confirmed_union")
-        return None
+        return 0
 
 
 # SQL top 10 khoa phòng nhiều doanh thu nhất trong ngày
@@ -435,7 +435,7 @@ def services(day, cursor):
         return q
     except:
         print("Lỗi query revenue.top_service")
-        return None
+        return 0
 
 
 def services_type(day,type, cursor):
@@ -466,4 +466,4 @@ def services_type(day,type, cursor):
         return q
     except:
         print("Lỗi query revenue.top_service")
-        return None
+        return 0

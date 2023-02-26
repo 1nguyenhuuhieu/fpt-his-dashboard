@@ -118,22 +118,9 @@
         </div>
       </div>
       <div class="row g-2">
-        <div class="col-lg-6">
+        <div class="col-lg-6 pt-2">
           <!-- Danh sách bệnh nhân nội trú theo từng khoa -->
-          <div class="card shadow-sm mt-2">
-            <div class="card-header text-bg-warning">
-              <h6 class="m-0">Bệnh nhân hiện có</h6>
-            </div>
-            <ul class="list-group list-group-flush">
-              {% for department in value.patient_in_department %}
-              <a href="$"
-                class="list-group-item list-group-item-action d-flex justify-content-between align-items-start ">
-                {{ department[0] }}
-                <span class="fw-bold ms-2">{{ department[1]}}</span>
-              </a>
-              {% endfor %}
-            </ul>
-          </div>
+          {% include 'hospitalized/list_department.html' %}
           <!-- Danh sách bệnh nhân nội trú theo từng khoa -->
         </div>
         <div class="col-lg-6">

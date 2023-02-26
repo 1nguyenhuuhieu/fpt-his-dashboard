@@ -14,63 +14,121 @@
             {% for row in value.list %}
             <tr>
                 {% for col in row %}
+                {% if loop.index == 2 %}
+                <td> <button class="btn btn-sm btn-primary" data-clipboard-text="{{ col }}" data-bs-toggle="modal" data-bs-target="#patientDetailModal" onclick="getPatientDetail(this.textContent)">{{ col }}</button></td>
+                {% else %}
                 <td>{{ col }}</td>
+
+                {% endif %}
                 {% endfor %}
             </tr>
             {% endfor %}
         </tbody>
     </table>
+
+
+
 </div>
 
-  <!-- Modal -->
-  <div class="modal fade" id="confirmedDetail" tabindex="-1" aria-labelledby="confirmedModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="confirmedModalLabel">ss</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+<!-- patient Modal -->
+<!-- Modal -->
+<div class="modal fade" id="patientDetailModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel"><i class="fa-solid fa-hospital-user me-2"></i>Thông tin bệnh nhân</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row mb-3 align-items-center">
+          <div class="col-4 fw-bolder ">Họ và tên</div>
+          <div class="col-7">
+            <span id="namePatient" ></span>
+            </div>
+            <div class="col-1">
+              <button class="btn btn-lg m-0 p-0" data-clipboard-target="#namePatient">
+                <i class="fa-regular fa-clipboard"></i>
+            </button>
+            </div>
         </div>
-        <div class="modal-body">
-          <h1 id="benhNhanID"></h1>
-          <p id="confirmedBody"></p>
+        <div class="row mb-3">
+          <div class="col-4 fw-bolder">Ngày sinh</div>
+          <div class="col-8">
+            <span id="bornPatient"></span>
+
+          </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Save changes</button>
+        <div class="row mb-3">
+          <div class="col-4 fw-bolder">Địa chỉ</div>
+          <div class="col-8  ">
+            <span id="addressPatient"></span>
+          </div>
         </div>
+        <div class="row mb-3 align-items-center">
+          <div class="col-4 fw-bolder">Số điện thoại</div>
+          <div class="col-7">
+            <span id="phonePatient"></span>
+          </div>
+          <div class="col-1">
+            <button class="btn btn-lg  m-0 p-0" data-clipboard-target="#phonePatient">
+              <i class="fa-regular fa-clipboard"></i>
+          </button>
+          </div>
+        </div>
+        <hr>
+        <div class="row mb-3 align-items-center">
+          <div class="col-4 fw-bolder">ID Bệnh nhân</div>
+          <div class="col-7">
+            <span id="idPatient"></span>
+          </div>
+          <div class="col-1">
+            <button class="btn btn-lg  m-0 p-0" data-clipboard-target="#idPatient">
+              <i class="fa-regular fa-clipboard"></i>
+          </button>
+          </div>
+          
+        </div>
+        <div class="row mb-3 align-items-center">
+          <div class="col-4 fw-bolder">Mã y tế</div>
+          <div class="col-7">
+            <span id="maytePatient"></span>
+          </div>
+          <div class="col-1">
+            <button class="btn btn-lg m-0 p-0" data-clipboard-target="#maytePatient">
+              <i class="fa-regular fa-clipboard"></i>
+          </button>
+          </div>
+          
+        </div>
+        <div class="row mb-3">
+          <div class="col-4 fw-bolder">Ngày tạo</div>
+          <div class="col-8  ">
+            <span id="createTimePatient"></span>
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-4 fw-bolder">Ngày cập nhập</div>
+          <div class="col-8  ">
+            <span id="updateTimePatient"></span>
+          </div>
+        </div>
+    
+       <p class="mt-4 mb-3"> <small class="text-muted"><i class="fa-solid fa-circle-info me-2"></i>click để copy thông tin</small> </p>
+
+
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+        <a href="#"  class="btn btn-primary" id="detailLink">Xem chi tiết<i class="fa-solid fa-arrow-right ms-2"></i></a>
       </div>
     </div>
   </div>
-
-  <script>
-    
-    function renderConfirmedtoModal(data){
-        const h1exampleModalLabel = document.getElementById('confirmedModalLabel');
-        const confirmedBody = document.getElementById('confirmedBody');
-        confirmedBody.textContent = ''
-        h1exampleModalLabel.textContent = 'Số xác nhận: ' + data.SoXacNhan;
-  
-        for(i in data){
-            const para = document.createElement("p");
-            para.textContent = i + ' : ' + data[i];
-            
-            confirmedBody.appendChild(para);
-        }
-        const benhNhanID = document.getElementById('benhNhanID');
-
-        console.log(data)
-    }
+</div>
 
 
-    function openDetailConfirmed(event) {
-        fetch('http://127.0.0.1:5000/confirmed/detail/'+ event.innerText)
-        .then((response) => response.json())
-        .then((data) => renderConfirmedtoModal(data)
-        );
 
-    }
 
-  </script>
 
 {% if order_column %}
 {% set order = order_column %}
@@ -89,7 +147,8 @@
         
         buttons: [
         'searchPanes','copy', 'csv', 'excel', 'pdf', 'print'
-        ]
+        ],
+
     });
 
     });
@@ -107,6 +166,49 @@
       console.log(sumVal)
   }
 
+</script>
+
+
+<!-- Copy clipboard -->
+<script>
+var clipboard = new ClipboardJS('.btn');
+</script>
+
+<script>
+function updatePatientDetail(data){
+  const namePatient = document.getElementById('namePatient')
+  const bornPatient = document.getElementById('bornPatient')
+  const addressPatient = document.getElementById('addressPatient')
+  const phonePatient = document.getElementById('phonePatient')
+
+  const idPatient = document.getElementById('idPatient')
+  const maytePatient = document.getElementById('maytePatient')
+  const createTimePatient = document.getElementById('createTimePatient')
+  const updateTimePatient = document.getElementById('updateTimePatient')
+
+  const detailLink = document.getElementById('detailLink');
+  const detailURL = window.location.origin + '/patient/' + data['mayte']
+  detailLink.href = detailURL;
+
+  namePatient.textContent = data['name']
+  born_date = new Date(data['born_date'])
+  bornPatient.textContent = born_date.toLocaleDateString('vi-VN');
+  addressPatient.textContent = data['address']
+  phonePatient.textContent = data['phone']
+
+  idPatient.textContent = data['patient_id']
+  maytePatient.textContent = data['mayte']
+  created_date = new Date(data['created_date'])
+  createTimePatient.textContent = created_date.toLocaleDateString('vi-VN');
+  update_date = new Date(data['update_date'])
+  updateTimePatient.textContent = update_date.toLocaleDateString('vi-VN');
+}
+  function getPatientDetail(e){
+    const urlAPI = window.location.origin + '/patient-api/' + e
+    fetch(urlAPI)
+  .then((response) => response.json())
+  .then((data) => updatePatientDetail(data));
+  }
 </script>
 
 <script src="https://cdn.datatables.net/buttons/2.3.4/js/dataTables.buttons.min.js"></script>
