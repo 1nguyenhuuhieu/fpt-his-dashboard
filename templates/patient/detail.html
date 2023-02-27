@@ -7,7 +7,7 @@
     <div class="col-lg-4">
         <div class="card shadow-sm">
             <div class="card-body">
-                <h6 class="card-title">Thông tin cá nhân</h6>
+                <h6 class="card-title">Thông tin</h6>
                 <hr>
                 <p class="card-text">
                 <div class="row mb-2">
@@ -57,7 +57,16 @@
                     <div class="col-4 fw-bolder">Ngày cập nhập</div>
                     <div class="col-8">{% if value.detail.8 %}{{value.detail.8.strftime('%d-%m-%Y')}} {% endif %}</div>
                 </div>
-                <hr class="my-2">
+                </p>
+            </div>
+        </div>
+
+        <div class="card shadow-sm mt-3">
+            <div class="card-body">
+                <h6 class="card-title">Thống kê</h6>
+                <hr>
+                <p class="card-text">
+           
                 <div class="row mb-2">
                     <div class="col-4 fw-bolder">Lượt khám bệnh</div>
                     <div class="col-8">{% if value.history_visited %} {{ value.history_visited|length}}{% else %} 0 {% endif %}</div>
@@ -102,8 +111,14 @@
                 <div class="list-group list-group-flush">
                     {% if value.history_visited %}
                     {% for visited in value.history_visited %}
+                  
                     <a href="#" class="list-group-item list-group-item-action" data-bs-toggle="modal"
-                        data-bs-target="#patientVisitedHistory">
+                        data-bs-target="#patientVisitedHistory" data-department = "{{visited.0}}" data-doctor="{{visited.2}}" data-time="{{visited.2}}"
+                        onclick="getVisitedHistory(
+                            this.getAttribute('data-department'),
+                            this.getAttribute('data-doctor'),
+                            this.getAttribute('data-time')
+                            )">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <h6 class="">{{loop.index}}. {{visited.0}} </h6>
@@ -114,7 +129,7 @@
 
                             </div>
                             <div class="d-flex flex-column justify-content-start align-items-end ms-3" style="min-width: 90px;">
-                                {% if visited.4 == 'Chuyển tuyến'%}
+                                {% if visited.4 == 'Chuyển tuyến' or visited.4 == 'Chuyển viện' %}
                                 <span class="badge bg-danger m-0">{{ visited.4 }}</span>
                                 {% elif visited.4 == 'Nhập viện'%}
                                 <span class="badge text-bg-warning m-0">{{ visited.4 }}</span>
@@ -139,7 +154,7 @@
                                         aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    ...
+                                    <h6 id="departmentName"></h6>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary"
@@ -170,7 +185,7 @@
 
                             </div>
                             <div class="d-flex flex-column justify-content-start align-items-end ms-3"  style="min-width: 90px;">
-                                {% if visited.4 == 'Chuyển tuyến'%}
+                                {% if visited.4 == 'Chuyển tuyến' or visited.4 == 'Chuyển viện' %}
                                 <span class="badge bg-danger m-0">{{ visited.5 }}</span>
                                 {% elif visited.4 == 'Nhập viện'%}
                                 <span class="badge text-bg-warning m-0">{{ visited.5 }}</span>
@@ -199,5 +214,20 @@
     const urlGenerator = '/patient/';
     const todayURL = "{{ url_for('patient_detail', mayte=value.mayte) }}";
 
+
+
+</script>
+
+<script>
+    function getVisitedHistory(department, doctor){
+       
+        const departmentName = document.getElementById('departmentName');
+        const doctorName = document.getElementById('doctorName');
+        const timeVisited = document.getElementById('timeVisited');
+        departmentName.textContent = department
+        doctorName.textContent = doctor
+        timeVisited.textContent = time
+        
+    }
 </script>
 {% endblock %}

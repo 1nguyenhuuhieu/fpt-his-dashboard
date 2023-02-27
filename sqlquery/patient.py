@@ -13,13 +13,15 @@ def detail(mayte, cursor):
         return None
     
 
-# Danh sách toàn bộ bệnh nhân
+# Danh sách toàn bộ bệnh nhân có hoạt động gần nhất
 def patients(cursor):
     query = """
-          SELECT TOP 1000
-            NgayTao, MaYTe, TenBenhNhan,NgaySinh, SoDienThoai, DiaChi
-            FROM [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan]
-            ORDER BY NgayCapNhat DESC
+        SELECT TOP 1000
+        XacNhanChiPhi.NgayXacNhan, MaYTe, TenBenhNhan,NgaySinh, SoDienThoai, DiaChi
+        FROM [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan]
+        INNER JOIN [eHospital_NgheAn].[dbo].[XacNhanChiPhi]
+        ON XacNhanChiPhi.BenhNhan_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan].BenhNhan_Id
+        ORDER BY XacNhanChiPhi.NgayXacNhan DESC
         """
     try:
         q = cursor.execute(query).fetchall()
@@ -32,7 +34,7 @@ def patients(cursor):
 # Lịchh sử tiếp nhận của bệnh nhân
 def visited_history(mayte, cursor):
     query = """
-       SELECT TenPhongBan,ChanDoanKhoaKham,  TenNhanVien,ThoiGianKham, Dictionary_Name
+       SELECT TenPhongBan,ChanDoanKhoaKham,  TenNhanVien,ThoiGianKham, Dictionary_Name, KhamBenh_Id
         FROM KhamBenh
         INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan]
         ON KhamBenh.BenhNhan_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan].BenhNhan_Id
