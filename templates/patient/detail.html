@@ -113,12 +113,11 @@
                     {% for visited in value.history_visited %}
                   
                     <a href="#" class="list-group-item list-group-item-action" data-bs-toggle="modal"
-                        data-bs-target="#patientVisitedHistory" data-department = "{{visited.0}}" data-doctor="{{visited.2}}" data-time="{{visited.2}}"
-                        onclick="getVisitedHistory(
-                            this.getAttribute('data-department'),
+                        data-bs-target="#patientVisitedHistory" data-department = "{{visited.0}}" data-doctor="{{visited.2}}" data-time="{{visited.3}}" data-chandoan="{{visited.1}}" onclick="getVisitedHistory(this.getAttribute('data-department'),
                             this.getAttribute('data-doctor'),
-                            this.getAttribute('data-time')
-                            )">
+                            this.getAttribute('data-time'),
+                            this.getAttribute('data-chandoan')
+                            );">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <h6 class="">{{loop.index}}. {{visited.0}} </h6>
@@ -128,7 +127,7 @@
                                     %d-%m-%Y')}}</small>
 
                             </div>
-                            <div class="d-flex flex-column justify-content-start align-items-end ms-3" style="min-width: 90px;">
+                            <div class="d-flex flex-column justify-content-start align-items-end ms-2">
                                 {% if visited.4 == 'Chuyển tuyến' or visited.4 == 'Chuyển viện' %}
                                 <span class="badge bg-danger m-0">{{ visited.4 }}</span>
                                 {% elif visited.4 == 'Nhập viện'%}
@@ -155,7 +154,22 @@
                                 </div>
                                 <div class="modal-body">
                                     <h6 id="departmentName"></h6>
+                                    <div class="d-flex align-items-center">
+                               
+                                            <span class="badge text-bg-primary" id="doctorNameModal"></span>
+
+                                            <span class="badge bg-success ms-2">Cấp toa cho về</span>
+                                            <small class="text-muted ms-2" id="timeVisitedModal"></small>
+
+                                    </div>
+                                    <hr>
+                                    <p><span class="fw-bold">Chẩn đoán: </span><span   id="chanDoan" ></span> </p>
+                                    <hr>
+                                    <p><span class="fw-bold">Đơn thuốc: </span><span   id="donthuoc" ></span> </p>
+           
+                                            
                                 </div>
+                         
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary"
                                         data-bs-dismiss="modal">Đóng</button>
@@ -184,7 +198,7 @@
 
 
                             </div>
-                            <div class="d-flex flex-column justify-content-start align-items-end ms-3"  style="min-width: 90px;">
+                            <div class="d-flex flex-column justify-content-start align-items-end ms-2"  >
                                 {% if visited.4 == 'Chuyển tuyến' or visited.4 == 'Chuyển viện' %}
                                 <span class="badge bg-danger m-0">{{ visited.5 }}</span>
                                 {% elif visited.4 == 'Nhập viện'%}
@@ -219,15 +233,20 @@
 </script>
 
 <script>
-    function getVisitedHistory(department, doctor){
+    function getVisitedHistory(department, doctor, time, chandoantext){
        
         const departmentName = document.getElementById('departmentName');
-        const doctorName = document.getElementById('doctorName');
-        const timeVisited = document.getElementById('timeVisited');
-        departmentName.textContent = department
-        doctorName.textContent = doctor
-        timeVisited.textContent = time
+        departmentName.textContent = department;
         
+        const doctorNameModal = document.getElementById('doctorNameModal');
+        doctorNameModal.textContent = 'BS.' + doctor;
+
+        const timeVisitedModal = document.getElementById('timeVisitedModal');
+        timeKham = new Date(time)
+        timeVisitedModal.textContent = timeKham.toLocaleDateString('vi-VN');;
+
+        const chanDoan = document.getElementById('chanDoan');
+        chanDoan.textContent = chandoantext;
     }
 </script>
 {% endblock %}
