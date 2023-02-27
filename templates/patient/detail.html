@@ -20,8 +20,9 @@
                 <div class="row mb-2">
                     <div class="col-4 fw-bolder">Ngày sinh</div>
                     <div class="col-8"><span id="bornDate"> {% if value.detail.1
-                            %} {% set year_born =  value.detail.1.strftime('%Y')|int %} {{value.detail.1.strftime('%d-%m-%Y')}} {% endif %}</span></div>
-                           
+                            %} {% set year_born = value.detail.1.strftime('%Y')|int %}
+                            {{value.detail.1.strftime('%d-%m-%Y')}} {% endif %}</span></div>
+
                     <script>
                         const yearBorn = {{ year_born }};
                         const thisYear = new Date().getFullYear();
@@ -60,20 +61,20 @@
                 </p>
             </div>
         </div>
-
         <div class="card shadow-sm mt-3">
             <div class="card-body">
                 <h6 class="card-title">Thống kê</h6>
                 <hr>
                 <p class="card-text">
-           
                 <div class="row mb-2">
                     <div class="col-4 fw-bolder">Lượt khám bệnh</div>
-                    <div class="col-8">{% if value.history_visited %} {{ value.history_visited|length}}{% else %} 0 {% endif %}</div>
+                    <div class="col-8">{% if value.history_visited %} {{ value.history_visited|length}}{% else %} 0 {%
+                        endif %}</div>
                 </div>
                 <div class="row mb-2">
                     <div class="col-4 fw-bolder">Lượt nhập viện</div>
-                    <div class="col-8">{% if value.history_hospital %} {{ value.history_hospital|length}}{% else %} 0 {% endif %}</div>
+                    <div class="col-8">{% if value.history_hospital %} {{ value.history_hospital|length}}{% else %} 0 {%
+                        endif %}</div>
                 </div>
                 <div class="row mb-2">
                     <div class="col-4 fw-bolder">Tổng tiền khám chữa bệnh</div>
@@ -83,7 +84,6 @@
                     <div class="col-4 fw-bolder">Tổng tiền thanh toán</div>
                     <div class="col-8">{% if value.thanhtoan %}{{ "{:,} đ".format(value.thanhtoan) }} {% endif %}</div>
                 </div>
-
                 </p>
             </div>
         </div>
@@ -102,7 +102,6 @@
                     <h6>Nhập viện</h6>
                 </button>
             </li>
-
         </ul>
         <div class="tab-content  border rounded shadow-sm" id="myTabContent"
             style="overflow-y: scroll; max-height:800px;">
@@ -111,12 +110,16 @@
                 <div class="list-group list-group-flush">
                     {% if value.history_visited %}
                     {% for visited in value.history_visited %}
-                  
                     <a href="#" class="list-group-item list-group-item-action" data-bs-toggle="modal"
-                        data-bs-target="#patientVisitedHistory" data-department = "{{visited.0}}" data-doctor="{{visited.2}}" data-time="{{visited.3}}" data-chandoan="{{visited.1}}" onclick="getVisitedHistory(this.getAttribute('data-department'),
+                        data-bs-target="#patientVisitedHistory" data-department="{{visited.0}}"
+                        data-doctor="{{visited.2}}" data-time="{{visited.3}}" data-chandoan="{{visited.1}}"
+                        data-khambenhid="{{ visited.5}}" data-ketqua="{{visited.4}}" data-tiepnhanid="{{visited.6}}" onclick="getVisitedHistory(this.getAttribute('data-department'),
                             this.getAttribute('data-doctor'),
                             this.getAttribute('data-time'),
-                            this.getAttribute('data-chandoan')
+                            this.getAttribute('data-chandoan'),
+                            this.getAttribute('data-khambenhid'),
+                            this.getAttribute('data-ketqua'),
+                            this.getAttribute('data-tiepnhanid')
                             );">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
@@ -137,7 +140,7 @@
                                 {% endif %}
                                 <span class="badge text-bg-primary mt-1">BS.{{visited.2}}</span>
                                 <span class="text-primary"><small>Xem chi tiết<i
-                                    class="fa-solid fa-arrow-right ms-1"></i></small></span>
+                                            class="fa-solid fa-arrow-right ms-1"></i></small></span>
                             </div>
                         </div>
                     </a>
@@ -155,21 +158,18 @@
                                 <div class="modal-body">
                                     <h6 id="departmentName"></h6>
                                     <div class="d-flex align-items-center">
-                               
-                                            <span class="badge text-bg-primary" id="doctorNameModal"></span>
-
-                                            <span class="badge bg-success ms-2">Cấp toa cho về</span>
-                                            <small class="text-muted ms-2" id="timeVisitedModal"></small>
-
+                                        <small class="text-muted" id="timeVisitedModal"></small>
+                                        <span class="badge bg-danger ms-2" id="ketquadanger"></span>
+                                        <span class="badge text-bg-warning ms-2" id="ketquawarning"></span>
+                                        <span class="badge bg-success ms-2" id="ketquasucess"></span>
+                                        <span class="badge text-bg-primary ms-2" id="doctorNameModal"></span>
                                     </div>
-                                    <hr>
-                                    <p><span class="fw-bold">Chẩn đoán: </span><span   id="chanDoan" ></span> </p>
-                                    <hr>
-                                    <p><span class="fw-bold">Đơn thuốc: </span><span   id="donthuoc" ></span> </p>
-           
-                                            
+                                    <hr class="my-2">
+                                    <p><span class="fw-bold">Chẩn đoán: </span><span id="chanDoan"></span> </p>
+                                    <hr class="my-2">
+                                    <p><span class="fw-bold">Đơn thuốc: </span><span id="donthuoc"
+                                            class="d-flex flex-column"></span> </p>
                                 </div>
-                         
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary"
                                         data-bs-dismiss="modal">Đóng</button>
@@ -178,7 +178,6 @@
                             </div>
                         </div>
                     </div>
-
                     {% endif %}
                 </div>
             </div>
@@ -195,10 +194,8 @@
                                         class="fa-regular fa-clock me-1"></i>{{visited.3.strftime('%d-%m-%Y')}} {% if
                                     visited.4 %}đến {{visited.4.strftime('%d-%m-%Y')}} {% else %}(chưa ra viện){% endif
                                     %}</small>
-
-
                             </div>
-                            <div class="d-flex flex-column justify-content-start align-items-end ms-2"  >
+                            <div class="d-flex flex-column justify-content-start align-items-end ms-2">
                                 {% if visited.4 == 'Chuyển tuyến' or visited.4 == 'Chuyển viện' %}
                                 <span class="badge bg-danger m-0">{{ visited.5 }}</span>
                                 {% elif visited.4 == 'Nhập viện'%}
@@ -208,9 +205,7 @@
                                 {% endif %}
                                 <span class="badge text-bg-primary mt-1">BS.{{visited.2}}</span>
                                 <span class="text-primary"><small>Xem chi tiết<i
-                                    class="fa-solid fa-arrow-right ms-1"></i></small></span>
-
-
+                                            class="fa-solid fa-arrow-right ms-1"></i></small></span>
                             </div>
                         </div>
                     </a>
@@ -224,20 +219,38 @@
     </div>
 </div>
 
+
+
 <script>
     const urlGenerator = '/patient/';
     const todayURL = "{{ url_for('patient_detail', mayte=value.mayte) }}";
 
-
-
 </script>
 
 <script>
-    function getVisitedHistory(department, doctor, time, chandoantext){
-       
+    function updatePatientModal(data) {
+        const donthuocElement = document.getElementById('donthuoc');
+        donthuocElement.textContent = "";
+
+        if (Object.keys(data).length) {
+            for (const key of data) {
+                const para = document.createElement("span");
+                para.innerHTML = `<div class="d-flex justify-content-between"><span>${key['thuoc']} (${key['duongdung']})</span><span class="fw-bolder">${key['soluong']}</span></div>  `
+                donthuocElement.appendChild(para)
+
+            }
+        }
+        else {
+            donthuocElement.textContent = "Không";
+        }
+
+    }
+
+    function getVisitedHistory(department, doctor, time, chandoantext, khambenh_id, ketquatext, tiepnhanid) {
+
         const departmentName = document.getElementById('departmentName');
         departmentName.textContent = department;
-        
+
         const doctorNameModal = document.getElementById('doctorNameModal');
         doctorNameModal.textContent = 'BS.' + doctor;
 
@@ -247,6 +260,30 @@
 
         const chanDoan = document.getElementById('chanDoan');
         chanDoan.textContent = chandoantext;
+
+        const ketquadanger = document.getElementById('ketquadanger');
+        ketquadanger.textContent = ""
+        const ketquawarning = document.getElementById('ketquawarning');
+        ketquawarning.textContent = ""
+        const ketquasucess = document.getElementById('ketquasucess');
+        ketquasucess.textContent = ""
+        if (ketquatext == 'Chuyển tuyến' || ketquatext == 'Chuyển viện') {
+            ketquadanger.textContent = ketquatext
+        }
+        else if (ketquatext == 'Nhập viện') {
+            ketquawarning.textContent = ketquatext
+        }
+        else {
+            ketquasucess.textContent = ketquatext
+        }
+
+        console.log(tiepnhanid)
+
+
+        const prescriptionAPI = window.location.origin + '/prescription-api/' + khambenh_id
+        fetch(prescriptionAPI)
+            .then((response) => response.json())
+            .then((data) => updatePatientModal(data));
     }
 </script>
 {% endblock %}

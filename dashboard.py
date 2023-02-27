@@ -6,6 +6,8 @@ from dateutil.relativedelta import *
 from time import time
 
 from flask import jsonify
+import json
+import collections
 
 import sql_query
 
@@ -1619,3 +1621,24 @@ def patient_api_detail(mayte):
     cnxn.close()
 
     return info_json
+
+# API đơn thuốc của bệnh nhân 
+@app.route('/prescription-api/<int:khambenh_id>')
+def prescription_api(khambenh_id):
+    cnxn = get_db()
+    cursor = cnxn.cursor()
+
+    info = query_patient.donthuoc(khambenh_id, cursor)
+    info_list = []
+    for i in info:
+        d = collections.OrderedDict()
+        d['duongdung'] = i[0]
+        d['thuoc'] = i[1]
+        d['soluong'] = int(i[2])
+        
+        info_list.append(d)
+    
+    j = jsonify(info_list)
+    cnxn.close()
+
+    return j

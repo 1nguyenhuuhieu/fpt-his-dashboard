@@ -34,7 +34,7 @@ def patients(cursor):
 # Lịchh sử tiếp nhận của bệnh nhân
 def visited_history(mayte, cursor):
     query = """
-       SELECT TenPhongBan,ChanDoanKhoaKham,  TenNhanVien,ThoiGianKham, Dictionary_Name, KhamBenh_Id
+       SELECT TenPhongBan,ChanDoanKhoaKham,  TenNhanVien,ThoiGianKham, Dictionary_Name, KhamBenh_Id, KhamBenh.TiepNhan_Id
         FROM KhamBenh
         INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan]
         ON KhamBenh.BenhNhan_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan].BenhNhan_Id
@@ -113,5 +113,27 @@ def thanhtoan(mayte, cursor):
         return int(q)
     except:
         print("Lỗi khi query patient.thanhtoan")
+        return 0
+        
+    
+# Đơn thuốc theo khám bệnh id
+def donthuoc(khambenh_id, cursor):
+    query = """
+        SELECT  Dictionary_Name, TenDuocDayDu,ToaThuoc.SoLuong
+        FROM ToaThuoc
+        INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_Duoc]
+        ON ToaThuoc.Duoc_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_Duoc].Duoc_Id
+        INNER JOIN KhamBenh
+        ON ToaThuoc.KhamBenh_Id = KhamBenh.KhamBenh_Id
+        INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[Lst_Dictionary]
+        ON ToaThuoc.DuongDung_Id = [eHospital_NgheAn_Dictionary].[dbo].[Lst_Dictionary].Dictionary_Id
+
+        WHERE ToaThuoc.KhamBenh_Id = ?
+    """
+    try:
+        q = cursor.execute(query, khambenh_id).fetchall()
+        return q
+    except:
+        print("Lỗi khi query patient.donthuoc")
         return 0
         
