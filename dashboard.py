@@ -114,6 +114,15 @@ def get_day(day):
     
     return day_dict
 
+# Lấy danh sách khoa
+def get_department_id_list(department_id):
+    if department_id == 23092310:
+        return [2309,2310]
+    elif department_id == (12442304):
+        return [1244,2304]
+    else:
+        return [department_id]
+
 # -------------------------------------------------------------
 app = Flask(__name__)
 Breadcrumbs(app=app)
