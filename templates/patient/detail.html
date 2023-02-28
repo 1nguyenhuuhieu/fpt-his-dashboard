@@ -3,6 +3,7 @@
 <i class="fa-solid fa-book-medical me-2"></i>{% block title %}Hồ sơ bệnh nhân{% endblock %}
 {% endblock %}
 {% block content %}
+
 <div class="row mt-3">
     <div class="col-lg-4">
         <div class="card shadow-sm">
@@ -10,16 +11,16 @@
                 <h6 class="card-title">Thông tin</h6>
                 <hr>
                 <p class="card-text">
-                <div class="row mb-2">
-                    <div class="col-4 fw-bolder">Họ và tên</div>
-                    <div class="col-8">{{value.detail.0}} {% if value.detail.2 == 'G' %}<i
+                <div class="row g-0 mb-2">
+                    <div class="col-5 fw-bolder">Họ và tên</div>
+                    <div class="col-7">{{value.detail.0}} {% if value.detail.2 == 'G' %}<i
                             class="fa-solid fa-venus text-danger"></i>{% else %}<i
                             class="fa-solid fa-mars text-primary"></i>{% endif %}</div>
                 </div>
 
-                <div class="row mb-2">
-                    <div class="col-4 fw-bolder">Ngày sinh</div>
-                    <div class="col-8"><span id="bornDate"> {% if value.detail.1
+                <div class="row g-0 mb-2">
+                    <div class="col-5 fw-bolder">Ngày sinh</div>
+                    <div class="col-7"><span id="bornDate"> {% if value.detail.1
                             %} {% set year_born = value.detail.1.strftime('%Y')|int %}
                             {{value.detail.1.strftime('%d-%m-%Y')}} {% endif %}</span></div>
 
@@ -32,31 +33,31 @@
                     </script>
 
                 </div>
-                <div class="row mb-2">
+                <div class="row g-0 mb-2">
                     <div class="col-4 fw-bolder">Địa chỉ</div>
-                    <div class="col-8">{{value.detail.3}}</div>
+                    <div class="col">{{value.detail.3}}</div>
                 </div>
-                <div class="row mb-2">
-                    <div class="col-4 fw-bolder">Số điện thoại</div>
-                    <div class="col-8">{{value.detail.4}}</div>
+                <div class="row g-0 mb-2">
+                    <div class="col-5 fw-bolder">Số điện thoại</div>
+                    <div class="col-7"> <a href="tel:+84{{value.detail.4}}" class="text-decoration-none">{{value.detail.4}}</a> </div>
                 </div>
                 <hr class="my-2">
-                <div class="row mb-2">
-                    <div class="col-4 fw-bolder">ID Bệnh nhân</div>
-                    <div class="col-8">{{value.detail.5}}</div>
+                <div class="row g-0 mb-2">
+                    <div class="col-5 fw-bolder">ID Bệnh nhân</div>
+                    <div class="col-7">{{value.detail.5}}</div>
                 </div>
 
-                <div class="row mb-2">
-                    <div class="col-4 fw-bolder">Mã y tế</div>
-                    <div class="col-8">{{value.detail.6}}</div>
+                <div class="row g-0 mb-2">
+                    <div class="col-5 fw-bolder">Mã y tế</div>
+                    <div class="col-7">{{value.detail.6}}</div>
                 </div>
-                <div class="row mb-2">
-                    <div class="col-4 fw-bolder">Ngày tạo</div>
-                    <div class="col-8">{% if value.detail.1 %}{{value.detail.7.strftime('%d-%m-%Y')}} {% endif %}</div>
+                <div class="row g-0 mb-2">
+                    <div class="col-5 fw-bolder">Ngày tạo</div>
+                    <div class="col-7">{% if value.detail.1 %}{{value.detail.7.strftime('%d-%m-%Y')}} {% endif %}</div>
                 </div>
-                <div class="row mb-2">
-                    <div class="col-4 fw-bolder">Ngày cập nhập</div>
-                    <div class="col-8">{% if value.detail.8 %}{{value.detail.8.strftime('%d-%m-%Y')}} {% endif %}</div>
+                <div class="row g-0 mb-2">
+                    <div class="col-5 fw-bolder">Ngày cập nhập</div>
+                    <div class="col-7">{% if value.detail.8 %}{{value.detail.8.strftime('%d-%m-%Y')}} {% endif %}</div>
                 </div>
                 </p>
             </div>
@@ -66,30 +67,30 @@
                 <h6 class="card-title">Thống kê</h6>
                 <hr>
                 <p class="card-text">
-                <div class="row mb-2">
-                    <div class="col-4 fw-bolder">Lượt khám bệnh</div>
-                    <div class="col-8">{% if value.history_visited %} {{ value.history_visited|length}}{% else %} 0 {%
+                <div class="row g-0 mb-2">
+                    <div class="col-5 fw-bolder">Lượt khám bệnh</div>
+                    <div class="col">{% if value.history_visited %} {{ value.history_visited|length}}{% else %} 0 {%
                         endif %}</div>
                 </div>
-                <div class="row mb-2">
-                    <div class="col-4 fw-bolder">Lượt nhập viện</div>
-                    <div class="col-8">{% if value.history_hospital %} {{ value.history_hospital|length}}{% else %} 0 {%
+                <div class="row g-0 mb-2">
+                    <div class="col-5 fw-bolder">Lượt nhập viện</div>
+                    <div class="col">{% if value.history_hospital %} {{ value.history_hospital|length}}{% else %} 0 {%
                         endif %}</div>
                 </div>
-                <div class="row mb-2">
-                    <div class="col-4 fw-bolder">Tổng tiền khám chữa bệnh</div>
-                    <div class="col-8">{% if value.doanhthu %}{{ "{:,} đ".format(value.doanhthu) }} {% endif %}</div>
+                <div class="row g-0 mb-2">
+                    <div class="col-5 fw-bolder">Tổng thanh toán</div>
+                    <div class="col">{% if value.doanhthu %}{{ "{:,} đ".format(value.doanhthu) }} {% endif %}</div>
                 </div>
-                <div class="row">
-                    <div class="col-4 fw-bolder">Tổng tiền thanh toán</div>
-                    <div class="col-8">{% if value.thanhtoan %}{{ "{:,} đ".format(value.thanhtoan) }} {% endif %}</div>
+                <div class="row g-0">
+                    <div class="col-5 fw-bolder">Tự chi trả</div>
+                    <div class="col">{% if value.thanhtoan %}{{ "{:,} đ".format(value.thanhtoan) }} {% endif %}</div>
                 </div>
                 </p>
             </div>
         </div>
     </div>
     <div class="col-lg-8">
-        <ul class="nav nav-tabs mt-2 mt-md-0" id="myTab" role="tablist">
+        <ul class="nav nav-tabs mt-3 mt-md-0" id="myTab" role="tablist">
             <li class="nav-item " role="presentation">
                 <button class="nav-link active " id="home-tab" data-bs-toggle="tab" data-bs-target="#home-tab-pane"
                     type="button" role="tab" aria-controls="home-tab-pane" aria-selected="true">
@@ -103,8 +104,7 @@
                 </button>
             </li>
         </ul>
-        <div class="tab-content  border rounded shadow-sm" id="myTabContent"
-            style="overflow-y: scroll; max-height:800px;">
+        <div class="tab-content  border rounded shadow-sm scroll-desktop" id="myTabContent">
             <div class="tab-pane fade show active " id="home-tab-pane" role="tabpanel" aria-labelledby="home-tab"
                 tabindex="0">
                 <div class="list-group list-group-flush">
