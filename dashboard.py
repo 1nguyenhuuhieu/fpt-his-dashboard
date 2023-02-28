@@ -114,32 +114,6 @@ def get_day(day):
     
     return day_dict
 
-# lấy deparment_id list
-def get_department_id_list(department_id):
-    if department_id == 23092310:
-        return [2309,2310]
-    elif department_id == (12442304):
-        return [1244,2304]
-    else:
-        return [department_id]
-
-
-huonggiaiquyet = {
-    454: "Cấp toa cho về",
-    455: "Điều trị ngoại trú",
-    456: "Cấp toa & Hẹn tái khám",
-    457: "Nhập viện",
-    458: "Chuyển tuyến",
-    460: "Cho thực hiện CLS...",
-    1331: "Không toa",
-    2981: "Hẹn lấy kết quả CLS",
-    4011: "Cấp toa nghỉ ốm",
-    4030: "Cấp toa chuyển tuyến dưới",
-    8055: "Khám Sức Khỏe",
-    8056: "Không Khám Bệnh",
-    9165: "Khám Thêm Phòng"
-}
-
 # -------------------------------------------------------------
 app = Flask(__name__)
 Breadcrumbs(app=app)
@@ -162,9 +136,10 @@ def home(day_query=None):
 
     # Tổng Doanh thu trong 1 ngày
     today_money = query_revenue.total_day(today, cursor)
+    today_money_format = f'{today_money:,}'
     yesterday_money = query_revenue.total_day(yesterday, cursor)
     percent_doanhthu = get_change(today_money, yesterday_money)
-    top_card = ('fa-solid fa-money-bill',"Tổng doanh thu", today_money, percent_doanhthu)
+    top_card = ('fa-solid fa-money-bill',"Tổng doanh thu", today_money_format, percent_doanhthu)
 
 
     # Tổng Doanh thu dược
@@ -1335,6 +1310,7 @@ def list_revenue(day_query=None):
     table_column_title = ['Nội dung', 'Tên', 'Khoa/Phòng', 'Số lượt', 'Tổng doanh thu']
 
     list_patients = query_revenue.services(today, cursor)
+    list_patients = list([e1,e2,e3,e4,f'{ int(e5):,}'] for e1,e2,e3,e4,e5 in list_patients)
 
     today = today.strftime("%Y-%m-%d")
 
@@ -1376,6 +1352,7 @@ def medicine(day_query=None):
     table_column_title = ['Nội dung', 'Tên', 'Khoa/Phòng', 'Số lượt', 'Tổng doanh thu']
 
     list_patients = query_revenue.services_type(today,'DU', cursor)
+    list_patients = list([e1,e2,e3,e4,f'{ int(e5):,}'] for e1,e2,e3,e4,e5 in list_patients)
 
     today = today.strftime("%Y-%m-%d")
 
@@ -1417,6 +1394,7 @@ def service(day_query=None):
     table_column_title = ['Nội dung', 'Tên', 'Khoa/Phòng', 'Số lượt', 'Tổng doanh thu']
 
     list_patients = query_revenue.services_type(today,'DV', cursor)
+    list_patients = list([e1,e2,e3,e4,f'{ int(e5):,}'] for e1,e2,e3,e4,e5 in list_patients)
 
     today = today.strftime("%Y-%m-%d")
 

@@ -4,26 +4,27 @@
 {% endblock %}
 {% block content %}
 {% include 'home/chartjs.html' %}
-  <div class="row">
-    <div class="col-lg-6">
-      <div class="row g-2">
-        <div class="col-12">
-          <!-- Top card -->
-          <div class="row g-2">
-            <div class="col-lg-6">
-              <!-- Money card -->
-              <div class="card shadow-sm text-bg-warning h-100">
-                <div class="card-body">
-                  <h6 class="card-subtitle mb-2 d-flex justify-content-between align-items-center">
-                    <div>
-                      <i class="{{value.top_card.0}} me-2"></i> <a
-                      href="{{ url_for('revenue', day_query=value.today)}}" class="text-reset text-decoration-none stretched-link">{{
+<div class="row">
+  <div class="col-lg-6">
+    <div class="row g-2">
+      <div class="col-12">
+        <!-- Top card -->
+        <div class="row g-2">
+          <div class="col-lg-6 mb-2 mb-sm-0">
+            <!-- Money card -->
+            <div class="card shadow-sm text-bg-warning h-100">
+              <div class="card-body">
+                <h6 class="card-subtitle mb-2 d-flex justify-content-between align-items-center">
+                  <div>
+                    <i class="{{value.top_card.0}} me-2"></i> <a href="{{ url_for('revenue', day_query=value.today)}}"
+                      class="text-reset text-decoration-none stretched-link">{{
                       value.top_card.1 }}</a>
-                    </div>
-                    
-                    </h6>
-                  <hr class="my-2">
-                  <h3 class="card-title">{{ "{:,} đ".format(value.top_card.2) }} </h3>
+                  </div>
+                </h6>
+                <hr class="my-2">
+                <div class="d-flex flex-row flex-md-column justify-content-between">
+                <h3 class="card-title">{{ value.top_card.2 }} đ </h3>
+                <div class="d-flex flex-column justify-content-end">
                   <p class="text-muted card-text m-0 text-end">
                     <span class="">
                       {% if value.top_card.3.0 %}
@@ -34,147 +35,150 @@
                       {{ value.top_card.3.1 }}%</span>
                     <span>hôm trước</span>
                   </p>
-                  <div class="d-flex justify-content-end">
-                    <a href="{{ url_for('revenue', day_query=value.today) }}" class="text-decoration-none text-end stretched-link">Xem chi tiết<i class="fa-solid fa-arrow-right ms-2"></i></a>
-                  </div>
+                  <a href="{{ url_for('revenue', day_query=value.today) }}"
+                    class="text-decoration-none text-end stretched-link">Xem chi tiết<i
+                      class="fa-solid fa-arrow-right ms-2"></i></a>
                 </div>
               </div>
-              <!-- Money card -->
-            </div>
-            <!-- Dược và dịch vụ card -->
-            <div class="col-lg-6">
-              <div class="card shadow-sm h-100">
-                <div class="card-body">
-                  <div class="mb-2">
-                    <p class="mt-0 mb-1 d-flex justify-content-between">
-                      <a href="{{ url_for('medicine',day_query=value.today)}}" class="fw-bolder text-decoration-none text-dark"><i
-                          class="fa-solid fa-pills me-1 fa-fw"></i>Dược</a> 
-                      <span class="fw-bolder">{{ "{:,} đ".format(value.medicine_card[0]) }}</span>
-                    </p>
-                    <div class="progress" role="progressbar" aria-label="Example with label" aria-valuenow="25"
-                      aria-valuemin="0" aria-valuemax="100">
-                      <div class="progress-bar bg-danger" style="width: {{value.medicine_card[1]}}%">
-                        {{value.medicine_card[1]}}%</div>
-                    </div>
-                  </div>
-                  <div>
-                    <p class="mt-0 mb-1 d-flex justify-content-between">
-                      <a href="{{ url_for('service', day_query=value.today) }}" class="fw-bolder text-decoration-none  text-dark"><i
-                          class="fa-solid fa-stethoscope me-1 fa-fw"></i>Dịch vụ</a>
-                      <span  class="fw-bolder">{{ "{:,} đ".format(value.service_card[0]) }}</span>
-                    </p>
-                    <div class="progress" role="progressbar" aria-label="Example with label" aria-valuenow="25"
-                      aria-valuemin="0" aria-valuemax="100">
-                      <div class="progress-bar bg-success" style="width: {{ value.service_card[1]}}%">{{ value.service_card[1]}}%
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="d-flex justify-content-end mt-1">
-                    <a href="{{ url_for('list_revenue', day_query=value.today) }}" class="text-decoration-none text-end">Xem chi tiết<i class="fa-solid fa-arrow-right ms-2"></i></a>
-                  </div>
-
-                </div>
+     
               </div>
             </div>
-            <!-- Dược và dịch vụ card -->
-
+            <!-- Money card -->
           </div>
-
-          <!-- Top card-->
-        </div>
-      </div>
-      <div class="row g-2 mt-1">
-        {% for url, title, icon, count, percent in value.patient_card %}
-        <div class="col-lg-6">
-          <div class="card shadow-sm">
-            <div class="card-body">
-              <h6 class="card-subtitle mb-2  d-flex justify-content-between align-items-center">
-                <div>
-                <i class="{{ icon }} me-2 fa-fw"></i>{{ title }}
-                </div>
-              </h6>
-              <hr class="my-2">
-              <div class="row">
-                <div class="col-4 align-items-center justify-content-start d-flex">
-                    <h3 class="card-title p-0 m-0">{{ count }}</h3>
-                </div>
-                <div class="col-8 align-items-center justify-content-end d-flex">
-                  <p class="text-muted card-text p-0 m-0">
-                    <span>
-                      {% if percent[0]%}
-                      <i class="fa-solid fa-arrow-trend-up me-1 fw-bold text-success"></i>
-                      {% else %}
-                      <i class="fa-solid fa-arrow-trend-down me-1 fw-bold text-danger"></i>
-                      {% endif %}
-                      {{ percent[1] }}%</span>
-                    <span>hôm trước</span>
-
+          <!-- Dược và dịch vụ card -->
+          <div class="col-lg-6">
+            <div class="card shadow-sm h-100">
+              <div class="card-body">
+                <div class="mb-2">
+                  <p class="mt-0 mb-1 d-flex justify-content-between">
+                    <a href="{{ url_for('medicine',day_query=value.today)}}"
+                      class="fw-bolder text-decoration-none text-dark"><i
+                        class="fa-solid fa-pills me-1 fa-fw"></i>Dược</a>
+                    <span class="fw-bolder">{{ "{:,} đ".format(value.medicine_card[0]) }}</span>
                   </p>
-
+                  <div class="progress" role="progressbar" aria-label="Example with label" aria-valuenow="25"
+                    aria-valuemin="0" aria-valuemax="100">
+                    <div class="progress-bar bg-danger" style="width: {{value.medicine_card[1]}}%">
+                      {{value.medicine_card[1]}}%</div>
+                  </div>
+                </div>
+                <div>
+                  <p class="mt-0 mb-1 d-flex justify-content-between">
+                    <a href="{{ url_for('service', day_query=value.today) }}"
+                      class="fw-bolder text-decoration-none  text-dark"><i
+                        class="fa-solid fa-stethoscope me-1 fa-fw"></i>Dịch vụ</a>
+                    <span class="fw-bolder">{{ "{:,} đ".format(value.service_card[0]) }}</span>
+                  </p>
+                  <div class="progress" role="progressbar" aria-label="Example with label" aria-valuenow="25"
+                    aria-valuemin="0" aria-valuemax="100">
+                    <div class="progress-bar bg-success" style="width: {{ value.service_card[1]}}%">{{
+                      value.service_card[1]}}%
+                    </div>
+                  </div>
                 </div>
 
-                <a href="{{ url_for(url, day_query=value.today) }}" class="text-decoration-none text-end stretched-link">Xem chi tiết<i class="fa-solid fa-arrow-right ms-2"></i></a>
+                <div class="d-flex justify-content-end mt-1">
+                  <a href="{{ url_for('list_revenue', day_query=value.today) }}"
+                    class="text-decoration-none text-end">Xem chi tiết<i class="fa-solid fa-arrow-right ms-2"></i></a>
+                </div>
 
               </div>
             </div>
           </div>
+          <!-- Dược và dịch vụ card -->
+
         </div>
-        {% endfor %}
+
+        <!-- Top card-->
       </div>
-      <div class="row g-2 mt-1">
-        <div class="col-lg-6">
-            {% include 'visited/list_department.html' %}
+    </div>
+    <div class="row g-2 mt-1">
+      {% for url, title, icon, count, percent in value.patient_card %}
+      <div class="col-lg-6">
+        <div class="card shadow-sm">
+          <div class="card-body">
+            <h6 class="card-subtitle mb-2  d-flex justify-content-between align-items-center">
+              <div>
+                <i class="{{ icon }} me-2 fa-fw"></i>{{ title }}
+              </div>
+            </h6>
+            <hr class="my-2">
+            <div class="row">
+              <div class="col-4 align-items-center justify-content-start d-flex">
+                <h3 class="card-title p-0 m-0">{{ count }}</h3>
+              </div>
+              <div class="col-8 align-items-center justify-content-end d-flex">
+                <p class="text-muted card-text p-0 m-0">
+                  <span>
+                    {% if percent[0]%}
+                    <i class="fa-solid fa-arrow-trend-up me-1 fw-bold text-success"></i>
+                    {% else %}
+                    <i class="fa-solid fa-arrow-trend-down me-1 fw-bold text-danger"></i>
+                    {% endif %}
+                    {{ percent[1] }}%</span>
+                  <span>hôm trước</span>
 
+                </p>
+
+              </div>
+
+              <a href="{{ url_for(url, day_query=value.today) }}"
+                class="text-decoration-none text-end stretched-link">Xem chi tiết<i
+                  class="fa-solid fa-arrow-right ms-2"></i></a>
+
+            </div>
+          </div>
         </div>
-        <div class="col-lg-6">
-          {% include 'hospitalized/list_department.html' %}
-
-        </div>
-
       </div>
-
-
+      {% endfor %}
     </div>
 
-    <div class="col-lg-6">
-      {% include 'home/news.html' %}
+    <div class="row mt-3">
+      <div class="col-12">
+        
+    <div class="border shadow-sm rounded p-1 bg-white mt-2 mt-sm-0">
+      <div id="chart_soluotkham"></div>
+    </div>
 
-
-      <div class="border shadow-sm rounded p-1 bg-white mt-2">
-        <div id="chart_soluotkham"></div>
       </div>
+    </div>
 
-      <div class="row g-2">
-        <div class="col-lg-6">
-          <!-- Chart lượt khám bệnh -->
-          <div class="border shadow-sm rounded p-1 bg-white mt-2">
-            <div id="piechart"></div>
-          </div>
-          <!-- End Chart lượt khám bệnh -->
 
+  </div>
+
+  <div class="col-lg-6 mt-2 mt-sm-0">
+    <!-- {% include 'home/news.html' %} -->
+
+
+    <div class="row g-2">
+      <div class="col-lg-6">
+        {% include 'visited/list_department.html' %}
+                <!-- Chart lượt khám bệnh -->
+                <div class="border shadow-sm rounded p-1 bg-white mt-2">
+                  <div id="piechart"></div>
+                </div>
+                <!-- End Chart lượt khám bệnh -->
+
+      </div>
+      <div class="col-lg-6">
+        {% include 'hospitalized/list_department.html' %}
+
+        <!-- Chart bệnh nhân nội trú -->
+        <div class="border shadow-sm rounded p-1 bg-white mt-2">
+          <div id="piechart_benhnhannoitru"></div>
         </div>
-        <div class="col-lg-6">
-
-          <!-- Chart bệnh nhân nội trú -->
-          <div class="border shadow-sm rounded p-1 bg-white mt-2">
-            <div id="piechart_benhnhannoitru"></div>
-          </div>
-          <!-- End Chart bệnh nhân nội trú -->
+        <!-- End Chart bệnh nhân nội trú -->
 
 
-        </div>
       </div>
 
     </div>
   </div>
+</div>
 
 <script>
   const urlGenerator = '/dashboard/';
   const todayURL = "{{ url_for('home') }}";
 </script>
-
-
-
 
 {% endblock %}

@@ -33,7 +33,7 @@
                                 <hr>
                                 {% for title, money in value.money_card_body %}
                                 <div class="card-text d-flex justify-content-between">
-                                    <span>{{ title }}</span>
+                                   <a href="" class="text-decoration-none" >{{ title }}</a>
                                     <span class="fw-bold">{{ "{:,} đ".format(money) }}</span>
                                 </div>
                                 {% endfor %}
