@@ -37,7 +37,7 @@ def get_db():
     database = 'eHospital_NgheAn'
     username = 'sa'
     password = 'toanthang'
-    cnxn = pyodbc.connect('DRIVER={SQL Server};SERVER=' +
+    cnxn = pyodbc.connect('DRIVER={SQL Server Native Client 11.0};SERVER=' +
                           server+';DATABASE='+database+';UID='+username+';PWD=' + password)
     return cnxn
 
