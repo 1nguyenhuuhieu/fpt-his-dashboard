@@ -1,14 +1,14 @@
 # Lấy danh sách tiếp nhận ID đã xác nhận chi phí trong ngày
 def list_tiepnhan_id(day, cursor):
     query = """
-    SELECT TiepNhan_Id
+    SELECT DISTINCT XacNhanChiPhi.TiepNhan_Id
     FROM XacNhanChiPhi
     INNER JOIN XacNhanChiPhiChiTiet
     ON XacNhanChiPhi.XacNhanChiPhi_Id = XacNhanChiPhiChiTiet.XacNhanChiPhi_Id
-    WHERE NgayXacNhan = '2023-03-01'
+    WHERE NgayXacNhan = ?
     """
     try:
-        q = cursor.excute(query).fetchall()
+        q = cursor.execute(query, day).fetchall()
         return q
     except:
         print('Lỗi query report.list_tiepnhan_id')
@@ -19,7 +19,7 @@ def list_tiepnhan_id(day, cursor):
 
 def patient_info(tiepnhan_id, cursor):
     query = """
-    SELECT MaYTe, TenBenhNhan, NgaySinh, GioiTinh, DiaChi, TiepNhan.SoBHYT, BHYTTuNgay, BHYTDenNgay, MaBenh, BenhKhac, XacNhanChiPhi.NgayVao, XacNhanChiPhi.NgayRa, TenPhongKham,
+    SELECT DISTINCT XacNhanChiPhi.ThoiGianXacNhan, MaYTe,TiepNhan.SoBHYT,
     SUM(XacNhanChiPhiChiTiet.SoLuong*XacNhanChiPhiChiTiet.DonGiaDoanhThu) as 'Tổng Doanh Thu',
     SUM(XacNhanChiPhiChiTiet.SoLuong*XacNhanChiPhiChiTiet.DonGiaHoTroChiTra) as 'Tổng Bảo Hiểm thanh toán',
     SUM(XacNhanChiPhiChiTiet.SoLuong*XacNhanChiPhiChiTiet.DonGiaThanhToan) as 'Tổng Bệnh nhân thanh toán'
@@ -31,11 +31,11 @@ def patient_info(tiepnhan_id, cursor):
     INNER JOIN XacNhanChiPhiChiTiet
     ON XacNhanChiPhi.XacNhanChiPhi_Id = XacNhanChiPhiChiTiet.XacNhanChiPhi_Id
     WHERE TiepNhan.TiepNhan_Id = ?
-    GROUP BY MaYTe, TenBenhNhan, NgaySinh, GioiTinh, DiaChi, TiepNhan.SoBHYT, BHYTTuNgay, BHYTDenNgay, MaBenh, BenhKhac, XacNhanChiPhi.NgayVao, XacNhanChiPhi.NgayRa, TenPhongKham
+    GROUP BY XacNhanChiPhi.ThoiGianXacNhan, MaYTe,TiepNhan.SoBHYT
     """
 
     try:
-        q = cursor.excute(query, tiepnhan_id).fetchone()
+        q = cursor.execute(query, tiepnhan_id).fetchone()
         return q
     except:
         print('Lỗi query report.patient_info')
@@ -46,7 +46,7 @@ def patient_info(tiepnhan_id, cursor):
 def service_money(tiepnhan_id, cursor):
     query = """
     SELECT
-    SUM(Soluong*DonGiaDoanhThu) as 'Doanh Thu',
+    
         (CASE
         WHEN TenNhomDichVu IN(N'XN HÓA SINH',
         N'XN HÓA SINH NƯỚC TIỂU',
@@ -88,9 +88,9 @@ def service_money(tiepnhan_id, cursor):
         WHEN TenNhomDichVu IN(N'KHÁM BỆNH') THEN N'Tiền Khám'
         WHEN TenNhomDichVu IN(N'VẬN CHUYỂN') THEN N'Tiền vận chuyển'
         WHEN TenNhomDichVu IS NULL THEN N'Tiền thuốc'
-
         ELSE TenNhomDichVu
-        END) AS  'group_name'
+        END) AS  'group_name',
+        SUM(Soluong*DonGiaDoanhThu) as 'Doanh Thu'
 
     FROM XacNhanChiPhi
     INNER JOIN XacNhanChiPhiChiTiet
@@ -151,7 +151,7 @@ def service_money(tiepnhan_id, cursor):
         END)
     """
     try:
-        q = cursor.excute(query, tiepnhan_id).fetchall()
+        q = cursor.execute(query, tiepnhan_id).fetchall()
         return q
     except:
         print('Lỗi query report.service_money')

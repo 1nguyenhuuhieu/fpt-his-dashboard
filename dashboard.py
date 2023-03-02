@@ -33,19 +33,19 @@ from flask_breadcrumbs import Breadcrumbs, register_breadcrumb
 #     cnxn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER=' +
 #                           server+';DATABASE='+database+';UID='+username+';PWD=' + password)
 #     return cnxn
-def get_db():
-    server = '192.168.123.254'
-    database = 'eHospital_NgheAn'
-    username = 'sa'
-    password = 'toanthang'
-    cnxn = pyodbc.connect('DRIVER={SQL Server Native Client 11.0};SERVER=' +
-                          server+';DATABASE='+database+';UID='+username+';PWD=' + password)
-    return cnxn
-
 # def get_db():
-#     cnxn = pyodbc.connect(driver='{ODBC Driver 17 for SQL Server}', server='localhost', database='eHospital_NgheAn',               
-#                trusted_connection='yes')
+#     server = '192.168.123.254'
+#     database = 'eHospital_NgheAn'
+#     username = 'sa'
+#     password = 'toanthang'
+#     cnxn = pyodbc.connect('DRIVER={SQL Server Native Client 11.0};SERVER=' +
+#                           server+';DATABASE='+database+';UID='+username+';PWD=' + password)
 #     return cnxn
+
+def get_db():
+    cnxn = pyodbc.connect(driver='{ODBC Driver 17 for SQL Server}', server='localhost', database='eHospital_NgheAn',               
+               trusted_connection='yes')
+    return cnxn
 
 def get_change(current, previous):
     if not current:
@@ -1593,7 +1593,71 @@ def patient_detail(mayte):
     cnxn.close()
     return render_template('patient/detail.html', value=context, active='patient')
 
+# Baso caso 79 
+@app.route('/report-79/<string:day_query>')
+@app.route('/report-79')
+def report_79(day_query=None):
+    cnxn = get_db()
+    cursor = cnxn.cursor()
+    day_dict = get_day(day_query)
+    today = day_dict['today']
 
+    list_id = query_report.list_tiepnhan_id(today,cursor)
+    list_data = []
+    s_data = []
+    for id in list_id:
+        t = list(query_report.patient_info(id, cursor))
+
+        
+        s = list(query_report.service_money(id, cursor))
+        s = dict(s)
+
+        if not 'Tiền xét nghiệm' in s:
+            s['Tiền xét nghiệm'] = 0
+        if not 'Tiền CĐHA' in s:
+            s['Tiền CĐHA'] = 0
+        if not 'Tiền Phẫu thuật, thủ thuật' in s:
+            s['Tiền Phẫu thuật, thủ thuật'] = 0
+        if not 'Tiền máu' in s:
+            s['Tiền máu'] = 0
+        if not 'Tiền Giường' in s:
+            s['Tiền Giường'] = 0
+        if not 'Tiền Khám' in s:
+            s['Tiền Khám'] = 0
+        if not 'Tiền vận chuyển' in s:
+            s['Tiền vận chuyển'] = 0
+        if not 'Tiền thuốc' in s:
+            s['Tiền thuốc'] = 0
+        if not 'NHÓM OXY' in s:
+            s['NHÓM OXY'] = 0
+
+        for i in sorted(s.keys()):
+
+            t.append(s[i])
+
+        list_data.append(t)
+    
+    table_column_title = ['Thời gian', 'Mã y tế', 'Mã thẻ BHYT', 'Tổng doanh thu', 'BHYT trả', 'BN trả',
+'NHÓM OXY',
+'Tiền CĐHA',
+'Tiền Giường',
+'Tiền Khám',
+'Tiền Phẫu thuật, thủ thuật',
+'Tiền máu',
+'Tiền thuốc',
+'Tiền vận chuyển',
+'Tiền xét nghiệm']
+
+    today = today.strftime("%Y-%m-%d")
+    cnxn.close()
+    context = {
+        'today': today,
+        'list': list_data,
+        'table_column_title': table_column_title
+
+    }
+
+    return render_template('report/79.html', value=context)
 # API Thông tin của bệnh nhân
 @app.route('/patient-api/<string:mayte>')
 def patient_api_detail(mayte):
@@ -1639,19 +1703,3 @@ def prescription_api(khambenh_id):
 
     return j
 
-@app.route('/report')
-def report_79():
-    cnxn = get_db()
-    cursor = cnxn.cursor()
-    day_query = None
-    day_dict = get_day(day_query)
-    today = day_dict['today']
-
-    list_id = query_report.list_tiepnhan_id(today,cursor)
-    for id in list_id:
-        t = query_report.patient_info(id, cursor)
-        print(t)
-
-    cnxn.close()
-
-    return None
