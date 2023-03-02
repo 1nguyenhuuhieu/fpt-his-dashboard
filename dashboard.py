@@ -19,6 +19,7 @@ from sqlquery import transfer as query_transfer
 from sqlquery import surgery as query_surgery
 from sqlquery import born as query_born
 from sqlquery import patient as query_patient
+from sqlquery import report as query_report
 
 from flask_breadcrumbs import Breadcrumbs, register_breadcrumb
 
@@ -1637,3 +1638,20 @@ def prescription_api(khambenh_id):
     cnxn.close()
 
     return j
+
+@app.route('/report')
+def report_79():
+    cnxn = get_db()
+    cursor = cnxn.cursor()
+    day_query = None
+    day_dict = get_day(day_query)
+    today = day_dict['today']
+
+    list_id = query_report.list_tiepnhan_id(today,cursor)
+    for id in list_id:
+        t = query_report.patient_info(id, cursor)
+        print(t)
+
+    cnxn.close()
+
+    return None
