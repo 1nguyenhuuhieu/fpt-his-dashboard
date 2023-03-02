@@ -938,18 +938,6 @@ def patients(day_query=None):
 
     day_dict = get_day(day_query)
     today = day_dict['today']
-    yesterday = day_dict['yesterday']
-    mon_day = day_dict['mon_day']
-    last_week_monday = day_dict['last_week_monday']
-    last_week_sun_day = day_dict['last_week_sun_day']
-    twolast_week_monday = day_dict['twolast_week_monday']
-    twolast_week_sun_day = day_dict['twolast_week_sun_day']
-    first_month_day = day_dict['first_month_day']
-    last_first_month_day = day_dict['last_first_month_day']
-    last_end_month_day = day_dict['last_end_month_day']
-    first_year_day = day_dict['first_year_day']
-    last_first_year_day = day_dict['last_first_year_day']
-    end_last_year_day = day_dict['end_last_year_day']
 
 
     table_column_title = ['Thời gian vào khoa','Mã y tế',  'Số bệnh án', 'Tên bệnh nhân', 'Chẩn đoán trong khoa','Bác sĩ', 'Khoa']
@@ -1600,11 +1588,25 @@ def report_79(day_query=None):
     cnxn = get_db()
     cursor = cnxn.cursor()
     day_dict = get_day(day_query)
+    day_dict = get_day(day_query)
     today = day_dict['today']
+    yesterday = day_dict['yesterday']
+    mon_day = day_dict['mon_day']
+    last_week_monday = day_dict['last_week_monday']
+    last_week_sun_day = day_dict['last_week_sun_day']
+    twolast_week_monday = day_dict['twolast_week_monday']
+    twolast_week_sun_day = day_dict['twolast_week_sun_day']
+    first_month_day = day_dict['first_month_day']
+    last_first_month_day = day_dict['last_first_month_day']
+    last_end_month_day = day_dict['last_end_month_day']
+    first_year_day = day_dict['first_year_day']
+    last_first_year_day = day_dict['last_first_year_day']
+    end_last_year_day = day_dict['end_last_year_day']
+
 
     list_id = query_report.list_tiepnhan_id(today,cursor)
     list_data = []
-    s_data = []
+
     for id in list_id:
         t = list(query_report.patient_info(id, cursor))
 
@@ -1618,18 +1620,14 @@ def report_79(day_query=None):
             s['Tiền CĐHA'] = 0
         if not 'Tiền Phẫu thuật, thủ thuật' in s:
             s['Tiền Phẫu thuật, thủ thuật'] = 0
-        if not 'Tiền máu' in s:
-            s['Tiền máu'] = 0
         if not 'Tiền Giường' in s:
             s['Tiền Giường'] = 0
         if not 'Tiền Khám' in s:
             s['Tiền Khám'] = 0
-        if not 'Tiền vận chuyển' in s:
-            s['Tiền vận chuyển'] = 0
+        if not 'Tiền vận chuyển, Oxy, Máu' in s:
+            s['Tiền vận chuyển, Oxy, Máu'] = 0
         if not 'Tiền thuốc' in s:
             s['Tiền thuốc'] = 0
-        if not 'NHÓM OXY' in s:
-            s['NHÓM OXY'] = 0
 
         for i in sorted(s.keys()):
 
@@ -1638,22 +1636,27 @@ def report_79(day_query=None):
         list_data.append(t)
     
     table_column_title = ['Thời gian', 'Mã y tế', 'Mã thẻ BHYT', 'Tổng doanh thu', 'BHYT trả', 'BN trả',
-'NHÓM OXY',
 'Tiền CĐHA',
 'Tiền Giường',
 'Tiền Khám',
 'Tiền Phẫu thuật, thủ thuật',
-'Tiền máu',
 'Tiền thuốc',
-'Tiền vận chuyển',
+'Tiền vận chuyển, Oxy, Máu',
 'Tiền xét nghiệm']
+    
+    total_service = query_report.total_service_money(first_year_day, today, cursor)
+    total_service = convert_to_chart(total_service)
+    total_service_chart = total_service.copy()
+    total_service.insert(0, ['Mục', 'Doanh thu'])
 
     today = today.strftime("%Y-%m-%d")
     cnxn.close()
     context = {
         'today': today,
         'list': list_data,
-        'table_column_title': table_column_title
+        'table_column_title': table_column_title,
+        'total_service': total_service,
+        'total_service_chart': total_service_chart
 
     }
 

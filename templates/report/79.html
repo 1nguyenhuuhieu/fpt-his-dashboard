@@ -4,11 +4,66 @@
 {% endblock %}
 {% block content %}
 
-{% include 'include/table-report.html' %}
+<div class="row g-2">
+    <div class="col-lg-8">
+        <div class="bg-white rounded border shadow-sm p-2">
+            <div id="chart_div1"></div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="bg-white rounded border shadow-sm p-2">
+            <div id="chart_div2"></div>
+        </div>
+    </div>
+</div>
+
+{% include 'include/table.html' %}
 
 <script>
-    const urlGenerator = '/visited/patients/';
-    const todayURL = "{{ url_for('visited') }}";
+    const urlGenerator = '/report-79/';
+    const todayURL = "{{ url_for('report_79') }}";
 
+</script>
+
+
+<!-- vẽ chart -->
+<script>
+    google.charts.load('current', {packages: ['corechart', 'bar']});
+    google.charts.setOnLoadCallback(drawBasic);
+
+function drawBasic() {
+
+
+      const data_chart = {{ value.total_service|tojson }}
+      var data = google.visualization.arrayToDataTable(data_chart);
+
+      var options = {
+        title: 'Tổng doanh thu trong năm theo từng mục',
+        chartArea: {width: '60%'}
+      };
+
+      var chart = new google.visualization.BarChart(document.getElementById('chart_div1'));
+
+      chart.draw(data, options);
+    }
+
+
+    google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+        const data_chart = {{ value.total_service|tojson }}
+
+        var data = google.visualization.arrayToDataTable(data_chart);
+
+        var options = {
+          title: 'Tổng doanh thu trong năm theo từng mục',
+          legend: { position: 'bottom' }
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('chart_div2'));
+
+        chart.draw(data, options);
+      }
 </script>
 {% endblock %}
