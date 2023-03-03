@@ -2,6 +2,7 @@ const dateQuery = document.getElementById("dateQuery");
 
 const yesterdayLink = document.getElementById("yesterdayLink");
 const tomorrowLink = document.getElementById("tomorrowLink");
+
 const todayLink = document.getElementById("todayLink");
 const toDayString = dateQuery.value;
 
@@ -26,3 +27,5 @@ function dateQueryFunction(urlGenerator) {
     dateQueryLink.href = window.location.origin + urlGenerator + dateQuery.value;
     dateQueryLink.click()
 }
+
+

@@ -33,19 +33,19 @@ from flask_breadcrumbs import Breadcrumbs, register_breadcrumb
 #     cnxn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER=' +
 #                           server+';DATABASE='+database+';UID='+username+';PWD=' + password)
 #     return cnxn
-# def get_db():
-#     server = '192.168.123.254'
-#     database = 'eHospital_NgheAn'
-#     username = 'sa'
-#     password = 'toanthang'
-#     cnxn = pyodbc.connect('DRIVER={SQL Server Native Client 11.0};SERVER=' +
-#                           server+';DATABASE='+database+';UID='+username+';PWD=' + password)
-#     return cnxn
-
 def get_db():
-    cnxn = pyodbc.connect(driver='{ODBC Driver 17 for SQL Server}', server='localhost', database='eHospital_NgheAn',               
-               trusted_connection='yes')
+    server = '192.168.123.254'
+    database = 'eHospital_NgheAn'
+    username = 'sa'
+    password = 'toanthang'
+    cnxn = pyodbc.connect('DRIVER={SQL Server Native Client 11.0};SERVER=' +
+                          server+';DATABASE='+database+';UID='+username+';PWD=' + password)
     return cnxn
+
+# def get_db():
+#     cnxn = pyodbc.connect(driver='{ODBC Driver 17 for SQL Server}', server='localhost', database='eHospital_NgheAn',               
+#                trusted_connection='yes')
+#     return cnxn
 
 def get_change(current, previous):
     if not current:
@@ -89,9 +89,9 @@ def convert_to_chart_date(list):
 # get day of week, month, year
 def get_day(day):
     day_dict = {}
-    if day:
+    try:
         today = datetime.strptime(day, '%Y-%m-%d')
-    else:
+    except:
         today = date.today()
 
     yesterday = today - timedelta(days=1)
@@ -1241,7 +1241,7 @@ def surgery_list(day_query=None):
 # Số trẻ sinh
 @app.route('/born/<string:day_query>')
 @app.route('/born')
-@register_breadcrumb(app, '..born', 'Trẻ sinh')
+@register_breadcrumb(app, '..surgery.born', 'Trẻ sinh')
 def born(day_query=None):
 
     cnxn = get_db()
@@ -1263,10 +1263,12 @@ def born(day_query=None):
     end_last_year_day = day_dict['end_last_year_day']
 
 
-    table_column_title = ['Thời gian kết thúc', 'Số bệnh án', 'Tên bệnh nhân', 'Mô tả']
+    table_column_title = ['Thời gian kết thúc', 'Mã Y tế', 'Tên bệnh nhân', 'Can thiệp phẫu thuật','Mô tả sau phẫu thuật']
 
-    list_patients = query_born.list(today, cursor)
-    list_patients = list([e1.strftime("%H:%M %d-%m-%Y"), e2,e3,e4] for e1,e2,e3,e4 in list_patients)
+    if day_query == 'thisyear':
+        list_patients = query_born.list_between(first_year_day, today, cursor)
+    else:
+        list_patients = query_born.list(today, cursor)
 
     chart = query_visited.department_day(today, cursor)
     chart = list([i,j] for i,j in chart)

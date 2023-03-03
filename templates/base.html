@@ -54,26 +54,12 @@
             <div class="">
               <div class="btn-group">
                 <a href="#" class="btn btn-sm btn-outline-secondary" id="yesterdayLink"><i
-                    class="fa-solid fa-caret-left mx-2"></i></a>
+                    class="fa-solid fa-caret-left mx-3"></i></a>
                 <a href="#" class="btn btn-sm btn-outline-secondary" id="tomorrowLink"><i
-                  class="fa-solid fa-caret-right mx-2"></i></a>
+                  class="fa-solid fa-caret-right mx-3"></i></a>
                 </div>
-                <div class="btn-group ms-1">
-                <a href="{{ url_for('home') }}" class="btn btn-sm btn-warning" id="todayLink">Hôm nay</a>
-                  <button type="button" class="btn btn-sm btn-warning dropdown-toggle dropdown-toggle-split"
-                  data-bs-toggle="dropdown" aria-expanded="false">
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end">
-                  <li><a class="dropdown-item disabled" href="#">Tuần này</a></li>
-                  <li><a class="dropdown-item disabled" href="#">Tuần trước</a></li>
-                  <li><a class="dropdown-item disabled" href="#">Tháng này</a></li>
-                  <li><a class="dropdown-item disabled" href="#">Tháng trước</a></li>
-                  <li>
-                    <hr class="dropdown-divider">
-                  </li>
-                  <li><a class="dropdown-item disabled" href="#">Tùy chỉnh</a></li>
-                </ul>
-              </div>
+                <a href="{{ url_for('home') }}" class="btn btn-sm btn-warning ms-1" id="todayLink">Hôm nay</a>
+    
             </div>
           </div>
         </div>

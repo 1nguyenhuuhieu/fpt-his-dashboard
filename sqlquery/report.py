@@ -82,7 +82,7 @@ def patient_info(tiepnhan_id, cursor):
 
     try:
         q = cursor.execute(query, tiepnhan_id).fetchone()
-        q.ThoiGianXacNhan = q.ThoiGianXacNhan.strftime('%H:%M %d/%m/%Y')
+        q.ThoiGianXacNhan = q.ThoiGianXacNhan.strftime('%d/%m/%Y %H:%M')
         q.total_money = f'{int(q.total_money):,}'
         q.bhyt = f'{int(q.bhyt):,}'
         q.bntt = f'{int(q.bntt):,}'

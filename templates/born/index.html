@@ -4,11 +4,19 @@
 {% endblock %}
 {% block content %}
 
+<div class="row">
+    <div class="col-12">
+        <a href="#" class="btn btn-sm btn-primary" id="thisYear">Trong năm</a>
+    </div>
+</div>
+
 {% include 'include/table.html' %}
 
 <script>
     const urlGenerator = '/born/';
     const todayURL = "{{ url_for('born') }}";
+    const thisYearLink = document.getElementById("thisYear");
+    thisYearLink.href = window.location.origin + urlGenerator + 'thisyear';
 </script>
 
 {% endblock %}
