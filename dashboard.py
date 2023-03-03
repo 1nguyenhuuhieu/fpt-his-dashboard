@@ -1583,9 +1583,35 @@ def patient_detail(mayte):
     cnxn.close()
     return render_template('patient/detail.html', value=context, active='patient')
 
+
+# Trang danh sách báo cáo
+@app.route('/report/<string:day_query>')
+@app.route('/report')
+@register_breadcrumb(app, '..report', 'Danh sách báo cáo')
+def report(day_query=None):
+
+    cnxn = get_db()
+    cursor = cnxn.cursor()
+    day_dict = get_day(day_query)
+    today = day_dict['today']
+    card = []
+    card1 = ['Doanh thu theo từng mục', 'Mẫu báo cáo 79 của BHYT', 'Chi tiết doanh thu từng mục: Tiền CĐHA, Tiền Xét nghiệm, Tiền Thuốc, Tiền Phẫu thuật, Tiền Khám, Tiền Giường', 'report_79']
+
+    card.append(card1)
+
+    today = today.strftime("%Y-%m-%d")
+    context = {
+        'today': today,
+        'card': card
+
+    }
+    cnxn.close()
+    return render_template('report/index.html', value=context, active='report')
+
 # Baso caso 79 
-@app.route('/report-79/<string:day_query>')
-@app.route('/report-79')
+@app.route('/report/79/<string:day_query>')
+@app.route('/report/79')
+@register_breadcrumb(app, '..report.report-79', 'Chi tiết doanh thu xác nhận')
 def report_79(day_query=None):
     cnxn = get_db()
     cursor = cnxn.cursor()
@@ -1662,7 +1688,7 @@ def report_79(day_query=None):
 
     }
 
-    return render_template('report/79.html', value=context)
+    return render_template('report/79.html', value=context, active='report')
 # API Thông tin của bệnh nhân
 @app.route('/patient-api/<string:mayte>')
 def patient_api_detail(mayte):
