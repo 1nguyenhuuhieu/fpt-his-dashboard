@@ -33,7 +33,13 @@
                                 <hr>
                                 {% for title, money in value.money_card_body %}
                                 <div class="card-text d-flex justify-content-between">
-                                   <a href="" class="text-decoration-none" >{{ title }}</a>
+                                   <a href="
+                                   {% if title == 'Dịch vụ' %}
+                                   {{ url_for('service', day_query=value.today) }}
+                                   {% else %}
+                                   {{ url_for('medicine',day_query=value.today)}}
+                                   {% endif %}
+                                   " class="text-decoration-none text-dark" >{{ title }}<i class="fa-solid fa-caret-right ms-1"></i></a>
                                     <span class="fw-bold">{{ "{:,} đ".format(money) }}</span>
                                 </div>
                                 {% endfor %}

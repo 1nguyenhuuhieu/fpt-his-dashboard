@@ -192,3 +192,72 @@ def name_department(department_id, cursor):
     except:
         print("Lỗi query visited.name_department")
         return None 
+    
+
+
+# lượt khám theo khoa phòng và department_id
+def department_id_between(startday,enday, d_id,cursor):
+    if d_id == 23092310:
+        query = """
+                SELECT
+                NgayKham,
+                COALESCE(COUNT(KhamBenh.KhamBenh_Id),0) AS 'TongLuotKham'
+                FROM KhamBenh INNER JOIN nhh_department
+                ON KhamBenh.PhongBan_Id=nhh_department.PhongBan_Id
+                WHERE (NgayKham BETWEEN ? AND ?) AND (KhamBenh.PhongBan_Id = 2309 OR KhamBenh.PhongBan_Id = 2310)
+                GROUP BY 
+                NgayKham
+                ORDER BY NgayKham
+
+                """
+        try:
+            q = cursor.execute(query, startday,enday).fetchall()
+            for row in q:
+                row.NgayKham = row.NgayKham.strftime('%A %Y-%m-%d')
+            return q
+        except:
+            print("Lỗi query visited.department_id_between")
+            return None
+
+    elif d_id == 12442304:
+        query = """
+                SELECT
+                NgayKham,
+                COALESCE(COUNT(KhamBenh.KhamBenh_Id),0) AS 'TongLuotKham'
+                FROM KhamBenh INNER JOIN nhh_department
+                ON KhamBenh.PhongBan_Id=nhh_department.PhongBan_Id
+                WHERE (NgayKham BETWEEN ? AND ?) AND (KhamBenh.PhongBan_Id = 1244 OR KhamBenh.PhongBan_Id = 2304)
+                GROUP BY 
+                NgayKham
+                ORDER BY NgayKham
+
+                """
+        try:
+            q = cursor.execute(query, startday,enday).fetchall()
+            for row in q:
+                row.NgayKham = row.NgayKham.strftime('%A %Y-%m-%d')
+            return q
+        except:
+            print("Lỗi query visited.department_id_between")
+            return None
+
+    else:
+        query = """
+                SELECT
+                NgayKham,
+                COALESCE(COUNT(KhamBenh.KhamBenh_Id),0) AS 'TongLuotKham'
+                FROM KhamBenh INNER JOIN nhh_department
+                ON KhamBenh.PhongBan_Id=nhh_department.PhongBan_Id
+                WHERE (NgayKham BETWEEN ? AND ?) AND KhamBenh.PhongBan_Id = ?
+                GROUP BY 
+                NgayKham
+                ORDER BY NgayKham
+                """
+        try:
+            q = cursor.execute(query, startday,enday,d_id ).fetchall()
+            for row in q:
+                row.NgayKham = row.NgayKham.strftime('%A %Y-%m-%d')
+            return q
+        except:
+            print("Lỗi query visited.department_id_between")
+            return None      

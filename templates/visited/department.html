@@ -8,11 +8,46 @@
 {% endblock %}
 {% block content %}
 
+<div class="row mt-3">
+    <div class="col-lg-12">
+        <div class="bg-white rounded border shadow-sm p-2">
+            <div id="chart_div"></div>
+        </div>
+    </div>
+</div>
+
 {% include 'include/table.html' %}
 
 <script>
     const urlGenerator = '/visited/' + {{value.department_id}} + '/';
     const todayURL = "{{ url_for('visited_department', department_id=value.department_id) }}";
 
+</script>
+
+<!-- chart -->
+
+<script>
+      
+      google.charts.load('current', {packages: ['corechart', 'bar']});
+google.charts.setOnLoadCallback(drawBasic);
+
+function drawBasic() {
+    const data_chart = {{ value.visited_department_chart|tojson }}
+
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'Ngày');
+      data.addColumn('number', 'Lượt khám');
+
+      data.addRows(data_chart);
+
+      var options = {
+        title: 'Lượt khám bệnh 30 ngày gần nhất',
+      };
+
+      var chart = new google.visualization.ColumnChart(
+        document.getElementById('chart_div'));
+
+      chart.draw(data, options);
+    }
 </script>
 {% endblock %}

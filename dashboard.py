@@ -1479,6 +1479,9 @@ def visited_department(department_id, day_query=None):
     department_name = ''
     for d_id in department_id_list:
         department_name += (query_visited.name_department(d_id, cursor)) + ' - '
+    startday = today + timedelta(days=-30)
+    visited_department_chart = query_visited.department_id_between(startday, today, department_id, cursor)
+    visited_department_chart = convert_to_chart(visited_department_chart)
 
     today = today.strftime("%Y-%m-%d")
 
@@ -1487,7 +1490,8 @@ def visited_department(department_id, day_query=None):
         'list': list_patients,
         'table_column_title': table_column_title,
         'department_id': department_id,
-        'department_name': department_name
+        'department_name': department_name,
+        'visited_department_chart': visited_department_chart
     }
     cnxn.close()
     return render_template('visited/department.html', value=context, active='visited', order_column=0)
