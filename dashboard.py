@@ -1591,7 +1591,7 @@ def patient_detail(mayte):
 # Trang danh sách báo cáo
 @app.route('/report/<string:day_query>')
 @app.route('/report')
-@register_breadcrumb(app, '..report', 'Danh sách báo cáo')
+@register_breadcrumb(app, '..report', 'Báo cáo')
 def report(day_query=None):
 
     cnxn = get_db()

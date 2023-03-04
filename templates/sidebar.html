@@ -47,11 +47,21 @@
     </a>
       <ul class="nav flex-column mb-2">
         <li class="nav-item">
+          <a class="nav-link  {{ 'active' if active=='repor-dashboard'}}" href="{{ url_for('report_79', day_query=value.today)}}">
+            <span data-feather="file-text" class="align-text-bottom"></span>
+           Hoạt động khám chữa bệnh
+          </a>
+        </li>
+
+
+        <li class="nav-item">
           <a class="nav-link  {{ 'active' if active=='report'}}" href="{{ url_for('report_79', day_query=value.today)}}">
             <span data-feather="file-text" class="align-text-bottom"></span>
             Chi tiết xác nhận thanh toán
           </a>
         </li>
+
+        
 
       </ul>
       <!-- 

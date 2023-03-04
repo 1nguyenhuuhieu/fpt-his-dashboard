@@ -39,7 +39,7 @@
                                    {% else %}
                                    {{ url_for('medicine',day_query=value.today)}}
                                    {% endif %}
-                                   " class="text-decoration-none text-dark" >{{ title }}<i class="fa-solid fa-caret-right ms-1"></i></a>
+                                   " class="text-decoration-none " >{{ title }}<i class="fa-solid fa-caret-right ms-1"></i></a>
                                     <span class="fw-bold">{{ "{:,} đ".format(money) }}</span>
                                 </div>
                                 {% endfor %}
