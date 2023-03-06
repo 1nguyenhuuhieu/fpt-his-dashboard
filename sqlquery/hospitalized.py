@@ -245,6 +245,8 @@ def patients(day,cursor):
         """
     try:
         q = cursor.execute(query, day, tomorrow).fetchall()
+        for row in q:
+            row.ThoiGianVaoKhoa = row.ThoiGianVaoKhoa.strftime("%Y-%m-%d %H:%M")
 
         return q
     except:

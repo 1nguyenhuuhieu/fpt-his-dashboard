@@ -943,8 +943,6 @@ def patients(day_query=None):
     table_column_title = ['Thời gian vào khoa','Mã y tế',  'Số bệnh án', 'Tên bệnh nhân', 'Chẩn đoán trong khoa','Bác sĩ', 'Khoa']
 
     list_patients = query_hospitalized.patients(today, cursor)
-    list_patients = list([e1.strftime("%H:%M %d-%m-%Y"), e2,e3,e4,e5,e6,e7] for e1,e2,e3,e4,e5,e6,e7 in list_patients)
-
 
     chart = query_hospitalized.total_department(today, cursor)
     chart = list([i,j] for i,j in chart)
