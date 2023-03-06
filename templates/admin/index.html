@@ -10,6 +10,9 @@
 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
     Viết bài mới
   </button>
+
+  
+  
     </div>
     <div class="col-lg-12">
       
@@ -59,7 +62,18 @@
     tinymce.init({
   selector: 'textarea',
   plugins: 'image media link save'
+  
 });
+
+
+</script>
+
+<script>
+  // Prevent Bootstrap dialog from blocking focusin
+  document.addEventListener('focusin', (e) => {
+         if (e.target.closest(".tox-tinymce-aux, .moxman-window, .tam-assetmanager-root") !== null) {
+         e.stopImmediatePropagation();
+   }});
 </script>
 
 {% endblock %}
