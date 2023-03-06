@@ -299,7 +299,7 @@ def home(day_query=None):
         'recent_action_time': recent_action_time,
         'recent_action_tiepnhan_id': recent_action_tiepnhan_id,
         'recent_detail': recent_detail,
-        'posts': list_post
+        'posts': posts
     }
 
     cnxn.close()
