@@ -28,6 +28,12 @@ from flask import session
 from flask import request
 import sqlite3
 
+import re
+CLEANR = re.compile('<.*?>') 
+
+def cleanhtml(raw_html):
+  cleantext = re.sub(CLEANR, '', raw_html)
+  return cleantext
 
 
 # Kết nối database sql server
@@ -265,6 +271,16 @@ def home(day_query=None):
 
     recent_detail = query_confirmed.detail(recent_action_tiepnhan_id, cursor)
 
+    # tin tức
+    con_sqlite = sqlite3.connect("dashboard.db")
+    con_sqlite.row_factory = sqlite3.Row
+    cursor_sqlite = con_sqlite.cursor()
+
+    list_post = query_user.posts(cursor_sqlite)
+    posts = list([post[0], post[1], post[2], cleanhtml(post[3]), post[4] ] for post in list_post)
+
+    print(posts)
+
 
     # convert để hiện thị ở top filter
     today = today.strftime("%Y-%m-%d")
@@ -282,7 +298,8 @@ def home(day_query=None):
         'visited_in_department_chart': visited_in_department_chart,
         'recent_action_time': recent_action_time,
         'recent_action_tiepnhan_id': recent_action_tiepnhan_id,
-        'recent_detail': recent_detail
+        'recent_detail': recent_detail,
+        'posts': list_post
     }
 
     cnxn.close()
@@ -1425,43 +1442,17 @@ def service(day_query=None):
     return render_template('revenue/service.html', value=context, active='revenue', order_column=4)
 
 # Trang tin tức
-@app.route('/news/<string:day_query>')
 @app.route('/news')
 @register_breadcrumb(app, '..news', 'Thông tin công việc')
-def news(day_query=None):
-
-    cnxn = get_db()
-    cursor = cnxn.cursor()
-
-    day_dict = get_day(day_query)
-    today = day_dict['today']
-    yesterday = day_dict['yesterday']
-    mon_day = day_dict['mon_day']
-    last_week_monday = day_dict['last_week_monday']
-    last_week_sun_day = day_dict['last_week_sun_day']
-    twolast_week_monday = day_dict['twolast_week_monday']
-    twolast_week_sun_day = day_dict['twolast_week_sun_day']
-    first_month_day = day_dict['first_month_day']
-    last_first_month_day = day_dict['last_first_month_day']
-    last_end_month_day = day_dict['last_end_month_day']
-    first_year_day = day_dict['first_year_day']
-    last_first_year_day = day_dict['last_first_year_day']
-    end_last_year_day = day_dict['end_last_year_day']
-
-
-    table_column_title = ['Nội dung', 'Tên', 'Khoa/Phòng', 'Số lượt', 'Tổng doanh thu']
-
-    list_patients = query_revenue.services_type(today,'DV', cursor)
-
-    today = today.strftime("%Y-%m-%d")
-
-
+def news():
+    con = sqlite3.connect("dashboard.db")
+    con.row_factory = sqlite3.Row
+    cursor = con.cursor()
+    list_post = query_user.posts(cursor)
     context = {
-        'today': today,
-        'list': list_patients,
-        'table_column_title': table_column_title,
+        'posts': list_post
     }
-    cnxn.close()
+    con.close()
     return render_template('news/index.html', value=context, active='news', order_column=4)
 
 # Trang bệnh nhân khám bệnh theo từng khoa
@@ -1720,7 +1711,7 @@ def user_login():
         login_user = query_user.login_user(user, pwd, cursor)
         if login_user:
             session['username'] = request.form['username']
-            return redirect(url_for('home'))
+            return redirect(url_for('admin'))
         else:
             flash('Đăng nhập thất bại')
 
@@ -1746,37 +1737,42 @@ def user_logout():
 @app.route('/admin', methods=['GET', 'POST'])
 @register_breadcrumb(app, '..admin', 'Quản trị')
 def admin():
-    con = sqlite3.connect("dashboard.db")
-    cursor = con.cursor()
-    sql = """
-    INSERT INTO post(time_created,title,body,username)
-              VALUES(?,?,?,?)
-    """
-    sql_posts = """
-    SELECT *
-    FROM post
+    if session.get('username'):
+        con = sqlite3.connect("dashboard.db")
+        con.row_factory = sqlite3.Row
+        cursor = con.cursor()
+        list_post = query_user.posts(cursor)
 
-    """
-    list_post = cursor.execute(sql_posts).fetchall()
+        if request.method == 'POST' and 'new_post' in request.form:
+            time_created = datetime.now()
+            title = request.form['titlePost']
+            body = request.form['bodyPost']
+            username = session['username']
 
-    if request.method == 'POST':
-        time_created = datetime.now()
-        title = request.form['titlePost']
-        body = request.form['bodyPost']
-        username = session['username']
+            is_posted = query_user.new_post(time_created,title,body,username, cursor)
+            if is_posted:
+                con.commit()
+                con.close()
+                return redirect(url_for('admin'))
+            
+        if request.method == 'POST' and 'delete_post' in request.form:
+            post_id = request.form['post_id']
+            is_deleted = query_user.delete_post(post_id, cursor)
+            if is_deleted:
+                con.commit()
+                con.close()
+                return redirect(url_for('admin'))
 
-        cursor.execute(sql,(time_created,title,body,username))
-        con.commit()
+        context = {
+            'list_post': list_post
 
 
-    context = {
-        'list_post': list_post
+        }
+        con.close()
 
-
-    }
-    con.close()
-
-    return render_template('admin/index.html', value=context)
+        return render_template('admin/index.html', value=context)
+    else:
+        return redirect(url_for('user_login'))
 
 
 # bài viết mới

@@ -4,23 +4,32 @@
 {% endblock %}
 {% block content %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.3.2/tinymce.min.js" integrity="sha512-0hADhKU8eEFSmp3+f9Yh8QmWpr6nTYLpN9Br7k2GTUQOT6reI2kdEOwkOORcaRZ+xW5ZL8W24OpBlsCOCqNaNQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-<div class="row justify-content-center">
-    <div class="col-lg-12">
+<div class="row">
+    <div class="col-lg-2">
         <!-- Button trigger modal -->
-<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-    Viết bài mới
-  </button>
-
-  
-  
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            <i class="fa-solid fa-pen-to-square me-2"></i>Bài viết mới
+            </button>
     </div>
-    <div class="col-lg-12">
+    <div class="col-lg-6">
       
       {% for post in value.list_post %}
+     <h6>{{ post.title }}</h6>
+      <p class="text-muted fst-italic">Đăng bởi {{post.username}} lúc {{ post.time_created}}</p>
 
-        {{ post.3|safe }}
-      </div>
+        {{ post.body|safe }}
+        <form method="post">
+          <input type="hidden" value="{{post.post_id}}" name="post_id">
+          <button type="submit" class="btn btn-danger" name="delete_post">Xóa</button>
+
+        </form>
+
+        {% if not loop.last %}
+        <hr>
+        {% endif %}
       {% endfor %}
+    </div>
+
     </div>
   
 </div>
@@ -38,18 +47,17 @@
         <form method="post">
           <div class="mb-3">
             <label for="exampleFormControlInput1" class="form-label">Tên bài viết</label>
-            <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com" name="titlePost">
+            <input type="text" class="form-control" id="exampleFormControlInput1"  name="titlePost">
           </div>
 
             <textarea id="default-editor"  name="bodyPost">
-                <p><em>Hello</em>, <span style="text-decoration: underline;"><strong>World!</strong></span></p>
               </textarea>
 
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="reset" class="btn btn-primary">xóa</button>
-          <button type="submit" class="btn btn-primary">Save changes</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+          <button type="reset" class="btn btn-primary">Xóa hết</button>
+          <button type="submit" class="btn btn-primary" name="new_post">Lưa bài viết</button>
         </div>
       </form>
 
@@ -61,7 +69,10 @@
 <script>
     tinymce.init({
   selector: 'textarea',
-  plugins: 'image media link save'
+  plugins: 'image media link save',
+  image_class_list: [
+    {title: 'Tự động chiều ngang', value: 'img-fluid border rounded shadow-sm m-1'},
+]
   
 });
 
