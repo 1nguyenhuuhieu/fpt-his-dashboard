@@ -12,3 +12,5 @@ CREATE TABLE `user` (
 	`password` VARCHAR,
     `email` VARCHAR
 );
+
+DROP TABLE `post`
