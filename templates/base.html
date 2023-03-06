@@ -26,7 +26,7 @@
 </head>
 <body class="bg-light">
   <header class="navbar sticky-top flex-md-nowrap p-0  shadow-sm  bg-warning">
-    <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 pt-2 pb-3 py-md-0 d-flex text-bg-warning m-0" href="{{ url_for('home', day_query=value.today) }}">
+    <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 pt-2 pb-3 py-md-0 d-flex text-bg-warning m-0" href="{% if value.today %}{{ url_for('home', day_query=value.today) }} {% else %}{{ url_for('home') }} {% endif %}">
       <img src="{{ url_for('static', filename='imgs/logo.png')}}" height="30px" alt="">
       <span class="fw-bold  ms-2">TTYT Anh Sơn</span>
     </a>
@@ -54,9 +54,9 @@
             <div class="">
               <div class="btn-group">
                 <a href="#" class="btn btn-sm btn-outline-secondary" id="yesterdayLink"><i
-                    class="fa-solid fa-caret-left mx-3"></i></a>
+                    class="fa-solid fa-caret-left mx-2"></i></a>
                 <a href="#" class="btn btn-sm btn-outline-secondary" id="tomorrowLink"><i
-                  class="fa-solid fa-caret-right mx-3"></i></a>
+                  class="fa-solid fa-caret-right mx-2"></i></a>
                 </div>
                 <a href="{{ url_for('home') }}" class="btn btn-sm btn-warning ms-1" id="todayLink">Hôm nay</a>
     
@@ -101,7 +101,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.2/moment.min.js"></script>
 
 
-
+{% if value.today %}
   <script>
     const dateToday = document.getElementById('date_today');
     const today = {{ value.today| tojson }};
@@ -110,6 +110,7 @@
     const dayLocale = event.toLocaleDateString('vi-VN', options)
     dateToday.textContent = dayLocale
 </script>
+{% endif %}
 
 </body>
 </html>

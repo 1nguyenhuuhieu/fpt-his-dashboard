@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block header %}
+<i class="fa-solid fa-user me-2"></i>{% block title %}Quản trị{% endblock %}
+{% endblock %}
+{% block content %}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.3.2/tinymce.min.js" integrity="sha512-0hADhKU8eEFSmp3+f9Yh8QmWpr6nTYLpN9Br7k2GTUQOT6reI2kdEOwkOORcaRZ+xW5ZL8W24OpBlsCOCqNaNQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+
+<div class="row justify-content-center">
+    <div class="col-lg-9">
+            <textarea id="default-editor">
+                <p><em>Hello</em>, <span style="text-decoration: underline;"><strong>World!</strong></span></p>
+              </textarea>
+
+    
+
+    
+
+
+  
+
+    </div>
+
+</div>
+
+<script>
+    tinymce.init({
+  selector: 'textarea',
+  plugins: 'image media link'
+});
+</script>
+
+{% endblock %}

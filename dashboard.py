@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask,redirect, url_for, flash
 from flask import render_template
 import pyodbc
 from datetime import date, datetime, timedelta
@@ -20,8 +20,14 @@ from sqlquery import surgery as query_surgery
 from sqlquery import born as query_born
 from sqlquery import patient as query_patient
 from sqlquery import report as query_report
+from sqlquery import user as query_user
 
 from flask_breadcrumbs import Breadcrumbs, register_breadcrumb
+
+from flask import session
+from flask import request
+import sqlite3
+
 
 
 # Kết nối database sql server
@@ -131,10 +137,15 @@ def get_department_id_list(department_id):
         return [1244,2304]
     else:
         return [department_id]
+    
 
 # -------------------------------------------------------------
 app = Flask(__name__)
+
+app.secret_key = 'edcac19b15911795fe4a7ece9e27613a8565d1f549cb7535f04c035bffc91315'
+
 Breadcrumbs(app=app)
+
 
 # register zip filter for pararell loop
 app.jinja_env.filters['zip'] = zip
@@ -1691,9 +1702,106 @@ def report_79(day_query=None):
     }
 
     return render_template('report/79.html', value=context, active='report')
+
+
+
+
+# USER
+# trang đăng nhập
+@app.route('/admin/login', methods=['GET', 'POST'])
+def user_login():
+    con = sqlite3.connect("dashboard.db")
+    cursor = con.cursor()
+
+    if request.method == "POST":
+        user = request.form['username']
+        pwd = request.form['password']
+
+        login_user = query_user.login_user(user, pwd, cursor)
+        if login_user:
+            session['username'] = request.form['username']
+            return redirect(url_for('home'))
+        else:
+            flash('Đăng nhập thất bại')
+
+
+
+    context = {
+
+
+    }
+
+    con.close()
+    return render_template('admin/login.html', value=context)
+
+
+# url đăng xuất
+@app.route('/admin/logout')
+def user_logout():
+    session.clear()
+    return redirect(url_for('home'))
+
+
+# trang quản trị
+@app.route('/admin', methods=['GET', 'POST'])
+@register_breadcrumb(app, '..admin', 'Quản trị')
+def admin():
+    con = sqlite3.connect("dashboard.db")
+    cursor = con.cursor()
+    sql = """
+    INSERT INTO post(time_created,title,body,username)
+              VALUES(?,?,?,?)
+    """
+    sql_posts = """
+    SELECT *
+    FROM post
+
+    """
+    list_post = cursor.execute(sql_posts).fetchall()
+
+    if request.method == 'POST':
+        time_created = datetime.now()
+        title = request.form['titlePost']
+        body = request.form['bodyPost']
+        username = session['username']
+
+        cursor.execute(sql,(time_created,title,body,username))
+        con.commit()
+
+
+    context = {
+        'list_post': list_post
+
+
+    }
+    con.close()
+
+    return render_template('admin/index.html', value=context)
+
+
+# bài viết mới
+@app.route('/admin/new-post', methods=['GET', 'POST'])
+@register_breadcrumb(app, '..admin.new_post', 'Bài viết mới')
+def new_post():
+    con = sqlite3.connect("dashboard.db")
+    cursor = con.cursor()
+
+
+    context = {
+
+
+    }
+    con.close()
+
+    return render_template('admin/new-post.html', value=context)
+
+
 # API Thông tin của bệnh nhân
 @app.route('/patient-api/<string:mayte>')
 def patient_api_detail(mayte):
+
+    print(session['is_authenticated'])
+
     cnxn = get_db()
     cursor = cnxn.cursor()
 

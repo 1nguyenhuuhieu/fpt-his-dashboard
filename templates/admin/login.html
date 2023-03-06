@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block header %}
+<i class="fa-solid fa-user me-2"></i>{% block title %}Quản trị{% endblock %}
+{% endblock %}
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-lg-4">
+        <div class="bg-white rounded border shadow-sm p-4">
+
+
+
+          <form method="post">
+            <div class="d-flex flex-column justify-content-center align-items-center">
+           
+            <img class="my-2 text-center" src="{{ url_for('static', filename='imgs/logo.png')}}" alt="" width="72">
+            <h1 class="h3 mb-3 fw-normal">Đăng nhập</h1>
+          </div>
+          
+            <div class="form-floating mb-2">
+              <input type="text" class="form-control " id="floatingInput"  name="username">
+              <label for="floatingInput">Tên đăng nhập</label>
+            </div>
+            <div class="form-floating">
+              <input type="password" class="form-control" id="floatingPassword"  name="password">
+              <label for="floatingPassword">Mật khẩu</label>
+            </div>
+            <button class="w-100 btn btn-primary mt-3" type="submit">Đăng nhập</button>
+      
+          </form>
+
+          {% with messages = get_flashed_messages() %}
+          {% if messages %}
+          
+            {% for message in messages %}
+            <div class="alert alert-danger mt-3" role="alert">
+              {{ message }}
+            </div>
+            {% endfor %}
+           
+          {% endif %}
+        {% endwith %}
+        
+        
+    </div>
+</div>
+</div>
+
+{% endblock %}
+
