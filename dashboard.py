@@ -1916,6 +1916,24 @@ def new_post():
     return render_template('admin/new-post.html', value=context)
 
 
+
+# Trang danh bạ
+@app.route('/addressbook')
+@register_breadcrumb(app, '..addressbook', 'Danh bạ nhân viên')
+def addressbook():
+
+    cnxn = get_db()
+    cursor = cnxn.cursor()
+    day_dict = get_day(None)
+    today = day_dict['today']
+   
+    today = today.strftime("%Y-%m-%d")
+    context = {
+    }
+    cnxn.close()
+    return render_template('user/addressbook.html', value=context, active='addressbook')
+
+
 # API Thông tin của bệnh nhân
 @app.route('/patient-api/<string:mayte>')
 def patient_api_detail(mayte):
