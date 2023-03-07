@@ -12,14 +12,14 @@ def login_user(user, pwd, cursor):
         print("Lỗi sql login user")
         return None
     
-def new_post(time_created,title,body,username, cursor):
+def new_post(time_created,title,body,username, plain_text,cursor):
     sql = """
-    INSERT INTO post(time_created,title,body,username)
-              VALUES(?,?,?,?)
+    INSERT INTO post(time_created,title,body,username,plain_text)
+              VALUES(?,?,?,?,?)
     """
 
     try:
-        q = cursor.execute(sql, (time_created,title,body,username))
+        q = cursor.execute(sql, (time_created,title,body,username,plain_text))
         return True
     except:
         print("Lỗi sql new post")

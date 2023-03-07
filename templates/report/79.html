@@ -17,6 +17,29 @@
     </div>
 </div>
 
+<div class="row mt-3">
+  <div class="col-12">
+    <form method="post">
+      <div class="d-flex align-items-end">
+        <div class="me-2">
+          <label for="exampleFormControlInput1" class="form-label">Từ ngày</label>
+          <input type="date" class="form-control" id="exampleFormControlInput1" name="start_date">
+        </div>
+        <div class="me-4">
+          <label for="exampleFormControlInput2" class="form-label">Đến ngày</label>
+          <input type="date" class="form-control" id="exampleFormControlInput2" name="end_date">
+          
+        </div>
+        <button type="submit" class="btn btn-primary h-100" name="filter_date"><i class="fa-solid fa-magnifying-glass me-2"></i>Lấy dữ liệu</button>
+        <button type="submit" class="btn btn-outline-primary h-100 ms-2" name="export_excel"><i class="fa-solid fa-file-excel me-2"></i>Xuất dữ liệu excel theo báo cáo 79</button>
+
+
+      </div>
+
+    </form>
+  </div>
+</div>
+
 {% include 'include/table.html' %}
 
 <script>

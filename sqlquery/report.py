@@ -68,7 +68,7 @@ def patient_info(tiepnhan_id, cursor):
     SELECT DISTINCT XacNhanChiPhi.ThoiGianXacNhan, MaYTe,TiepNhan.SoBHYT,
     SUM(XacNhanChiPhiChiTiet.SoLuong*XacNhanChiPhiChiTiet.DonGiaDoanhThu) as 'total_money',
     SUM(XacNhanChiPhiChiTiet.SoLuong*XacNhanChiPhiChiTiet.DonGiaHoTroChiTra) as 'bhyt',
-    SUM(XacNhanChiPhiChiTiet.SoLuong*XacNhanChiPhiChiTiet.DonGiaThanhToan) as 'bntt'
+    (SUM(XacNhanChiPhiChiTiet.SoLuong*XacNhanChiPhiChiTiet.DonGiaDoanhThu) -  SUM(XacNhanChiPhiChiTiet.SoLuong*XacNhanChiPhiChiTiet.DonGiaHoTroChiTra)) as 'bntt'
     FROM TiepNhan
     INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan] as DM_BenhNhan
     ON DM_BenhNhan.BenhNhan_Id = TiepNhan.BenhNhan_Id
@@ -82,10 +82,10 @@ def patient_info(tiepnhan_id, cursor):
 
     try:
         q = cursor.execute(query, tiepnhan_id).fetchone()
-        q.ThoiGianXacNhan = q.ThoiGianXacNhan.strftime('%d/%m/%Y %H:%M')
-        q.total_money = f'{int(q.total_money):,}'
-        q.bhyt = f'{int(q.bhyt):,}'
-        q.bntt = f'{int(q.bntt):,}'
+        q.ThoiGianXacNhan = q.ThoiGianXacNhan.strftime('%Y/%m/%d %H:%M')
+        # q.total_money = f'{int(q.total_money):,}'
+        # q.bhyt = f'{int(q.bhyt):,}'
+        # q.bntt = f'{int(q.bntt):,}'
         return q
     except:
         print('Lỗi query report.patient_info')

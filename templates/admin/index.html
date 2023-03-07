@@ -42,25 +42,22 @@
           <h1 class="modal-title fs-5" id="exampleModalLabel">Bài viết mới</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-
         <div class="modal-body">
-        <form method="post">
+        <form method="post" >
           <div class="mb-3">
             <label for="exampleFormControlInput1" class="form-label">Tên bài viết</label>
-            <input type="text" class="form-control" id="exampleFormControlInput1"  name="titlePost">
+            <input type="text" class="form-control" id="exampleFormControlInput1"  name="titlePost" required>
           </div>
-
-            <textarea id="default-editor"  name="bodyPost">
+            <textarea id="default-editor" name="bodyPost" required>
               </textarea>
-
         </div>
+        <input type="hidden" id="plainTextPost" name="plain_text_input">
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
           <button type="reset" class="btn btn-primary">Xóa hết</button>
-          <button type="submit" class="btn btn-primary" name="new_post">Lưa bài viết</button>
+          <button type="submit" class="btn btn-primary" name="new_post" id="savePostBtn">Lưa bài viết</button>
         </div>
       </form>
-
       </div>
     </div>
   </div>
@@ -69,12 +66,26 @@
 <script>
     tinymce.init({
   selector: 'textarea',
+  setup: function(editor) {
+    editor.on('input', function(e) {
+      let plainText = tinyMCE.activeEditor.getBody().textContent;
+      let input_PlainText = document.getElementById('plainTextPost');
+      input_PlainText.value = plainText;
+    });
+  },
   plugins: 'image media link save',
   image_class_list: [
     {title: 'Tự động chiều ngang', value: 'img-fluid border rounded shadow-sm m-1'},
 ]
   
 });
+
+function updateTextContent(){
+  
+
+
+}
+
 
 
 </script>
@@ -85,6 +96,11 @@
          if (e.target.closest(".tox-tinymce-aux, .moxman-window, .tam-assetmanager-root") !== null) {
          e.stopImmediatePropagation();
    }});
+</script>
+<script>
+  const urlGenerator = '/news/';
+  const todayURL = "{{ url_for('news') }}";
+
 </script>
 
 {% endblock %}

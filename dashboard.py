@@ -45,19 +45,19 @@ def cleanhtml(raw_html):
 #     cnxn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER=' +
 #                           server+';DATABASE='+database+';UID='+username+';PWD=' + password)
 #     return cnxn
-# def get_db():
-#     server = '192.168.123.254'
-#     database = 'eHospital_NgheAn'
-#     username = 'sa'
-#     password = 'toanthang'
-#     cnxn = pyodbc.connect('DRIVER={SQL Server Native Client 11.0};SERVER=' +
-#                           server+';DATABASE='+database+';UID='+username+';PWD=' + password)
-#     return cnxn
-
 def get_db():
-    cnxn = pyodbc.connect(driver='{ODBC Driver 17 for SQL Server}', server='localhost', database='eHospital_NgheAn',               
-               trusted_connection='yes')
+    server = '192.168.123.254'
+    database = 'eHospital_NgheAn'
+    username = 'sa'
+    password = 'toanthang'
+    cnxn = pyodbc.connect('DRIVER={SQL Server Native Client 11.0};SERVER=' +
+                          server+';DATABASE='+database+';UID='+username+';PWD=' + password)
     return cnxn
+
+# def get_db():
+#     cnxn = pyodbc.connect(driver='{ODBC Driver 17 for SQL Server}', server='localhost', database='eHospital_NgheAn',               
+#                trusted_connection='yes')
+#     return cnxn
 
 def get_change(current, previous):
     if not current:
@@ -277,11 +277,6 @@ def home(day_query=None):
     cursor_sqlite = con_sqlite.cursor()
 
     list_post = query_user.posts(cursor_sqlite)
-    posts = list([post[0], post[1], post[2], cleanhtml(post[3]), post[4] ] for post in list_post)
-
-    print(posts)
-
-
     # convert để hiện thị ở top filter
     today = today.strftime("%Y-%m-%d")
 
@@ -299,7 +294,7 @@ def home(day_query=None):
         'recent_action_time': recent_action_time,
         'recent_action_tiepnhan_id': recent_action_tiepnhan_id,
         'recent_detail': recent_detail,
-        'posts': posts
+        'posts': list_post
     }
 
     cnxn.close()
@@ -1133,10 +1128,9 @@ def visited_patients(day_query=None):
     end_last_year_day = day_dict['end_last_year_day']
 
 
-    table_column_title = ['Thời gian khám', 'Mã y tế', 'Tên bệnh nhân', 'Chẩn đoán trong khoa','Bác sĩ', 'Khoa']
+    table_column_title = ['Thời gian khám', 'Mã y tế', 'Tên bệnh nhân', 'Số tiếp nhận','Chẩn đoán trong khoa','Bác sĩ', 'Khoa']
 
     list_patients = query_visited.patients(today, cursor)
-    list_patients = list([e1.strftime("%H:%M %d-%m-%Y"), e2,e3,e4,e5,e6] for e1,e2,e3,e4,e5,e6 in list_patients)
 
     chart = query_visited.department_day(today, cursor)
     chart = list([i,j] for i,j in chart)
@@ -1612,9 +1606,9 @@ def report(day_query=None):
     cnxn.close()
     return render_template('report/index.html', value=context, active='report')
 
-# Baso caso 79 
-@app.route('/report/79/<string:day_query>')
-@app.route('/report/79')
+# Báo cáo 79 
+@app.route('/report/79/<string:day_query>', methods=['GET', 'POST'])
+@app.route('/report/79', methods=['GET', 'POST'])
 @register_breadcrumb(app, '..report.report-79', 'Chi tiết doanh thu xác nhận')
 def report_79(day_query=None):
     cnxn = get_db()
@@ -1635,8 +1629,20 @@ def report_79(day_query=None):
     last_first_year_day = day_dict['last_first_year_day']
     end_last_year_day = day_dict['end_last_year_day']
 
+    if request.method == 'POST':
+        list_id = []
+        start_day = request.form['start_date']
+        start_day = datetime.strptime(start_day,'%Y-%m-%d')
+        end_day = request.form['end_date']
+        end_day = datetime.strptime(end_day,'%Y-%m-%d')
+        for n in range(int((end_day - start_day).days)):
+            day = start_day + timedelta(n)
+            list_id.extend(query_report.list_tiepnhan_id(day,cursor))
 
-    list_id = query_report.list_tiepnhan_id(today,cursor)
+
+    else:
+        list_id = query_report.list_tiepnhan_id(today,cursor)
+
     list_data = []
 
     for id in list_id:
@@ -1737,6 +1743,9 @@ def user_logout():
 @app.route('/admin', methods=['GET', 'POST'])
 @register_breadcrumb(app, '..admin', 'Quản trị')
 def admin():
+    day_dict = get_day(None)
+    today = day_dict['today']
+
     if session.get('username'):
         con = sqlite3.connect("dashboard.db")
         con.row_factory = sqlite3.Row
@@ -1744,15 +1753,15 @@ def admin():
         list_post = query_user.posts(cursor)
 
         if request.method == 'POST' and 'new_post' in request.form:
-            time_created = datetime.now()
+            time_created = datetime.now().strftime('%H:%M %d/%m/%Y')
             title = request.form['titlePost']
             body = request.form['bodyPost']
             username = session['username']
+            plain_text = request.form['plain_text_input']
 
-            is_posted = query_user.new_post(time_created,title,body,username, cursor)
+            is_posted = query_user.new_post(time_created,title,body,username, plain_text,cursor)
             if is_posted:
                 con.commit()
-                con.close()
                 return redirect(url_for('admin'))
             
         if request.method == 'POST' and 'delete_post' in request.form:
@@ -1760,13 +1769,12 @@ def admin():
             is_deleted = query_user.delete_post(post_id, cursor)
             if is_deleted:
                 con.commit()
-                con.close()
                 return redirect(url_for('admin'))
-
+            
+        today = today.strftime("%Y-%m-%d")
         context = {
+            'today': today,
             'list_post': list_post
-
-
         }
         con.close()
 
@@ -1795,9 +1803,6 @@ def new_post():
 # API Thông tin của bệnh nhân
 @app.route('/patient-api/<string:mayte>')
 def patient_api_detail(mayte):
-
-    print(session['is_authenticated'])
-
     cnxn = get_db()
     cursor = cnxn.cursor()
 

@@ -17,9 +17,17 @@
                 <p class="mb-0 fw-semibold">{{ post.title }}</p>
                 <p class="text-muted mb-0">
 
-                   {{ post.body|truncate(150, True)}}</p>
+                   {{ post.plain_text|truncate(150, True)}}</p>
             </div>
+            <div class="d-flex flex-column align-items-end">
+                <span class="text-muted">
+                {{ post.username }}
+                    
+                </span>
             <small class="opacity-50 text-nowrap">{{ post.time_created }}</small>
+
+
+            </div>
         </div>
     </a>
     {% endfor %}
