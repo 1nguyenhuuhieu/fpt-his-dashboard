@@ -15,6 +15,25 @@ def total_day(day, cursor):
     except:
         print('Lỗi query total_day')
         return 0
+    
+# Thống kê tiền doanh thu trong 1 ngày
+def total_bhyt_day(day, cursor):
+    try:
+        q = cursor.execute(
+            """
+            SELECT COALESCE(SUM(SoLuong*DonGiaHoTro),0)
+            FROM XacNhanChiPhi
+            INNER JOIN XacNhanChiPhiChiTiet
+            ON XacNhanChiPhi.XacNhanChiPhi_Id=XacNhanChiPhiChiTiet.XacNhanChiPhi_Id
+            WHERE NgayXacNhan=?
+            """, day
+        ).fetchone()[0]
+
+        return int(q)
+    except:
+        print('Lỗi query total_bhyt_day')
+        return 0
+
 
 # Tổng doanh thu dược trong ngày theo phân nhóm: (DV= Dịch vụ, DU = DƯợc)
 def service_medicine_day(day, phannhom ,cursor):

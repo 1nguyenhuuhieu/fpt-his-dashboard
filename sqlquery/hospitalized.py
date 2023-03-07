@@ -73,6 +73,29 @@ def total_department(day, cursor):
         print("Lỗi query hospitalized.total_department")
         return None
     
+# Số lượng bệnh nhân nội trú tại khoa
+def bed_department(day,department_id, cursor):
+    tomorrow = day + timedelta(days=1)
+
+    try:
+        q = cursor.execute(
+        """
+        SELECT COALESCE(COUNT(BenhAn.BenhAn_Id),0) AS 'count'
+        FROM nhh_department
+        INNER JOIN BenhAn
+        ON BenhAn.KhoaVao_Id = nhh_department.PhongBan_Id
+        WHERE (NgayRaVien IS NULL
+        OR NgayRaVien > ?)
+        AND NgayVaoVien < ?
+        AND BenhAn.KhoaVao_Id = ?
+        """, day, tomorrow, department_id
+        ).fetchone()[0]
+
+        return q
+    except:
+        print("Lỗi query hospitalized.bed_department")
+        return None
+    
 
 # Số lượng bệnh nhân nội trú từng khoa
 def total_department_id(day, cursor):
