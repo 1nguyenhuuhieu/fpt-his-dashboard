@@ -28,6 +28,8 @@ from flask import session
 from flask import request
 import sqlite3
 
+import pandas as pd
+
 
 # Kết nối database sql server
 # def get_db():
@@ -1926,9 +1928,12 @@ def addressbook():
     cursor = cnxn.cursor()
     day_dict = get_day(None)
     today = day_dict['today']
-   
+    address_book = pd.read_excel('static/document/addressbook.xlsx')
+    address_book = address_book.values.tolist()
+    
     today = today.strftime("%Y-%m-%d")
     context = {
+        'address_book': address_book
     }
     cnxn.close()
     return render_template('user/addressbook.html', value=context, active='addressbook')

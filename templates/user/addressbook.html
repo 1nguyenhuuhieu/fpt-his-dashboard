@@ -1,11 +1,67 @@
 {% extends 'base.html' %}
 {% block header %}
-<i class="fa-solid fa-kit-medical me-2"></i>{% block title %}Phẫu thuật, thủ thuật{% endblock %}
+<i class="fa-solid fa-address-book me-2"></i>{% block title %}Danh bạ nhân viên{% endblock %}
 {% endblock %}
 {% block content %}
-<h1> danh bạ</h1>
+<div class="p-3 border mt-3 rounded bg-white shadow-sm table-responsive  ">
+
+    <table id="myTable" class="table table-striped bg-white " style="width:100%">
+        <thead>
+            <tr>
+                <th>Họ và tên</th>
+                <th>Số điện thoại</th>
+                <th>Email</th>
+                <th>Khoa/Phòng</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in value.address_book %}
+            <tr>
+                <td>{{ row.0 }}</td>
+                <td> <a href="tel:+84{{ row.1 }}" class="btn btn-sm btn-primary"><i class="fa-solid fa-phone me-2"></i>0{{ row.1 }}</a> </td>
+                <td> <a href="mailto:{{ row.2 }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-envelope me-2"></i>{{ row.2 }}</a></td>
+                <td>{{ row.3 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
 <script>
     const urlGenerator = '/surgery/';
     const todayURL = "{{ url_for('surgery') }}";
 </script>
+
+<script>
+  
+    $(document).ready(function () {
+      // Create DataTable
+      var table = $('#myTable').DataTable({
+          dom: 'Bfrtip',
+          pagingType: 'full_numbers',
+          order: [[3, 'asc']],
+          bPaginate: false,
+          buttons: [
+          'searchPanes','copy', 'csv', 'excel', 'pdf', 'print'
+          ],
+  
+      });
+  
+      });
+  </script>
+
+  
+<script src="https://cdn.datatables.net/buttons/2.3.4/js/dataTables.buttons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.4/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/2.3.4/js/buttons.print.min.js"></script>
+
+<script src="https://cdn.datatables.net/searchpanes/2.1.1/js/dataTables.searchPanes.min.js"></script>
+<script src="https://cdn.datatables.net/select/1.6.0/js/dataTables.select.min.js"></script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://cdn.datatables.net/plug-ins/1.13.2/api/sum().js"></script>
+
+  
 {% endblock %}
