@@ -45,19 +45,19 @@ def cleanhtml(raw_html):
 #     cnxn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER=' +
 #                           server+';DATABASE='+database+';UID='+username+';PWD=' + password)
 #     return cnxn
-def get_db():
-    server = '192.168.123.254'
-    database = 'eHospital_NgheAn'
-    username = 'sa'
-    password = 'toanthang'
-    cnxn = pyodbc.connect('DRIVER={SQL Server Native Client 11.0};SERVER=' +
-                          server+';DATABASE='+database+';UID='+username+';PWD=' + password)
-    return cnxn
-
 # def get_db():
-#     cnxn = pyodbc.connect(driver='{ODBC Driver 17 for SQL Server}', server='localhost', database='eHospital_NgheAn',               
-#                trusted_connection='yes')
+#     server = '192.168.123.254'
+#     database = 'eHospital_NgheAn'
+#     username = 'sa'
+#     password = 'toanthang'
+#     cnxn = pyodbc.connect('DRIVER={SQL Server Native Client 11.0};SERVER=' +
+#                           server+';DATABASE='+database+';UID='+username+';PWD=' + password)
 #     return cnxn
+
+def get_db():
+    cnxn = pyodbc.connect(driver='{ODBC Driver 17 for SQL Server}', server='localhost', database='eHospital_NgheAn',               
+               trusted_connection='yes')
+    return cnxn
 
 def get_change(current, previous):
     if not current:
@@ -790,6 +790,56 @@ def hospitalized(day_query=None):
     last_30_day_in_hostpital_chart = query_hospitalized.in_betweenday(last_50_day, today, cursor)
     last_30_day_in_hostpital_chart = convert_to_chart_date(last_30_day_in_hostpital_chart)
 
+
+    total_bed = {
+        'TTYT Anh Sơn': (200,72,272),
+        'Khoa Ngoại tổng hợp': (44,8,52),
+        'Khoa Nội-Truyền nghiễm': (37,15,52),
+        'Khoa HSCC-Nhi': (44,10,54),
+        'Khoa Phụ Sản': (30,11,48),
+        'Liên chuyên khoa TMH-RHM-Mắt': (17,8,25),
+        'Khoa Đông Y&PHCN': (28,20,48)
+    }
+    # Tính công suất toàn viện trong ngày
+    today_real_bed = query_hospitalized.total_day(today, cursor)
+    total_percent = get_percent(today_real_bed, total_bed['TTYT Anh Sơn'][2])
+    ttyt = ('TTYT Anh Sơn', today_real_bed, total_bed['TTYT Anh Sơn'][2], total_percent )
+
+
+    # công suất khoa hscc
+    hscc_real_bed = query_hospitalized.bed_department(today,1228,cursor)
+    hscc_percent = get_percent(hscc_real_bed, total_bed['Khoa HSCC-Nhi'][2])
+    hscc = ('Khoa HSCC-Nhi', hscc_real_bed, total_bed['Khoa HSCC-Nhi'][2], hscc_percent )
+    
+    # công suất khoa ngoại
+    ngoai_real_bed = query_hospitalized.bed_department(today,1219,cursor)
+    ngoai_percent = get_percent(ngoai_real_bed, total_bed['Khoa Ngoại tổng hợp'][2])
+    ngoai = ('Khoa Ngoại tổng hợp', ngoai_real_bed, total_bed['Khoa Ngoại tổng hợp'][2], ngoai_percent )
+    
+    # công suất khoa nội
+    noi_real_bed = query_hospitalized.bed_department(today,1215,cursor)
+    noi_percent = get_percent(noi_real_bed, total_bed['Khoa Nội-Truyền nghiễm'][2])
+    noi = ('Khoa Nội-Truyền nghiễm', noi_real_bed, total_bed['Khoa Nội-Truyền nghiễm'][2], noi_percent )
+    
+    # công suất khoa yhct
+    yhct_real_bed = query_hospitalized.bed_department(today,1227,cursor)
+    yhct_percent = get_percent(yhct_real_bed, total_bed['Khoa Đông Y&PHCN'][2])
+    yhct = ('Khoa Đông Y&PHCN', yhct_real_bed, total_bed['Khoa Đông Y&PHCN'][2], yhct_percent )
+    
+    # công suất khoa sản
+    san_real_bed = query_hospitalized.bed_department(today,1218,cursor)
+    san_percent = get_percent(san_real_bed, total_bed['Khoa Phụ Sản'][2])
+    san = ('Khoa Phụ Sản', san_real_bed, total_bed['Khoa Phụ Sản'][2], san_percent )
+
+    # công suất khoa Liên chuyên khoa TMH-RHM-Mắt
+    lck_real_bed = query_hospitalized.bed_department(today,2385,cursor)
+    lck_percent = get_percent(lck_real_bed, total_bed['Liên chuyên khoa TMH-RHM-Mắt'][2])
+    lck = ('Liên chuyên khoa TMH-RHM-Mắt', lck_real_bed, total_bed['Liên chuyên khoa TMH-RHM-Mắt'][2], lck_percent )
+
+
+
+    bed_list = [ttyt,ngoai,noi, hscc, san, lck,  yhct]
+
     today = today.strftime("%Y-%m-%d")
     context = {
         'today': today,
@@ -802,7 +852,8 @@ def hospitalized(day_query=None):
         'last_30_day_chart': last_30_day_chart,
         'last_30_day_in_hostpital_chart': last_30_day_in_hostpital_chart,
         'recent_hospitalized_in_day': recent_hospitalized_in_day,
-        'last_patients': last_patients
+        'last_patients': last_patients,
+        'bed_list': bed_list
     }
 
     cnxn.close()
@@ -1528,15 +1579,7 @@ def hospitalized_department(department_id, day_query=None):
 @app.route('/hospitalized/bed')
 @register_breadcrumb(app, '..hospitalized.bed', 'Công suất giường bệnh')
 def hospitalized_bed(day_query=None):
-    total_bed = {
-        'TTYT Anh Sơn': (200,72,272),
-        'Khoa Ngoại tổng hợp': (44,8,52),
-        'Khoa Nội-Truyền nghiễm': (37,15,52),
-        'Khoa HSCC-Nhi': (44,10,54),
-        'Khoa Phụ Sản': (30,11,48),
-        'Liên chuyên khoa TMH-RHM-Mắt': (17,8,25),
-        'Khoa Đông Y&PHCN': (28,20,48)
-    }
+
     
     cnxn = get_db()
     cursor = cnxn.cursor()
@@ -1547,7 +1590,15 @@ def hospitalized_bed(day_query=None):
 
     # chart công suất toàn viện 30 ngày
 
-
+    total_bed = {
+        'TTYT Anh Sơn': (200,72,272),
+        'Khoa Ngoại tổng hợp': (44,8,52),
+        'Khoa Nội-Truyền nghiễm': (37,15,52),
+        'Khoa HSCC-Nhi': (44,10,54),
+        'Khoa Phụ Sản': (30,11,48),
+        'Liên chuyên khoa TMH-RHM-Mắt': (17,8,25),
+        'Khoa Đông Y&PHCN': (28,20,48)
+    }
     # Tính công suất toàn viện trong ngày
     today_real_bed = query_hospitalized.total_day(today, cursor)
     total_percent = get_percent(today_real_bed, total_bed['TTYT Anh Sơn'][2])

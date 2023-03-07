@@ -1,0 +1,41 @@
+<div class="table-responsive bg-white p-3 border shadow-sm rounded">
+    <div class="d-flex justify-content-between align-items-center px-1 mb-2">
+    <h6 class="p-0 m-0"><i class="fa-solid fa-bed-pulse me-2"></i>Công suất trong ngày</h6>
+    <a href="{{ url_for('static', filename='document/44_0001_20230110043948479470.pdf')}}" target="_blank" class="text-decoration-none">Xem quyết định<i class="fa-solid fa-up-right-from-square ms-2"></i></a>
+    </div>
+    <hr class="mx-1 my-1">
+<table class="table table-borderless table-sm bg-white">
+    <thead>
+      <tr>
+        <th scope="col">Khoa</th>
+        <th scope="col">Đang sử dụng</th>
+        <th scope="col">Thực kê</th>
+        <th scope="col">Công suất</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for bed in value.bed_list %}
+      <tr >
+        <th scope="row">{{ bed.0 }}</th>
+        <td>{{ bed.1 }}</td>
+        <td>{{ bed.2 }}</td>
+        <td>
+            <div class="d-flex justify-content-between align-items-center">
+                {% if bed.3.1 > 95 %}
+                <span class="fw-bolder text-danger">{{ bed.3.1 }}%</span> <i class="fa-solid fa-fire text-danger"></i>
+                {% elif bed.3.1 > 70 %}
+                <span class="fw-bolder text-success">{{ bed.3.1 }}%</span> <i class="fa-solid fa-fan text-success"></i>
+                {% else %}
+                <span class="fw-bolder text-muted">{{ bed.3.1 }}%</span><i class="fa-solid fa-snowflake text-muted"></i>
+
+                {% endif %}
+            </div>
+        </td>
+      </tr>
+ 
+      
+      {% endfor %}
+
+    </tbody>
+  </table>
+</div>
