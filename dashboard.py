@@ -28,13 +28,6 @@ from flask import session
 from flask import request
 import sqlite3
 
-import re
-CLEANR = re.compile('<.*?>') 
-
-def cleanhtml(raw_html):
-  cleantext = re.sub(CLEANR, '', raw_html)
-  return cleantext
-
 
 # Kết nối database sql server
 # def get_db():
