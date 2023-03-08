@@ -32,7 +32,7 @@
                             <div class="bg-primary-subtle rounded d-flex justify-content-between align-items-center px-3 py-2 my-2">
                             <div>
                                 <h6 class="name m-0">{{ person.2 }}  </h6>
-                                    <span class="m-0 text-muted"> {{ person.1 }}</span>
+                                    <span class="m-0 text-muted"> {% if person.3 == 'Nam' %} <i class="fa-solid fa-mars text-primary me-1"></i>{% else %}<i class="fa-solid fa-venus text-danger me-1"></i>{% endif%}{{ person.1 }}</span>
                 
                                       
                             </div>
