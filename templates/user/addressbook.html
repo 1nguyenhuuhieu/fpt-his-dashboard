@@ -7,38 +7,102 @@
 <div class="row justify-content-center">
     <div class="col-lg-12">
         <div id="users">
-            <div class="d-flex mb-3">
-                <div><input class="search form-control" placeholder="Search" type="search" /></div>
-                <button class="sort btn btn-primary ms-2" data-sort="name">
-                    Sắp xếp theo tên
-                </button>
-                <button class="sort btn btn-primary ms-2" data-sort="department">
-                    Sắp xếp theo khoa phòng
-                </button>
+            <div class="d-flex mb-2 flex-column flex-sm-row">
+                <div class="mb-2 mb-sm-0"><input class="search form-control form-control-sm" placeholder="Tìm danh bạ" type="search" />
+                </div>
+                <div>
+                    <button class="sort btn btn-sm btn-primary ms-0 ms-sm-4" data-sort="name">
+                        <i class="fa-solid fa-sort me-1"></i>Tên
+                    </button>
+                    <button class="sort btn btn-sm btn-primary ms-0 ms-sm-2" data-sort="department">
+                        <i class="fa-solid fa-sort me-1"></i>Khoa/phòng
+                    </button>
+
+                </div>
+
             </div>
             <ul class="list list-group">
 
                 {% for person in value.address_book %}
+                
                 <li class="list-group-item list-group-item-action">
                     <div class="row align-items-center">
                         <div class="col-lg-3">
-                            <h6 class="name m-0"> {{ person.0 }}</h6>
+                           <a href="#" class="text-decoration-none link-dark" data-bs-toggle="modal" data-bs-target="#contactModal{{loop.index}}"><h6 class="name m-0">{{ person.2 }}  </h6>
+                            <small class="m-0 text-muted"> {{ person.1 }}</small>
+        
+                        </a> 
+                              
                         </div>
                         <div class="col-lg-3 mt-2 mt-sm-0">
-                            <a href="tel:+84{{ person.1}}" class="btn btn-sm btn-warning"><i class="fa-solid fa-phone me-2"></i>0{{ person.1}}</a>
+                            <a href="tel:+84{{ person.1}}" class="btn btn-sm btn-warning"><i class="fa-solid fa-phone me-2"></i>0{{ person.5}}</a>
                         </div>
                         <div class="col-lg-3 text-truncate  mt-2 mt-sm-0">
-                            <a href="mailto:{{ person.2}}" class="text-decoration-none "><i class="fa-solid fa-envelope me-2"></i>{{ person.2}}</a>
+                            <a href="mailto:{{ person.2}}" class="text-decoration-none "><i class="fa-solid fa-envelope me-2"></i>{{ person.0}}</a>
 
                         </div>
                         <div class="col-lg-3  mt-2 mt-sm-0">
-                            <span class="department">{{ person.3}}</span>
+                            <span class="department">{{ person.7}}</span>
 
                         </div>
                     </div>
+
                 </li>
+
                 {% endfor %}
+
+
             </ul>
+
+            {% for person in value.address_book %}
+                <!-- Modal -->
+                <div class="modal fade" id="contactModal{{loop.index}}" tabindex="-1" aria-labelledby="exampleModalLabel{{loop.index}}" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h1 class="modal-title fs-5" id="exampleModalLabel{{loop.index}}">Chi tiết danh bạ</h1>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-4 fw-bolder">Tên</div>
+                                <div class="col-8"> <h6>{{ person.2 }}</h6> <span> {{ person.1 }} ({{ person.3}})</span></div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-4 fw-bolder">Ngày sinh</div>
+                                <div class="col-8"> <span> {{ person.4 }}</span></div>
+                            </div>
+                
+                            <div class="row mt-2">
+                                <div class="col-4 fw-bolder">Chuyên môn - Khoa phòng</div>
+                                <div class="col-8"> <span> {{ person.8 }} - {{person.7}}</span></div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-4 fw-bolder">Điện thoại</div>
+                                <div class="col-8"> <a href="tel:+84{{ person.5 }}" class="text-decoration-none">0{{ person.5 }}</a></div>
+                            </div>
+                
+                            <div class="row mt-2">
+                                <div class="col-4 fw-bolder">Email</div>
+                                <div class="col-8"> <a href="mailto:{{ person.0 }}" class="text-decoration-none">{{ person.0 }}</a></div>
+                            </div>
+                
+                
+                            <div class="row mt-2">
+                                <div class="col-4 fw-bolder">Địa chỉ</div>
+                                <div class="col-8"> <span> {{ person.6 }}</span></div>
+                            </div>
+                
+                
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+        {% endfor %}
+
         </div>
     </div>
     <script>
