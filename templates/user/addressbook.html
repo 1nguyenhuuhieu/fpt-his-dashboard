@@ -11,10 +11,10 @@
                 <div class="mb-2 mb-sm-0"><input class="search form-control rounded rounded-pill" placeholder="Tìm danh bạ" type="search" />
                 </div>
                 <div>
-                    <button class="sort btn btn-primary ms-0 ms-sm-4" data-sort="name">
+                    <button class="sort btn btn-outline-primary ms-0 ms-sm-4" data-sort="name">
                         <i class="fa-solid fa-sort me-1"></i>Tên
                     </button>
-                    <button class="sort btn  btn-primary ms-2 ms-sm-2" data-sort="department">
+                    <button class="sort btn  btn-outline-primary ms-2 ms-sm-2" data-sort="department">
                         <i class="fa-solid fa-sort me-1"></i>Khoa/phòng
                     </button>
 
@@ -32,12 +32,12 @@
                             <div class=" rounded d-flex justify-content-between align-items-center px-3 py-2 bg-primary-subtle shadow-sm">
                             <div>
                                 <h6 class="name m-0 d-none">{{ person.2 }}  </h6>
-                                    <h6 class="fullName m-0"> {{ person.1 }} </h6>
+                                    <h6 class="fullName m-0 "> {{ person.1 }} </h6>
                             
                                     <p class="m-0 "> 
                                         <small class="text-muted skill" >{{ person.8 }}</small>
                                     </p>
-                        <span class="department fs-7 fw-bolder">{{ person.7}}</span>
+                        <span class="department fw-semibold text-muted">{{ person.7}}</span>
                             </div>
                             <div class="d-flex flex-column justify-content-center align-items-center">
                             <img src="
@@ -72,7 +72,7 @@
 
                             </div>
                             <div class="mt-2">
-                            <a href="mailto:{{ person.2}}" class="btn btn-sm btn-primary rounded-pill "><i class="fa-solid fa-envelope me-2 fa-fw"></i>{{ person.0}}</a>
+                            <a href="mailto:{{ person.2}}" class="btn btn-sm btn-light border rounded-pill "><i class="fa-solid fa-envelope me-2 fa-fw"></i>{{ person.0}}</a>
 
                             </div>
                         </div>
