@@ -1943,20 +1943,17 @@ def detail_post(post_id):
 @register_breadcrumb(app, '..addressbook', 'Danh bạ nhân viên')
 def addressbook():
 
-    cnxn = get_db()
-    cursor = cnxn.cursor()
-    day_dict = get_day(None)
-    today = day_dict['today']
-    address_book = pd.read_excel('static/document/addressbook.xlsx')
-    address_book = address_book.values.tolist()
+    con = sqlite3.connect("dashboard.db")
+    con.row_factory = sqlite3.Row
+    cursor = con.cursor()
+
+    address_book = query_user.users(cursor)
     
-    today = today.strftime("%Y-%m-%d")
     context = {
-        'today': today,
         'address_book': address_book
     }
-    cnxn.close()
-    return render_template('user/addressbook.html', value=context, active='addressbook')
+    con.close()
+    return render_template('user/addressbook.html', value=context, active='addressbook', hidden_top_filter=True)
 
 
 # API Thông tin của bệnh nhân

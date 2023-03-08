@@ -62,3 +62,16 @@ def post(post_id, cursor):
     except:
         print("Lỗi sql post")
         return None  
+
+def users(cursor):
+    sql = """
+    SELECT *
+    FROM staff
+    ORDER BY name ASC
+    """
+    try:
+        q = cursor.execute(sql).fetchall()
+        return q
+    except:
+        print("Lỗi sql users")
+        return None  
