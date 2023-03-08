@@ -4,17 +4,17 @@
 {% endblock %}
 {% block content %}
 
-<div class="row justify-content-center">
-    <div class="col-lg-12">
+<div class="row  g-1 justify-content-center">
+    <div class="col-lg-7">
         <div id="users">
             <div class="d-flex mb-2 flex-column flex-sm-row">
-                <div class="mb-2 mb-sm-0"><input class="search form-control form-control-sm " placeholder="Tìm danh bạ" type="search" />
+                <div class="mb-2 mb-sm-0"><input class="search form-control rounded rounded-pill" placeholder="Tìm danh bạ" type="search" />
                 </div>
                 <div>
-                    <button class="sort btn btn-sm btn-primary ms-0 ms-sm-4" data-sort="name">
+                    <button class="sort btn btn-primary ms-0 ms-sm-4" data-sort="name">
                         <i class="fa-solid fa-sort me-1"></i>Tên
                     </button>
-                    <button class="sort btn btn-sm btn-primary ms-0 ms-sm-2" data-sort="department">
+                    <button class="sort btn  btn-primary ms-2 ms-sm-2" data-sort="department">
                         <i class="fa-solid fa-sort me-1"></i>Khoa/phòng
                     </button>
 
@@ -25,23 +25,39 @@
 
                 {% for person in value.address_book %}
                 
-                <li class="list-group-item list-group-item-action mb-3 rounded border shadow-sm">
+                <li class="list-group-item list-group-item-action mb-3 p-3 rounded border shadow-sm ">
                     <div class="row align-items-center ">
-                        <div class="col-lg-3 ">
+                        <div class="col-lg-6 ">
                             <a href="#" class="text-decoration-none link-dark" data-bs-toggle="modal" data-bs-target="#contactModal{{loop.index}}">
-                            <div class="bg-primary-subtle rounded d-flex justify-content-between align-items-center px-3 py-2 my-2">
+                            <div class=" rounded d-flex justify-content-between align-items-center px-3 py-2 bg-primary-subtle shadow-sm">
                             <div>
-                                <h6 class="name m-0">{{ person.2 }}  </h6>
-                                    <span class="m-0 text-muted"> {% if person.3 == 'Nam' %} <i class="fa-solid fa-mars text-primary me-1"></i>{% else %}<i class="fa-solid fa-venus text-danger me-1"></i>{% endif%}{{ person.1 }}</span>
-                                    
-                                    <p class="m-0"> 
-                                        <small class="text-muted" >{{ person.8 }}</small>
+                                <h6 class="name m-0 d-none">{{ person.2 }}  </h6>
+                                    <h6 class="fullName m-0"> {{ person.1 }} </h6>
+                            
+                                    <p class="m-0 "> 
+                                        <small class="text-muted skill" >{{ person.8 }}</small>
                                     </p>
-                
-                                      
+                        <span class="department fs-7 fw-bolder">{{ person.7}}</span>
+                            </div>
+                            <div class="d-flex flex-column justify-content-center align-items-center">
+                            <img src="
+
+                            {% if person.3 == 'Nam' %}
+                            https://www.citypng.com/public/uploads/preview/free-round-flat-male-portrait-avatar-user-icon-png-11639648873oplfof4loj.png
+                             {% else %} 
+                            https://w7.pngwing.com/pngs/193/660/png-transparent-computer-icons-woman-avatar-avatar-girl-thumbnail.png
+                             
+                             {% endif%}
+                            
+                            
+                            " alt="" class="img-fluid mb-1 rounded rounded-circle" style="width: 40px ;">
+
+
+
+                            <small class="text-primary">Chi tiết<i class="fa-solid fa-up-right-from-square ms-2"></i></small>
+
                             </div>
                            
-                            <small class="text-primary">Chi tiết<i class="fa-solid fa-up-right-from-square ms-2"></i></small>
                             
                             
                         
@@ -49,20 +65,20 @@
                         </div>
                     </a> 
                     </div>
-                    <div class="col-lg-3  mt-2 mt-sm-0">
-                        <span class="department fs-6"><i class="fa-solid fa-building-user fa-fw me-2"></i>{{ person.7}}</span>
+                    <div class="col text-truncate text-end  mt-2 mt-sm-0">
+                        <div class="d-flex flex-column">
+                            <div>
+                            <a href="tel:+84{{ person.5}}" class="btn btn-sm btn-warning rounded rounded-pill"><i class="fa-solid fa-phone me-2 fa-fw"></i>0{{ person.5}}</a>
+
+                            </div>
+                            <div class="mt-2">
+                            <a href="mailto:{{ person.2}}" class="btn btn-sm btn-primary rounded-pill "><i class="fa-solid fa-envelope me-2 fa-fw"></i>{{ person.0}}</a>
+
+                            </div>
+                        </div>
+
 
                     </div>
-
-                        
-                        <div class="col-lg-3 mt-2 mt-sm-0">
-                            <a href="tel:+84{{ person.5}}" class="btn btn-sm btn-warning rounded rounded-pill"><i class="fa-solid fa-phone me-2 fa-fw"></i>0{{ person.5}}</a>
-                        </div>
-                        <div class="col-lg-3 text-truncate  mt-2 mt-sm-0">
-                            <a href="mailto:{{ person.2}}" class="text-decoration-none "><i class="fa-solid fa-envelope me-2 fa-fw"></i>{{ person.0}}</a>
-
-                        </div>
-                
                     </div>
 
                 </li>
@@ -125,7 +141,7 @@
     </div>
     <script>
         var options = {
-            valueNames: ['name', 'phone', 'email', 'department']
+            valueNames: ['name', 'phone', 'email', 'department', 'fullName', 'skill']
         };
 
         var userList = new List('users', options);
