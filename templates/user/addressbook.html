@@ -28,21 +28,22 @@
                 <li class="list-group-item list-group-item-action mb-3 rounded border shadow-sm">
                     <div class="row align-items-center ">
                         <div class="col-lg-3 ">
+                            <a href="#" class="text-decoration-none link-dark" data-bs-toggle="modal" data-bs-target="#contactModal{{loop.index}}">
                             <div class="bg-primary-subtle rounded d-flex justify-content-between align-items-center px-3 py-2 my-2">
                             <div>
-                                <a href="#" class="text-decoration-none link-dark" data-bs-toggle="modal" data-bs-target="#contactModal{{loop.index}}"><h6 class="name m-0">{{ person.2 }}  </h6>
+                                <h6 class="name m-0">{{ person.2 }}  </h6>
                                     <span class="m-0 text-muted"> {{ person.1 }}</span>
                 
-                                </a> 
                                       
                             </div>
-                           <a href="#" class="text-decoration-none " data-bs-toggle="modal" data-bs-target="#contactModal{{loop.index}}">
-                            <small>Chi tiết<i class="fa-solid fa-up-right-from-square ms-2"></i></small>
+                           
+                            <small class="text-primary">Chi tiết<i class="fa-solid fa-up-right-from-square ms-2"></i></small>
                             
                             
-                        </a> 
+                        
                               
                         </div>
+                    </a> 
                     </div>
                     <div class="col-lg-3  mt-2 mt-sm-0">
                         <span class="department fs-6"><i class="fa-solid fa-building-user fa-fw me-2"></i>{{ person.7}}</span>
