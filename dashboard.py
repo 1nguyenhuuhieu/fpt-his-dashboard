@@ -1933,6 +1933,7 @@ def addressbook():
     
     today = today.strftime("%Y-%m-%d")
     context = {
+        'today': today,
         'address_book': address_book
     }
     cnxn.close()
