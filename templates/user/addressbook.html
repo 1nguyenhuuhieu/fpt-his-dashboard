@@ -8,7 +8,7 @@
     <div class="col-lg-12">
         <div id="users">
             <div class="d-flex mb-2 flex-column flex-sm-row">
-                <div class="mb-2 mb-sm-0"><input class="search form-control form-control-sm" placeholder="Tìm danh bạ" type="search" />
+                <div class="mb-2 mb-sm-0"><input class="search form-control form-control-sm " placeholder="Tìm danh bạ" type="search" />
                 </div>
                 <div>
                     <button class="sort btn btn-sm btn-primary ms-0 ms-sm-4" data-sort="name">
@@ -25,9 +25,10 @@
 
                 {% for person in value.address_book %}
                 
-                <li class="list-group-item list-group-item-action">
-                    <div class="row align-items-center">
-                        <div class="col-lg-3 d-flex justify-content-between align-items-center">
+                <li class="list-group-item list-group-item-action mb-3 rounded border">
+                    <div class="row align-items-center ">
+                        <div class="col-lg-3 ">
+                            <div class="bg-primary-subtle rounded d-flex justify-content-between align-items-center px-3 py-2 my-2">
                             <div>
                                 <a href="#" class="text-decoration-none link-dark" data-bs-toggle="modal" data-bs-target="#contactModal{{loop.index}}"><h6 class="name m-0">{{ person.2 }}  </h6>
                                     <span class="m-0 text-muted"> {{ person.1 }}</span>
@@ -42,17 +43,21 @@
                         </a> 
                               
                         </div>
+                    </div>
+                    <div class="col-lg-3  mt-2 mt-sm-0">
+                        <span class="department fs-6"><i class="fa-solid fa-building-user fa-fw me-2"></i>{{ person.7}}</span>
+
+                    </div>
+
+                        
                         <div class="col-lg-3 mt-2 mt-sm-0">
-                            <a href="tel:+84{{ person.1}}" class="btn btn-sm btn-warning"><i class="fa-solid fa-phone me-2"></i>0{{ person.5}}</a>
+                            <a href="tel:+84{{ person.1}}" class="btn btn-sm btn-warning rounded rounded-pill"><i class="fa-solid fa-phone me-2 fa-fw"></i>0{{ person.5}}</a>
                         </div>
                         <div class="col-lg-3 text-truncate  mt-2 mt-sm-0">
-                            <a href="mailto:{{ person.2}}" class="text-decoration-none "><i class="fa-solid fa-envelope me-2"></i>{{ person.0}}</a>
+                            <a href="mailto:{{ person.2}}" class="text-decoration-none "><i class="fa-solid fa-envelope me-2 fa-fw"></i>{{ person.0}}</a>
 
                         </div>
-                        <div class="col-lg-3  mt-2 mt-sm-0">
-                            <span class="department">{{ person.7}}</span>
-
-                        </div>
+                
                     </div>
 
                 </li>
