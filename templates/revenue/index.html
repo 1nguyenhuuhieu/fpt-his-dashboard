@@ -55,29 +55,31 @@
                     <div class="card shadow-sm h-100">
                         <div class="card-body">
                             <h6 class="card-subtitle"><i class="fa-solid fa-clipboard-check me-2 fa-fw"></i>Hoàn tất
-                                thanh toán</h6>
+                                thanh toán: {{ value.confirmed_total }} </h6>
                             <hr class="my-2">
                             <div class="row g-0">
                                 <div class="col-6 text-center border-end">
-                                    <h3 class="card-title">{{ value.confirmed_visited }}</h3>
-                                    <p class="text-muted card-text">Ngoại trú</p>
+                                    <h3 class="card-title m-0">{{ value.confirmed_visited }}</h3>
+                                    <p class="text-muted card-text m-0">Ngoại trú</p>
+                                    <span class="m-0 p-0 fw-semibold">{{ value.money_visited }} đ</span>
                                 </div>
                                 <div class="col-6 text-center">
-                                    <h3 class="card-title">{{ value.confirmed_hospital}}</h3>
-                                    <p class="text-muted card-text">Nội trú</p>
+                                    <h3 class="card-title m-0">{{ value.confirmed_hospital}}</h3>
+                                    <p class="text-muted card-text m-0">Nội trú</p>
+                                    <span class="m-0 p-0 fw-semibold">{{ value.money_hospital }} đ</span>
                                 </div>
                             </div>
-                            <hr>
+                            <hr class="my-2">
                             {% for title, number in value.visited_card_body %}
                             <div class="card-text d-flex justify-content-between">
                                 <span>{{ title }}</span>
-                                {% if loop.first %}
-                                <span class="fw-bold">{{ number }}</span>
-                                {% else %}
                                 <span class="fw-bold">{{ "{:,} đ".format(number) }}</span>
-                                {% endif %}
+                                
                             </div>
                             {% endfor %}
+                            <div class="progress mt-2" role="progressbar" aria-label="Example with label" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+                                <div class="progress-bar text-bg-success" style="width: {{ value.percent_thanhtoan }}%">Bảo hiểm thanh toán {{ value.percent_thanhtoan }}%</div>
+                              </div>
                             <hr class="mt-2">
                             <div id="chart3"></div>
                         </div>

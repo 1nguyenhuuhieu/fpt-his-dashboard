@@ -40,20 +40,21 @@ import pandas as pd
 #     cnxn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER=' +
 #                           server+';DATABASE='+database+';UID='+username+';PWD=' + password)
 #     return cnxn
+server_location = 'work'
 def get_db():
-    server = '192.168.123.254'
-    database = 'eHospital_NgheAn'
-    username = 'sa'
-    password = 'toanthang'
-    cnxn = pyodbc.connect('DRIVER={SQL Server Native Client 11.0};SERVER=' +
-                          server+';DATABASE='+database+';UID='+username+';PWD=' + password)
-    return cnxn
+    if server_location == 'home':
+        cnxn = pyodbc.connect(driver='{ODBC Driver 17 for SQL Server}', server='localhost', database='eHospital_NgheAn',               
+               trusted_connection='yes')
+        return cnxn
+    else:
+        server = '192.168.123.254'
+        database = 'eHospital_NgheAn'
+        username = 'sa'
+        password = 'toanthang'
+        cnxn = pyodbc.connect('DRIVER={SQL Server Native Client 11.0};SERVER=' +
+                            server+';DATABASE='+database+';UID='+username+';PWD=' + password)
+        return cnxn
 
-
-# def get_db():
-#     cnxn = pyodbc.connect(driver='{ODBC Driver 17 for SQL Server}', server='localhost', database='eHospital_NgheAn',               
-#                trusted_connection='yes')
-#     return cnxn
 
 total_bed = {
         'TTYT Anh Sơn': (200,72,272),
@@ -403,17 +404,21 @@ def revenue(day_query=None):
     confirmed_total = confirmed_visited + confirmed_hospital
 
     money_visited = query_revenue.visited_hospitalized_day(today, 'NgoaiTru', cursor)
+    money_visited_c = f'{money_visited:,}'
     money_hospital = query_revenue.visited_hospitalized_day(today, 'NoiTru', cursor)
-
+    money_hospital_c = f'{money_hospital:,}'
     money_card_body = query_revenue.tenphanhom_service_medicine_day(today, cursor)
     money_card_body = convert_to_chart(money_card_body)
     money_card_body_chart = money_card_body.copy()
     money_card_body_chart.insert(0, ['Mục', 'Số tiền'])
+
+    bhtt = query_revenue.total_bhyt_day(today, cursor)
+    bntt = query_revenue.total_bntt_day(today, cursor)
+    percent_thanhtoan = get_percent(bhtt,today_money)[1]
  
     visited_card_body = [
-        ['Tổng số', confirmed_total],
-        ['Ngoại trú', money_visited],
-        ['Nội trú', money_hospital],
+        ['Bảo hiểm thanh toán', bhtt],
+        ['Bệnh nhân thanh toán', bntt],
     ]
 
     c_time = time()
@@ -517,7 +522,12 @@ def revenue(day_query=None):
         'last_update_time': last_update_time,
         'last_confirmed': last_confirmed,
         'recent_confirmed_in_day': recent_confirmed_in_day,
-        'top10_doanhthu_table': top10_doanhthu_table
+        'top10_doanhthu_table': top10_doanhthu_table,
+        'confirmed_total': confirmed_total,
+        'money_visited': money_visited_c,
+        'money_hospital': money_hospital_c,
+        'percent_thanhtoan': percent_thanhtoan
+
 
     }
     cnxn.close()
