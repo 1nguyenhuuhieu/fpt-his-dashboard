@@ -16,7 +16,7 @@ def total_day(day, cursor):
 # danh sách chi tiết ca phẫu thuật
 def list(day, cursor):
     query = """
-            SELECT BenhAnPhauThuat.ThoiGianKetThuc,MaYTe,TenBenhNhan,CanThiepPhauThuat, TenLoaiPhauThuat, TenPhongBan
+            SELECT BenhAnPhauThuat.ThoiGianKetThuc as time,MaYTe,TenBenhNhan,CanThiepPhauThuat, TenLoaiPhauThuat, TenPhongBan
             FROM BenhAnPhauThuat
             INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_PhongBan]
             ON BenhAnPhauThuat.PhongBanThucHien_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_PhongBan].PhongBan_Id
@@ -31,7 +31,7 @@ def list(day, cursor):
 
             UNION
 
-            SELECT BenhAnPhauThuat.ThoiGianKetThuc,MaYTe,TenBenhNhan,CanThiepPhauThuat, TenLoaiPhauThuat, TenPhongBan
+            SELECT BenhAnPhauThuat.ThoiGianKetThuc as time,MaYTe,TenBenhNhan,CanThiepPhauThuat, TenLoaiPhauThuat, TenPhongBan
             FROM BenhAnPhauThuat
             INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_PhongBan]
             ON BenhAnPhauThuat.PhongBanThucHien_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_PhongBan].PhongBan_Id
@@ -46,6 +46,8 @@ def list(day, cursor):
             """
     try:
         q = cursor.execute(query, day, day).fetchall()
+        for row in q:
+            row.time = row.time.strftime("%Y-%m-%d %H:%M")
         return q
     except:
         print("Lỗi query surgery.list")

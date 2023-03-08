@@ -1264,25 +1264,10 @@ def surgery_list(day_query=None):
 
     day_dict = get_day(day_query)
     today = day_dict['today']
-    yesterday = day_dict['yesterday']
-    mon_day = day_dict['mon_day']
-    last_week_monday = day_dict['last_week_monday']
-    last_week_sun_day = day_dict['last_week_sun_day']
-    twolast_week_monday = day_dict['twolast_week_monday']
-    twolast_week_sun_day = day_dict['twolast_week_sun_day']
-    first_month_day = day_dict['first_month_day']
-    last_first_month_day = day_dict['last_first_month_day']
-    last_end_month_day = day_dict['last_end_month_day']
-    first_year_day = day_dict['first_year_day']
-    last_first_year_day = day_dict['last_first_year_day']
-    end_last_year_day = day_dict['end_last_year_day']
-
 
     table_column_title = ['Thời gian kết thúc', 'Mã y tế', 'Tên bệnh nhân', 'Can thiệp','Loại', 'Nơi thực hiện']
 
     list_patients = query_surgery.list(today, cursor)
-    list_patients = list([e1.strftime("%H:%M %d-%m-%Y"), e2,e3,e4,e5,e6] for e1,e2,e3,e4,e5,e6 in list_patients)
-
     chart = query_visited.department_day(today, cursor)
     chart = list([i,j] for i,j in chart)
 
@@ -1757,7 +1742,6 @@ def report_79(day_query=None):
             day = start_day + timedelta(n)
             list_id.extend(query_report.list_tiepnhan_id(day,cursor))
 
-
     else:
         list_id = query_report.list_tiepnhan_id(today,cursor)
 
@@ -1792,14 +1776,14 @@ def report_79(day_query=None):
         list_data.append(t)
     
     table_column_title = ['Thời gian', 'Mã y tế', 'Mã thẻ BHYT', 'Tổng doanh thu', 'BHYT trả', 'BN trả',
-'Tiền CĐHA',
-'Tiền Giường',
-'Tiền Khám',
-'Tiền Phẫu thuật, thủ thuật',
-'Tiền thuốc',
-'Tiền vận chuyển, Oxy, Máu',
-'Tiền xét nghiệm']
-    
+                            'Tiền CĐHA',
+                            'Tiền Giường',
+                            'Tiền Khám',
+                            'Tiền Phẫu thuật, thủ thuật',
+                            'Tiền thuốc',
+                            'Tiền vận chuyển, Oxy, Máu',
+                            'Tiền xét nghiệm']
+                                
     total_service = query_report.total_service_money(first_year_day, today, cursor)
     total_service = convert_to_chart(total_service)
     total_service_chart = total_service.copy()
@@ -1818,9 +1802,6 @@ def report_79(day_query=None):
 
     return render_template('report/79.html', value=context, active='report')
 
-
-
-
 # USER
 # trang đăng nhập
 @app.route('/admin/login', methods=['GET', 'POST'])
@@ -1838,11 +1819,7 @@ def user_login():
             return redirect(url_for('admin'))
         else:
             flash('Đăng nhập thất bại')
-
-
-
     context = {
-
 
     }
 
