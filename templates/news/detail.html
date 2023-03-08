@@ -5,15 +5,8 @@
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-lg-6">
-
+        {{ value.post }}
     </div>
 </div>
-<script>
-    const urlGenerator = '/news/';
-    const todayURL = "{{ url_for('news') }}";
-</script>
-
-
-
 
 {% endblock %}

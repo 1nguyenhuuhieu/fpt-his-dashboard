@@ -49,3 +49,16 @@ def posts(cursor):
     except:
         print("Lỗi sql posts")
         return None
+    
+def post(post_id, cursor):
+    sql = """
+    SELECT *
+    FROM post
+    WHERE post_id = ?
+    """
+    try:
+        q = cursor.execute(sql, (post_id,)).fetchone()
+        return q
+    except:
+        print("Lỗi sql post")
+        return None  
