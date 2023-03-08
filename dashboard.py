@@ -1617,7 +1617,7 @@ def hospitalized_bed(day_query=None):
     chart_30_days = []
     # chart công suất toàn viện 30 ngày
     for n in range(31):
-        day = today + timedelta(n)
+        day = today - timedelta(n)
         today_real_bed = query_hospitalized.total_day(day, cursor)
         total_percent = get_percent(today_real_bed, total_bed['TTYT Anh Sơn'][2])
         percent = total_percent[1]
