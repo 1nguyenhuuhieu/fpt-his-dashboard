@@ -3,11 +3,38 @@
 <i class="fa-solid fa-truck-medical me-2"></i>{% block title %}Công suất giường bệnh{% endblock %}
 {% endblock %}
 {% block content %}
-<div class="row">
+
+<div class="row mt-3">
+    <div class="col-12">
+      <form method="post">
+        <div class="d-flex align-items-end">
+          <div class="me-2">
+            <label for="exampleFormControlInput1" class="form-label">Từ ngày</label>
+            <input type="date" class="form-control" id="exampleFormControlInput1" name="start_date">
+          </div>
+          <div class="me-4">
+            <label for="exampleFormControlInput2" class="form-label">Đến ngày</label>
+            <input type="date" class="form-control" id="exampleFormControlInput2" name="end_date">
+          </div>
+          <button type="submit" class="btn btn-primary h-100" name="filter_date"><i class="fa-solid fa-magnifying-glass me-2"></i>Xem</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+<div class="row mt-3">
     <div class="col-lg-6">
+    {% if value.filter_date %}
+    <p class="fw-semibold">Từ ngày {{ value.filter_date.0.strftime("%m/%d/%Y") }} đến ngày {{ value.filter_date.1.strftime("%m/%d/%Y") }}. Tổng {{ value.filter_date.2 }} ngày </p>
+    {% endif %}
 {% include 'hospitalized/bed_table.html'%}
     </div>
     <div class="col-lg-6">
+        <div class="bg-white p-2 rounded border shadow-sm">
+        <div id="chart_30_days"></div>
+
+        </div>
 
     </div>
 </div>
@@ -15,6 +42,30 @@
 <script>
     const urlGenerator = '/hospitalized/bed/';
     const todayURL = "{{ url_for('hospitalized_bed') }}";
+</script>
+
+<script>
+    google.charts.load('current', {packages: ['corechart', 'bar']});
+google.charts.setOnLoadCallback(drawBasic);
+
+function drawBasic() {
+
+      let data_chart = {{ value.chart_30_days|tojson }}
+      data_chart[0] = ['Element', 'Giường bệnh', { role: 'style' }]
+    //   data.addRows(data_chart);
+
+      var data = google.visualization.arrayToDataTable(data_chart);
+
+      var options = {
+        title: 'Công suất giường bệnh 30 ngày gần nhất',
+  
+      };
+
+      var chart = new google.visualization.ColumnChart(
+        document.getElementById('chart_30_days'));
+
+      chart.draw(data, options);
+    }
 </script>
 
 {% endblock %}
