@@ -15,8 +15,265 @@ def total_day(day, cursor):
         print('Lỗi query total_day')
         return 0
 
+# SQL query tổng doanh thu trong khoảng ngày
+def total_money_betweentime(startday, endday, cursor):
+    try:
+        q = cursor.execute(
+            """
+            SELECT
+            SUM(SoLuong*DonGiaDoanhThu)
+            FROM XacNhanChiPhi
+            INNER JOIN XacNhanChiPhiChiTiet
+            ON XacNhanChiPhi.XacNhanChiPhi_Id=XacNhanChiPhiChiTiet.XacNhanChiPhi_Id
+            WHERE ThoiGianXacNhan BETWEEN ? AND ?
+            """, startday, endday
+        ).fetchone()[0]
 
+        return f'{int(q):,}'
+    except:
+        print("Lỗi query revenue.total_money_betweenday")
+        return 0
+
+# SQL query tổng doanh thu trong khoảng ngày
+def bhtt_betweentime(startday, endday, cursor):
+    try:
+        q = cursor.execute(
+            """
+            SELECT
+            SUM(SoLuong*DonGiaHoTroChiTra)
+            FROM XacNhanChiPhi
+            INNER JOIN XacNhanChiPhiChiTiet
+            ON XacNhanChiPhi.XacNhanChiPhi_Id=XacNhanChiPhiChiTiet.XacNhanChiPhi_Id
+            WHERE ThoiGianXacNhan BETWEEN ? AND ?
+            """, startday, endday
+        ).fetchone()[0]
+
+        return f'{int(q):,}'
+    except:
+        print("Lỗi query revenue.bhtt_betweentime")
+        return 0
     
+# SQL query tổng doanh thu trong khoảng ngày
+def bntt_betweentime(startday, endday, cursor):
+    try:
+        q = cursor.execute(
+            """
+            SELECT
+            SUM(SoLuong*DonGiaThanhToan)
+            FROM XacNhanChiPhi
+            INNER JOIN XacNhanChiPhiChiTiet
+            ON XacNhanChiPhi.XacNhanChiPhi_Id=XacNhanChiPhiChiTiet.XacNhanChiPhi_Id
+            WHERE ThoiGianXacNhan BETWEEN ? AND ?
+            """, startday, endday
+        ).fetchone()[0]
+
+        return f'{int(q):,}'
+    except:
+        print("Lỗi query revenue.bntt_betweentime")
+        return 0
+
+# SQL query tổng doanh thu trong khoảng ngày
+def avg_money_betweentime(startday, endday, cursor):
+    try:
+        q = cursor.execute(
+            """
+        SELECT AVG(asset_sums)
+        FROM
+            (SELECT
+            SUM(SoLuong*DonGiaDoanhThu) AS asset_sums, NgayXacNhan
+            FROM XacNhanChiPhi
+            INNER JOIN XacNhanChiPhiChiTiet
+            ON XacNhanChiPhi.XacNhanChiPhi_Id=XacNhanChiPhiChiTiet.XacNhanChiPhi_Id
+            WHERE ThoiGianXacNhan BETWEEN ? AND ?
+            GROUP BY NgayXacNhan) as inner_query
+            """, startday, endday
+        ).fetchone()[0]
+
+        return f'{int(q):,}'
+    except:
+        print("Lỗi query revenue.avg_money_betweentime")
+        return 0
+    
+# SQL query tổng doanh thu trong khoảng ngày
+def avg_bhtt_betweentime(startday, endday, cursor):
+    try:
+        q = cursor.execute(
+            """
+        SELECT AVG(asset_sums)
+        FROM
+            (SELECT
+            SUM(SoLuong*DonGiaHoTroChiTra) AS asset_sums, NgayXacNhan
+            FROM XacNhanChiPhi
+            INNER JOIN XacNhanChiPhiChiTiet
+            ON XacNhanChiPhi.XacNhanChiPhi_Id=XacNhanChiPhiChiTiet.XacNhanChiPhi_Id
+            WHERE ThoiGianXacNhan BETWEEN ? AND ?
+            GROUP BY NgayXacNhan) as inner_query
+            """, startday, endday
+        ).fetchone()[0]
+
+        return f'{int(q):,}'
+    except:
+        print("Lỗi query revenue.avg_bhtt_betweentime")
+        return 0
+    
+# SQL query tổng doanh thu trong khoảng ngày
+def avg_bntt_betweentime(startday, endday, cursor):
+    try:
+        q = cursor.execute(
+            """
+        SELECT AVG(asset_sums)
+        FROM
+            (SELECT
+            SUM(SoLuong*DonGiaThanhToan) AS asset_sums, NgayXacNhan
+            FROM XacNhanChiPhi
+            INNER JOIN XacNhanChiPhiChiTiet
+            ON XacNhanChiPhi.XacNhanChiPhi_Id=XacNhanChiPhiChiTiet.XacNhanChiPhi_Id
+            WHERE ThoiGianXacNhan BETWEEN ? AND ?
+            GROUP BY NgayXacNhan) as inner_query
+            """, startday, endday
+        ).fetchone()[0]
+
+        return f'{int(q):,}'
+    except:
+        print("Lỗi query revenue.avg_bntt_betweentime")
+        return 0
+    
+
+# SQL query  doanh thu Lớn nhất trong khoảng ngày
+def max_money_betweentime(startday, endday, cursor):
+    try:
+        q = cursor.execute(
+            """
+        SELECT MAX(asset_sums)
+        FROM
+            (SELECT
+            SUM(SoLuong*DonGiaDoanhThu) AS asset_sums, NgayXacNhan
+            FROM XacNhanChiPhi
+            INNER JOIN XacNhanChiPhiChiTiet
+            ON XacNhanChiPhi.XacNhanChiPhi_Id=XacNhanChiPhiChiTiet.XacNhanChiPhi_Id
+            WHERE ThoiGianXacNhan BETWEEN ? AND ?
+            GROUP BY NgayXacNhan) as inner_query
+            """, startday, endday
+        ).fetchone()[0]
+
+        return f'{int(q):,}'
+    except:
+        print("Lỗi query revenue.max_money_betweentime")
+        return 0
+
+# SQL query  doanh thu Lớn nhất trong khoảng ngày
+def max_bhtt_betweentime(startday, endday, cursor):
+    try:
+        q = cursor.execute(
+            """
+        SELECT MAX(asset_sums)
+        FROM
+            (SELECT
+            SUM(SoLuong*DonGiaHoTroChiTra) AS asset_sums, NgayXacNhan
+            FROM XacNhanChiPhi
+            INNER JOIN XacNhanChiPhiChiTiet
+            ON XacNhanChiPhi.XacNhanChiPhi_Id=XacNhanChiPhiChiTiet.XacNhanChiPhi_Id
+            WHERE ThoiGianXacNhan BETWEEN ? AND ?
+            GROUP BY NgayXacNhan) as inner_query
+            """, startday, endday
+        ).fetchone()[0]
+
+        return f'{int(q):,}'
+    except:
+        print("Lỗi query revenue.max_bhtt_betweentime")
+        return 0
+    
+# SQL query  doanh thu Lớn nhất trong khoảng ngày
+def max_bntt_betweentime(startday, endday, cursor):
+    try:
+        q = cursor.execute(
+            """
+        SELECT MAX(asset_sums)
+        FROM
+            (SELECT
+            SUM(SoLuong*DonGiaThanhToan) AS asset_sums, NgayXacNhan
+            FROM XacNhanChiPhi
+            INNER JOIN XacNhanChiPhiChiTiet
+            ON XacNhanChiPhi.XacNhanChiPhi_Id=XacNhanChiPhiChiTiet.XacNhanChiPhi_Id
+            WHERE ThoiGianXacNhan BETWEEN ? AND ?
+            GROUP BY NgayXacNhan) as inner_query
+            """, startday, endday
+        ).fetchone()[0]
+
+        return f'{int(q):,}'
+    except:
+        print("Lỗi query revenue.max_bntt_betweentime")
+        return 0
+
+# SQL query  doanh thu bé nhất trong khoảng ngày
+def min_money_betweentime(startday, endday, cursor):
+    try:
+        q = cursor.execute(
+            """
+        SELECT MIN(asset_sums)
+        FROM
+            (SELECT
+            SUM(SoLuong*DonGiaDoanhThu) AS asset_sums, NgayXacNhan
+            FROM XacNhanChiPhi
+            INNER JOIN XacNhanChiPhiChiTiet
+            ON XacNhanChiPhi.XacNhanChiPhi_Id=XacNhanChiPhiChiTiet.XacNhanChiPhi_Id
+            WHERE ThoiGianXacNhan BETWEEN ? AND ?
+            GROUP BY NgayXacNhan) as inner_query
+            """, startday, endday
+        ).fetchone()[0]
+        print(q)
+        return f'{int(q):,}'
+    except:
+        print("Lỗi query revenue.min_money_betweentime")
+        return 0
+    
+# SQL query  doanh thu bé nhất trong khoảng ngày
+def min_bhtt_betweentime(startday, endday, cursor):
+    try:
+        q = cursor.execute(
+            """
+        SELECT MIN(asset_sums)
+        FROM
+            (SELECT
+            SUM(SoLuong*DonGiaHoTroChiTra) AS asset_sums, NgayXacNhan
+            FROM XacNhanChiPhi
+            INNER JOIN XacNhanChiPhiChiTiet
+            ON XacNhanChiPhi.XacNhanChiPhi_Id=XacNhanChiPhiChiTiet.XacNhanChiPhi_Id
+            WHERE ThoiGianXacNhan BETWEEN ? AND ?
+            GROUP BY NgayXacNhan) as inner_query
+            """, startday, endday
+        ).fetchone()[0]
+        print(q)
+        return f'{int(q):,}'
+    except:
+        print("Lỗi query revenue.min_bhtt_betweentime")
+        return 0
+    
+# SQL query  doanh thu bé nhất trong khoảng ngày
+def min_bntt_betweentime(startday, endday, cursor):
+    try:
+        q = cursor.execute(
+            """
+        SELECT MIN(asset_sums)
+        FROM
+            (SELECT
+            SUM(SoLuong*DonGiaThanhToan) AS asset_sums, NgayXacNhan
+            FROM XacNhanChiPhi
+            INNER JOIN XacNhanChiPhiChiTiet
+            ON XacNhanChiPhi.XacNhanChiPhi_Id=XacNhanChiPhiChiTiet.XacNhanChiPhi_Id
+            WHERE ThoiGianXacNhan BETWEEN ? AND ?
+            GROUP BY NgayXacNhan) as inner_query
+            """, startday, endday
+        ).fetchone()[0]
+        print(q)
+        return f'{int(q):,}'
+    except:
+        print("Lỗi query revenue.min_bntt_betweentime")
+        return 0
+    
+
+
+
 # Thống kê tiền BHYTtrong 1 ngày
 def total_bhyt_day(day, cursor):
     try:

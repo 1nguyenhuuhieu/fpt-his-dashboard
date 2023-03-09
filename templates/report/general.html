@@ -4,52 +4,81 @@
 {% endblock %}
 {% block content %}
 
+
+<div class="row mt-3">
+    <div class="col-12">
+      <form method="post">
+        <div class="row">
+          <div class="col-lg-3">
+              <div class="input-group mb-3 ">
+                  <span class="input-group-text" id="basic-addon1">Từ</span>
+                  <input type="datetime-local" class="form-control" name="start_date">
+                </div>
+          </div>
+          <div class="col-lg-3">
+              <div class="input-group mb-3">
+                  <span class="input-group-text" id="basic-addon1">Đến</span>
+                  <input type="datetime-local" class="form-control" name="end_date">
+                </div>
+          </div>
+          <div class="col-lg-2">
+          <button type="submit" class="btn btn-primary" name="filter_btn"><i class="fa-solid fa-magnifying-glass me-2"></i>Lấy dữ liệu</button>
+          </div>
+      
+        </div>
+      </form>
+    </div>
+  </div>
+
+    <button class="btn btn-sm btn-outline-primary mb-3"  onclick="printJS('printJS-form', 'html')">In báo cáo<i class="fa-solid fa-print ms-2"></i></button>
+
+
+
 <div class="row g-2">
-    <div class="col-lg-6">
+
+    <div class="col-lg-8">
+
         <div class="table-responsive bg-white pt-3 px-3 border shadow-sm rounded">
+    <form method="post" action="#" id="printJS-form">
+
             <div class="d-flex justify-content-between align-items-center px-1 mb-2">
-            <h6 class="p-0 m-0"><i class="fa-solid fa-bed-pulse me-2"></i>Công suất trong ngày</h6>
-            <a href="{{ url_for('hospitalized_bed', day_query=value.today)}}" class="text-decoration-none">Xem chi tiết<i class="fa-solid fa-up-right-from-square ms-2"></i></a>
+            <h6 class="p-0 m-0"><i class="fa-solid fa-chart-simple me-2"></i>Báo cáo tổng hợp <small class="text-muted fst-italic">từ {{value.start}} tới {{ value.end }} </small>
+            </h6>
             </div>
             <hr class="mx-1 my-1">
         <table class="table table-borderless table-sm bg-white">
             <thead>
               <tr>
-                <th scope="col">Khoa</th>
-                <th scope="col">Đang sử dụng</th>
-                <th scope="col">Thực kê</th>
-                <th scope="col">Công suất</th>
+                <th scope="col">Nội dung</th>
+                <th scope="col">Tổng</th>
+                <th scope="col">Trung bình ngày</th>
+                <th scope="col">Nhiều nhất</th>
+                <th scope="col">Ít nhất</th>
               </tr>
             </thead>
             <tbody>
-                {% for bed in value.bed_list %}
+                {% if value.table_data %}
+                {% for data in value.table_data %}
               <tr >
-                <th scope="row">{{ bed.0 }}</th>
-                <td>{{ bed.1 }}</td>
-                <td>{{ bed.2 }}</td>
-                <td>
-                    <div class="d-flex justify-content-between align-items-center">
-                        {% if bed.3.1 > 95 %}
-                        <span class="fw-bolder text-danger">{{ bed.3.1 }}%</span> <i class="fa-solid fa-fire text-danger fa-fw"></i>
-                        {% elif bed.3.1 > 70 %}
-                        <span class="fw-bolder text-success">{{ bed.3.1 }}%</span> <i class="fa-solid fa-fan text-success fa-fw"></i>
-                        {% elif bed.3.1 > 60 %}
-                        <span class="fw-bolder text-warning">{{ bed.3.1 }}%</span> <i class="fa-solid fa-mug-hot text-warning fa-fw"></i>
-                        {% else %}
-                        <span class="fw-bolder text-muted">{{ bed.3.1 }}%</span><i class="fa-solid fa-snowflake text-muted fa-fw"></i>
-        
-                        {% endif %}
-                    </div>
-                </td>
+                <th scope="row">{{ data.0 }}</th>
+                <td>{{ data.1 }}</td>
+                <td>{{ data.2 }}</td>
+                <td>{{ data.3 }}</td>
+                <td>{{ data.4 }}</td>
               </tr>
          
               
               {% endfor %}
+              {% endif %}
         
             </tbody>
           </table>
+    </form>
+
         </div>
+
     </div>
+
     <div class="col-lg-6">
         <div class="bg-white rounded border shadow-sm p-2">
             <div id="chart_div2"></div>
@@ -57,35 +86,6 @@
     </div>
 </div>
 
-<div class="row mt-3">
-  <div class="col-12">
-    <form method="post">
-      <div class="row">
-        <div class="col-lg-3">
-            <div class="input-group mb-3 ">
-                <span class="input-group-text" id="basic-addon1">Từ</span>
-                <input type="datetime-local" class="form-control" name="start_date">
-              </div>
-        </div>
-        <div class="col-lg-3">
-            <div class="input-group mb-3">
-                <span class="input-group-text" id="basic-addon1">Đến</span>
-                <input type="datetime-local" class="form-control" name="end_date">
-              </div>
-
-        </div>
-        <div class="col">
-        <button type="submit" class="btn btn-primary" name="filter_date"><i class="fa-solid fa-magnifying-glass me-2"></i>Lấy dữ liệu</button>
-
-        </div>
-     
-
-
-      </div>
-
-    </form>
-  </div>
-</div>
 
 {% include 'include/table.html' %}
 

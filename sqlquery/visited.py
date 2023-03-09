@@ -12,6 +12,83 @@ def total_day(day, cursor):
     except:
         print("Lỗi query visited.total_day")
         return None
+    
+# Số lượt khám bệnh trong khoảng thời gian
+def total_betweentime(start, end, cursor):
+    try:
+        q = cursor.execute("""SELECT
+        COALESCE(COUNT(KhamBenh_Id),0)
+        FROM dbo.KhamBenh
+        WHERE ThoiGianKham BETWEEN ? AND ?;
+        """,start, end
+        ).fetchone()[0]
+
+        return int(q)
+    except:
+        print("Lỗi query visited.total_day")
+        return None
+    
+# Số lượt khám bệnh trung bình trong khoảng thời gian
+def avg_betweentime(start, end, cursor):
+    try:
+        q = cursor.execute("""
+        SELECT AVG(asset_count)
+        FROM
+	(SELECT
+	COALESCE(COUNT(KhamBenh_Id),0) AS asset_count
+	FROM dbo.KhamBenh
+	WHERE ThoiGianKham BETWEEN ? AND ?
+	GROUP BY NgayKham) as inner_query
+
+        """,start, end
+        ).fetchone()[0]
+
+        return int(q)
+    except:
+        print("Lỗi query visited.avg_betweentime")
+        return None
+    
+# Số lượt khám bệnh nhiều nhất trong khoảng thời gian
+def max_betweentime(start, end, cursor):
+    try:
+        q = cursor.execute("""
+        SELECT MAX(asset_count)
+        FROM
+	(SELECT
+	COALESCE(COUNT(KhamBenh_Id),0) AS asset_count
+	FROM dbo.KhamBenh
+	WHERE ThoiGianKham BETWEEN ? AND ?
+	GROUP BY NgayKham) as inner_query
+
+        """,start, end
+        ).fetchone()[0]
+
+        return int(q)
+    except:
+        print("Lỗi query visited.max_betweentime")
+        return None
+
+    
+# Số lượt khám bệnh nhiều nhất trong khoảng thời gian
+def min_betweentime(start, end, cursor):
+    try:
+        q = cursor.execute("""
+        SELECT MIN(asset_count)
+        FROM
+	(SELECT
+	COALESCE(COUNT(KhamBenh_Id),0) AS asset_count
+	FROM dbo.KhamBenh
+	WHERE ThoiGianKham BETWEEN ? AND ?
+	GROUP BY NgayKham) as inner_query
+
+        """,start, end
+        ).fetchone()[0]
+
+        return int(q)
+    except:
+        print("Lỗi query visited.avg_betweentime")
+        return None
+
 
 # Số lượt khám mỗi ngày từ ngày start tới ngày end lấy 30 ngày
 def day_betweenday(startday, endday, cursor):

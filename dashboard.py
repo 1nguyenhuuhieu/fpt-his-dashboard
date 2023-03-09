@@ -145,7 +145,6 @@ def get_day(day):
 
 # NGÀY QUERY
 class DayQuery:
-
     def __init__(self, today):
         try:
             today = datetime.strptime(today, '%Y-%m-%d')
@@ -1870,23 +1869,59 @@ def report_79(day_query=None):
 def report_general(day_query=None):
     cnxn = get_db()
     cursor = cnxn.cursor()
-    day_dict = get_day(day_query)
-    today = day_dict['today']
+    day_class = DayQuery(day_query)
 
-    if request.method == 'POST':
+    if request.method == 'POST' and 'filter_btn' in request.form:
         list_id = []
         start_day = request.form['start_date']
-        start_day = datetime.strptime(start_day,'%Y-%m-%d')
+        start = datetime.strptime(start_day,'%Y-%m-%dT%H:%M')
         end_day = request.form['end_date']
-        end_day = datetime.strptime(end_day,'%Y-%m-%d')
-        for n in range(int((end_day - start_day).days)):
-            day = start_day + timedelta(n)
-            list_id.extend(query_report.list_tiepnhan_id(day,cursor))
+        end = datetime.strptime(end_day,'%Y-%m-%dT%H:%M')
+    else:
+        start = day_class.today
+        end = start + timedelta(days=1)
 
-    today = today.strftime("%Y-%m-%d")
+    money = query_revenue.total_money_betweentime(start, end, cursor)
+    avg = query_revenue.avg_money_betweentime(start, end, cursor)
+    max = query_revenue.max_money_betweentime(start,end, cursor)
+    min = query_revenue.min_money_betweentime(start,end, cursor)
+    revenue_table_data = ['Doanh thu', money, avg, max, min]
+
+
+    money_bhtt = query_revenue.bhtt_betweentime(start, end, cursor)
+    avg_bhtt = query_revenue.avg_bhtt_betweentime(start, end, cursor)
+    max_bhtt = query_revenue.max_bhtt_betweentime(start,end, cursor)
+    min_bhtt = query_revenue.min_bhtt_betweentime(start,end, cursor)
+    revenue_bhtt_table_data = ['Bảo hiểm thanh toán', money_bhtt, avg_bhtt, max_bhtt, min_bhtt]
+
+    money_bntt = query_revenue.bntt_betweentime(start, end, cursor)
+    avg_bntt = query_revenue.avg_bntt_betweentime(start, end, cursor)
+    max_bntt = query_revenue.max_bntt_betweentime(start,end, cursor)
+    min_bntt = query_revenue.min_bntt_betweentime(start,end, cursor)
+    revenue_bntt_table_data = ['Bệnh nhân thanh toán', money_bntt, avg_bntt, max_bntt, min_bntt]
+
+    total_visited = query_visited.total_betweentime(start, end, cursor)
+    avg_visited = query_visited.avg_betweentime(start, end, cursor)
+    max_visited = query_visited.max_betweentime(start, end, cursor)
+    min_visited = query_visited.min_betweentime(start, end, cursor)
+    visited_table_data = ['Lượt khám bệnh', total_visited, avg_visited, max_visited, min_visited]
+
+    total_hospitalized = query_hospitalized.total_in_between(start, end, cursor)
+    total_hospitalized = query_hospitalized.total_in_between(start, end, cursor)
+    total_hospitalized = query_hospitalized.total_in_between(start, end, cursor)
+    total_hospitalized = query_hospitalized.total_in_between(start, end, cursor)
+    hospital_table_data = ['Lượt nhập viện', total_hospitalized, avg_visited, max_visited, min_visited]
+
+
+    table_data = [revenue_table_data, revenue_bhtt_table_data, revenue_bntt_table_data , visited_table_data, hospital_table_data]
+    today = day_class.today.strftime("%Y-%m-%d")
     cnxn.close()
     context = {
-        'today': today
+        'today': today,
+        'table_data': table_data,
+        'start':start,
+        'end': end
+
 
     }
 

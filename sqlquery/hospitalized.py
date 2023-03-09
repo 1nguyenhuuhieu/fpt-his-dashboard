@@ -30,6 +30,20 @@ def in_betweenday(startday, endday, cursor):
     except:
         print("Lỗi query hospitalized.in_betweenday")
         return None
+    
+# Số lượng nhập viện trong khoảng thời gian
+def in_betweentime(start, end, cursor):
+    query = """
+    SELECT COUNT(BenhAn_Id)
+    FROM BenhAn
+    WHERE ThoiGianVaoVien BETWEEN ? AND ?
+    """
+    try:
+        q = cursor.execute(query, start, end).fetchone()
+        return q
+    except:
+        print("Lỗi query hospitalized.in_betweentime")
+        return None
 
 # Số lượng bệnh nhân đang nội trú trong ngày
 def total_day(day, cursor):
