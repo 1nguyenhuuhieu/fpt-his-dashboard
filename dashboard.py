@@ -143,6 +143,29 @@ def get_day(day):
     
     return day_dict
 
+# NGÀY QUERY
+class DayQuery:
+
+    def __init__(self, today):
+        try:
+            today = datetime.strptime(today, '%Y-%m-%d')
+        except:
+            today = date.today()
+        self.today = today
+        self.yesterday = today - timedelta(days=1)
+        self.mon_day = today - timedelta(days=today.weekday())
+        self.last_week_monday = self.mon_day - timedelta(days=7)
+        self.last_week_sun_day = self.last_week_monday + timedelta(days=6)
+        self.twolast_week_monday = self.last_week_monday - timedelta(days=7)
+        self.twolast_week_sun_day = self.last_week_sun_day - timedelta(days=7)
+        self.first_month_day = today.replace(day=1)
+        self.last_first_month_day = self.first_month_day + relativedelta(months=-1)
+        self.last_end_month_day = self.first_month_day + timedelta(days=-1)
+        self.first_year_day = today.replace(day=1, month=1)
+        self.last_first_year_day = self.first_year_day + relativedelta(years=-1)
+        self.end_last_year_day = self.first_year_day + timedelta(days=-1)
+
+
 # Lấy danh sách khoa
 def get_department_id_list(department_id):
     if department_id == 23092310:
@@ -326,6 +349,7 @@ def home(day_query=None):
     list_post = query_user.posts(cursor_sqlite)
     # convert để hiện thị ở top filter
     today = today.strftime("%Y-%m-%d")
+
 
     context = {
         'top_card': top_card,
