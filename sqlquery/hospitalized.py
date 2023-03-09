@@ -39,10 +39,61 @@ def in_betweentime(start, end, cursor):
     WHERE ThoiGianVaoVien BETWEEN ? AND ?
     """
     try:
-        q = cursor.execute(query, start, end).fetchone()
+        q = cursor.execute(query, start, end).fetchone()[0]
         return q
     except:
         print("Lỗi query hospitalized.in_betweentime")
+        return None
+    
+# AVG Số lượng nhập viện trong khoảng thời gian
+def avg_betweentime(start, end, cursor):
+    query = """
+    SELECT AVG(asset_count)
+    FROM
+    (SELECT COUNT(BenhAn_Id) as asset_count
+    FROM BenhAn
+    WHERE ThoiGianVaoVien BETWEEN ? AND ?
+    GROUP BY NgayVaoVien) as inner_query
+    """
+    try:
+        q = cursor.execute(query, start, end).fetchone()[0]
+        return q
+    except:
+        print("Lỗi query hospitalized.in_betweentime")
+        return None
+    
+# MAX Số lượng nhập viện trong khoảng thời gian
+def max_betweentime(start, end, cursor):
+    query = """
+    SELECT MAX(asset_count)
+    FROM
+    (SELECT COUNT(BenhAn_Id) as asset_count
+    FROM BenhAn
+    WHERE ThoiGianVaoVien BETWEEN ? AND ?
+    GROUP BY NgayVaoVien) as inner_query
+    """
+    try:
+        q = cursor.execute(query, start, end).fetchone()[0]
+        return q
+    except:
+        print("Lỗi query hospitalized.max_betweentime")
+        return None
+    
+# MIN Số lượng nhập viện trong khoảng thời gian
+def min_betweentime(start, end, cursor):
+    query = """
+    SELECT MIN(asset_count)
+    FROM
+    (SELECT COUNT(BenhAn_Id) as asset_count
+    FROM BenhAn
+    WHERE ThoiGianVaoVien BETWEEN ? AND ?
+    GROUP BY NgayVaoVien) as inner_query
+    """
+    try:
+        q = cursor.execute(query, start, end).fetchone()[0]
+        return q
+    except:
+        print("Lỗi query hospitalized.min_betweentime")
         return None
 
 # Số lượng bệnh nhân đang nội trú trong ngày
