@@ -1861,6 +1861,38 @@ def report_79(day_query=None):
 
     return render_template('report/79.html', value=context, active='report')
 
+
+
+# Báo cáo tổng hợp
+@app.route('/report/general/<string:day_query>', methods=['GET', 'POST'])
+@app.route('/report/general', methods=['GET', 'POST'])
+@register_breadcrumb(app, '..report.general', 'Tổng hợp')
+def report_general(day_query=None):
+    cnxn = get_db()
+    cursor = cnxn.cursor()
+    day_dict = get_day(day_query)
+    today = day_dict['today']
+
+    if request.method == 'POST':
+        list_id = []
+        start_day = request.form['start_date']
+        start_day = datetime.strptime(start_day,'%Y-%m-%d')
+        end_day = request.form['end_date']
+        end_day = datetime.strptime(end_day,'%Y-%m-%d')
+        for n in range(int((end_day - start_day).days)):
+            day = start_day + timedelta(n)
+            list_id.extend(query_report.list_tiepnhan_id(day,cursor))
+
+    today = today.strftime("%Y-%m-%d")
+    cnxn.close()
+    context = {
+        'today': today
+
+    }
+
+    return render_template('report/general.html', value=context, active='report')
+
+
 # USER
 # trang đăng nhập
 @app.route('/admin/login', methods=['GET', 'POST'])

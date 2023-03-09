@@ -3,14 +3,13 @@ def total_day(day, cursor):
     try:
         q = cursor.execute(
             """
-            SELECT COALESCE(SUM(SoLuong*DonGiaDoanhThu),0)
+            SELECT COALESCE(SUM(SoLuong_New*DonGiaDoanhThu),0)
             FROM XacNhanChiPhi
             INNER JOIN XacNhanChiPhiChiTiet
             ON XacNhanChiPhi.XacNhanChiPhi_Id=XacNhanChiPhiChiTiet.XacNhanChiPhi_Id
             WHERE NgayXacNhan=?
             """, day
         ).fetchone()[0]
-
         return int(q)
     except:
         print('Lỗi query total_day')
@@ -23,14 +22,13 @@ def total_bhyt_day(day, cursor):
     try:
         q = cursor.execute(
             """
-            SELECT COALESCE(SUM(SoLuong*DonGiaHoTroChiTra),0)
+            SELECT COALESCE(SUM(SoLuong_New*DonGiaHoTroChiTra_New),0)
             FROM XacNhanChiPhi
             INNER JOIN XacNhanChiPhiChiTiet
             ON XacNhanChiPhi.XacNhanChiPhi_Id=XacNhanChiPhiChiTiet.XacNhanChiPhi_Id
             WHERE NgayXacNhan=?
             """, day
         ).fetchone()[0]
-
         return int(q)
     except:
         print('Lỗi query total_bhyt_day')
@@ -41,7 +39,7 @@ def total_bntt_day(day, cursor):
     try:
         q = cursor.execute(
             """
-            SELECT COALESCE(SUM(SoLuong*DonGiaThanhToan),0)
+            SELECT COALESCE(SUM(SoLuong_New*DonGiaThanhToan),0)
             FROM XacNhanChiPhi
             INNER JOIN XacNhanChiPhiChiTiet
             ON XacNhanChiPhi.XacNhanChiPhi_Id=XacNhanChiPhiChiTiet.XacNhanChiPhi_Id
