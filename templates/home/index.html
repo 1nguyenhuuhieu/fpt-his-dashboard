@@ -102,9 +102,10 @@
     <div class="row g-2 mt-1">
       {% for url, title, icon, count, percent in value.patient_card %}
       <div class="col-lg-6">
-        <div class="card shadow-sm ">
+        <div class="card shadow-sm border " style="  background: url(https://img.freepik.com/free-vector/white-abstract-background-theme_23-2148830883.jpg) no-repeat center ;
+        background-size: cover;">
           <div class="card-body">
-            <h6 class="card-subtitle mb-2  d-flex justify-content-between align-items-center">
+            <h6 class="card-subtitle mb-2   d-flex justify-content-between align-items-center">
               <div>
                 <i class="{{ icon }} me-2 fa-fw"></i>{{ title }}
               </div>
@@ -112,10 +113,16 @@
             <hr class="my-2">
             <div class="row">
               <div class="col-4 align-items-center justify-content-start d-flex">
-                <h3 class="card-title p-0 m-0">{{ count }}</h3>
+                <h3 class="card-title p-0 m-0 display-6">{{ count }}</h3>
               </div>
               <div class="col-8 align-items-center justify-content-end d-flex">
-                <p class="text-muted card-text p-0 m-0">
+                <p class="card-text p-0 m-0 fw-semibold
+                {% if percent[0]%}
+                text-success
+                {% else %}
+                text-danger
+                {% endif %}
+                ">
                   <span>
                     {% if percent[0]%}
                     <i class="fa-solid fa-arrow-trend-up me-1 fw-bold text-success"></i>
@@ -124,13 +131,11 @@
                     {% endif %}
                     {{ percent[1] }}%</span>
                   <span>hôm trước</span>
-
                 </p>
-
               </div>
               <div class="text-end">
                 <a href="{{ url_for(url, day_query=value.today) }}"
-                class="text-decoration-none text-end stretched-link">Xem chi tiết<i
+                class="text-decoration-none text-end stretched-link btn btn-sm btn-light rounded-pill border  shadow-sm">Xem chi tiết<i
                   class="fa-solid fa-arrow-right ms-2"></i></a>
 
               </div>
