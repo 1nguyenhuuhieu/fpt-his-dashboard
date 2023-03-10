@@ -27,6 +27,9 @@ from flask import session
 from flask import request
 import sqlite3
 
+
+from slugify import slugify
+
 # Kết nối database sql server
 # def get_db():
 #     server = '192.168.123.254'
@@ -1246,6 +1249,11 @@ def visited(day_query=None):
 
     last30days_visited.reverse()
 
+    # tổng số lượt khám 30 ngày gần nhất theo từng khoa phòng
+    last30days_visited_department = query_visited.department_week(last30days,today, cursor)
+    last30days_visited_department = convert_to_chart(last30days_visited_department)
+    last30days_visited_department.insert(0, ["Phòng khám", 'Bệnh nhân'])
+
     today = today.strftime("%Y-%m-%d")
     context = {
         'today': today,
@@ -1254,7 +1262,7 @@ def visited(day_query=None):
         'card_top_body': card_top_body,
         'patient_in_department': patient_in_department,
         'visited_in_department_today': visited_in_department_today,
-        'patient_in_department_chart': patient_in_department_chart,
+        'patient_in_department_chart': last30days_visited_department,
         'last_30_day_chart': last30days_visited,
         'recent_hospitalized_in_day': recent_hospitalized_in_day,
         'last_patients': last_patients,
@@ -2118,6 +2126,74 @@ def detail_post(post_id):
 
     return render_template('news/post.html', value=context, active='news', hidden_top_filter=True)
 
+# trang báo cáo thu tiền dịch vụ
+@app.route('/admin/money', methods=['GET', 'POST'])
+@register_breadcrumb(app, '..admin.money', 'Tiền dịch vụ')
+def admin_money():
+    day_dict = get_day(None)
+    today = day_dict['today']
+
+
+    if session.get('username'):
+        con = sqlite3.connect("dashboard.db")
+        con.row_factory = sqlite3.Row
+        cursor = con.cursor()
+
+        sql_list_report = """
+        SELECT *
+        FROM report_money
+        ORDER BY id DESC
+        """
+        list_reports = cursor.execute(sql_list_report).fetchall()
+        titles = cursor.execute(sql_list_report).description
+            
+        list_form_title_money = [["Tiền khám bệnh"],["Viện phí"],["Xét nghiệm"],["Điện tim"],["Test covid 19"],["Lưu huyết não"],["Siêu âm"],["XQ"],["Nội soi dạ dày, thực quản"],["Nội soi TMH"],["Nội soi CTC"],["Khám sức khỏe"],["Bó bột gây mê"],["Chụp CT"],["Tiêm SAT"],["Tiêm phòng dại"],["Tiêm VGB 1ml"],["Tiêm VGB 0.5ml"],["Vắc xin Rotamin"],["Vắc xin Sởi - Quai bị - Rubella"],["Vắc xin Cúm"],["Vắc xin Quimihib"],["Thuốc"]]
+        for i in list_form_title_money:
+            i.append(slugify(i[0]).replace('-','_'))
+
+        if request.method == 'POST' and 'new_report' in request.form:
+           
+            values = []
+     
+            for i in (request.form):
+            
+                values.append(request.form[i])
+            
+            values.pop(-1)
+
+            sql = """
+            INSERT INTO report_money(ngay,tien_kham_benh,vien_phi,xet_nghiem,dien_tim,test_covid_19,luu_huyet_nao,sieu_am,xq,noi_soi_da_day_thuc_quan,noi_soi_tmh,noi_soi_ctc,kham_suc_khoe,bo_bot_gay_me,chup_ct,tiem_sat,tiem_phong_dai,tiem_vgb_1ml,tiem_vgb_0_5ml,vac_xin_rotamin,vac_xin_soi_quai_bi_rubella,vac_xin_cum,vac_xin_quimihib,thuoc)
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+            """
+            cursor.execute(sql, values)
+            con.commit()
+            return redirect(url_for('admin_money'))
+
+        
+        if request.method == 'POST' and 'delete_report' in request.form:
+            sql = """
+            DELETE FROM report_money WHERE id = ?
+            """
+            id = request.form['report_id']
+            print(id)
+            cursor.execute(sql, (request.form['report_id']))
+            con.commit()
+            return redirect(url_for('admin_money'))
+        
+
+
+        today = today.strftime("%Y-%m-%d")
+        context = {
+            'today': today,
+            'list_form_title_money': list_form_title_money,
+            'list_reports': list_reports,
+            'titles': titles
+        }
+        con.close()
+
+        return render_template('admin/report-money.html', value=context)
+    else:
+        return redirect(url_for('user_login'))
 
 # Trang danh bạ
 @app.route('/addressbook')

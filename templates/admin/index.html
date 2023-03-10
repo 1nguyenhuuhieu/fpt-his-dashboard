@@ -5,11 +5,26 @@
 {% block content %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.3.2/tinymce.min.js" integrity="sha512-0hADhKU8eEFSmp3+f9Yh8QmWpr6nTYLpN9Br7k2GTUQOT6reI2kdEOwkOORcaRZ+xW5ZL8W24OpBlsCOCqNaNQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <div class="row">
-    <div class="col-lg-2">
-        <!-- Button trigger modal -->
-          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-            <i class="fa-solid fa-pen-to-square me-2"></i>Bài viết mới
-            </button>
+    <div class="col-lg-4">
+        <!-- Button trigger modal --> 
+        <div class="d-flex flex-column">
+          <div class="mb-3">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+              <i class="fa-solid fa-pen-to-square me-2"></i>Bài viết mới
+              </button>
+
+          </div>
+          <div>
+            <a href="{{ url_for('admin_money')}}" class="btn btn-primary">
+              <i class="fa-solid fa-pen-to-square me-2"></i>Nhập báo cáo thu tiền dịch vụ
+            </a>
+
+          </div>
+
+
+
+        </div>
+
     </div>
     <div class="col-lg-6">
       

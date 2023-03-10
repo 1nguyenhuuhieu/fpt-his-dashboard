@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% block header %}
+<i class="fa-solid fa-user me-2"></i>{% block title %}Quản trị{% endblock %}
+{% endblock %}
+{% block content %}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.3.2/tinymce.min.js" integrity="sha512-0hADhKU8eEFSmp3+f9Yh8QmWpr6nTYLpN9Br7k2GTUQOT6reI2kdEOwkOORcaRZ+xW5ZL8W24OpBlsCOCqNaNQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+
+
+<div class="row g-1">
+    <div class="col-lg-9">
+        <form action="#" method="post">
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="row g-0">
+                    <label for="inputDate" class="col-sm-5 col-form-label fw-semibold text-end me-2">Ngày báo cáo</label>
+                    <div class="col-5">
+                      <input type="date" class="form-control form-control-sm" id="inputDate" name="dateMoney" required>
+                    </div>
+                </div>
+                </div>
+                {% for input_form in value.list_form_title_money %}
+                <div class="col-lg-6">
+                    <div class="row g-0">
+
+                    <label for="input{{loop.index}}" class="col-sm-5 col-form-label fw-semibold text-end me-2"> {{ input_form.0 }}</label>
+                    <div class="col-5">
+                      <input type="number" class="form-control form-control-sm" id="input{{loop.index}}" name="{{ input_form.1 }}" value=0>
+                    </div>
+                </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="row">
+                <div class="col-lg-11 d-flex justify-content-end">
+                    
+            <button class="btn btn-danger mt-3 me-2" type="reset">Xóa</button>
+            <button class="btn btn-primary mt-3" type="submit" name="new_report">Gửi báo cáo</button>
+
+                </div>
+            </div>
+
+        </form>
+
+        <script>
+            document.getElementById('inputDate').valueAsDate = new Date();
+        </script>
+
+    
+
+    </div>
+
+    <div class="col">
+        Báo cáo đã gửi
+        <hr>
+        <div class="list-group">
+            {% for report in value.list_reports %}
+
+            <a href="#" class="list-group-item list-group-item-action" data-bs-toggle="modal" data-bs-target="#reportDetailModal{{loop.index}}">{{ report.ngay }}</a>
+
+            <!-- Modal -->
+        <div class="modal fade" id="reportDetailModal{{loop.index}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Chi tiết báo cáo</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-5">
+                            {% for info in value.titles %}
+                            <p>{{ info[0]}}</p>
+                            {% endfor %}
+
+                        </div>
+                        <div class="col">
+                            {% for info in report %}
+                            <p> {{ info }}</p>
+                            {% endfor %}
+
+                        </div>
+                    </div>
+  
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                <form method="post">
+                    <input type="hidden" name="report_id" value="{{ report.id }}">
+                <button type="submit" class="btn btn-primary" name="delete_report">Xóa</button>
+            </form>
+                </div>
+            </div>
+            </div>
+        </div>
+        
+            {% endfor %}
+          </div>
+    </div>
+
+</div>
+
+{% endblock %}
+
+

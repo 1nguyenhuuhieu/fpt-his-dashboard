@@ -1,3 +1,5 @@
+from datetime import date, datetime, timedelta
+
 # Số lượt tiếp nhận trong ngày
 def total_day(day, cursor):
     try:
@@ -151,6 +153,36 @@ def department_day(day, cursor):
         return q
     except:
         print("Lỗi query visited.department_day")
+        return None
+    
+# Số lượt khám bệnh theo từng khoa phòng trong khoảng ngày
+def department_week(startday,endday, cursor):
+
+    try:
+        q = cursor.execute(
+            """
+            SELECT
+            (CASE
+                WHEN TenPhongBan IN(N'Phòng Khám Cao Huyết áp (10)', N'Phòng Khám Cao Huyết áp (10)_A' ) THEN N'Phòng Khám Cao Huyết áp (10)'
+                WHEN TenPhongBan IN(N'Phòng Khám Tiểu Đường (08)', N'Phòng Khám Tiểu Đường (08)_A') THEN N'Phòng Khám Tiểu Đường (08)'
+                ELSE TenPhongBan
+            END),
+            COALESCE(COUNT(KhamBenh.KhamBenh_Id),0) AS 'TongLuotKham'
+            FROM KhamBenh INNER JOIN nhh_department
+            ON KhamBenh.PhongBan_Id=nhh_department.PhongBan_Id
+            WHERE NgayKham BETWEEN ? AND ?
+            GROUP BY 
+            (CASE
+                WHEN TenPhongBan IN(N'Phòng Khám Cao Huyết áp (10)', N'Phòng Khám Cao Huyết áp (10)_A' ) THEN N'Phòng Khám Cao Huyết áp (10)'
+                WHEN TenPhongBan IN(N'Phòng Khám Tiểu Đường (08)', N'Phòng Khám Tiểu Đường (08)_A') THEN N'Phòng Khám Tiểu Đường (08)'
+                ELSE TenPhongBan END)
+            ORDER BY TongLuotKham DESC
+            """, startday, endday
+        ).fetchall()
+
+        return q
+    except:
+        print("Lỗi query visited.department_week")
         return None
 
 # Danh sách khám bệnh trong ngày
