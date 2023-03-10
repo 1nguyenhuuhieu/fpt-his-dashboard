@@ -25,7 +25,13 @@
                 <div class="d-flex flex-row flex-md-column justify-content-between">
                 <h3 class="card-title">{{ value.top_card.2 }} đ </h3>
                 <div class="d-flex flex-column justify-content-between">
-                  <p class="text-muted card-text m-0 text-end p-0">
+                  <p class="fw-semibold card-text m-0 text-end p-0
+                  {% if value.top_card.3.0 %}
+                  text-success
+                  {% else %}
+                  text-danger
+                  {% endif %}
+                  ">
                     <span class="">
                       {% if value.top_card.3.0 %}
                       <i class="fa-solid fa-arrow-trend-up me-1 fw-bold text-success"></i>
@@ -37,7 +43,7 @@
                   </p>
                   <div class="text-end mt-1">
                     <a href="{{ url_for('revenue', day_query=value.today) }}"
-                    class="text-decoration-none text-end stretched-link">Xem chi tiết<i
+                    class="text-decoration-none text-end stretched-link btn btn-sm rounded-pill btn-light mt-1">Xem chi tiết<i
                       class="fa-solid fa-arrow-right ms-2"></i></a>
 
                   </div>
@@ -51,12 +57,12 @@
           </div>
           <!-- Dược và dịch vụ card -->
           <div class="col-lg-6">
-            <div class="card shadow-sm h-100">
+            <div class="card shadow-sm h-100 text-bg-warning">
               <div class="card-body">
                 <div class="mb-2">
                   <p class="mt-0 mb-1 d-flex justify-content-between">
                     <a href="{{ url_for('medicine',day_query=value.today)}}"
-                      class="fw-bolder text-decoration-none text-dark"><i
+                      class="fw-bolder text-decoration-none link-dark"><i
                         class="fa-solid fa-pills me-1 fa-fw"></i>Dược</a>
                     <span class="fw-bolder">{{ "{:,} đ".format(value.medicine_card[0]) }}</span>
                   </p>
@@ -69,7 +75,7 @@
                 <div>
                   <p class="mt-0 mb-1 d-flex justify-content-between">
                     <a href="{{ url_for('service', day_query=value.today) }}"
-                      class="fw-bolder text-decoration-none  text-dark"><i
+                      class="fw-bolder text-decoration-none  link-dark"><i
                         class="fa-solid fa-stethoscope me-1 fa-fw"></i>Dịch vụ</a>
                     <span class="fw-bolder">{{ "{:,} đ".format(value.service_card[0]) }}</span>
                   </p>
@@ -83,7 +89,7 @@
                   
                 <div class="d-flex justify-content-end">
                   <a href="{{ url_for('list_revenue', day_query=value.today) }}"
-                    class="text-decoration-none text-end mt-2">Xem chi tiết<i class="fa-solid fa-arrow-right ms-2"></i></a>
+                    class="text-decoration-none text-end stretched-link btn btn-sm rounded-pill btn-light mt-3">Xem chi tiết<i class="fa-solid fa-arrow-right ms-2"></i></a>
                 </div>
 
 
