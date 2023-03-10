@@ -157,7 +157,7 @@ def department_day(day, cursor):
 def patients(day, cursor):
     query = """
     SELECT
-    ThoiGianKham, MaYTe, TenBenhNhan, KhamBenh.TiepNhan_Id ,ChanDoanKhoaKham,TenNhanVien, TenPhongBan
+    ThoiGianKham, MaYTe, TenBenhNhan, KhamBenh.TiepNhan_Id ,ChanDoanKhoaKham,Dictionary_Name,TenNhanVien, TenPhongBan
     FROM KhamBenh
     INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan]
     ON KhamBenh.BenhNhan_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan].BenhNhan_Id
@@ -165,8 +165,10 @@ def patients(day, cursor):
     ON KhamBenh.PhongBan_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_PhongBan].PhongBan_Id
     INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].NhanVien
     ON KhamBenh.BacSiKham_Id = [eHospital_NgheAn_Dictionary].[dbo].NhanVien.NhanVien_Id
+    INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[Lst_Dictionary] as dict
+    ON KhamBenh.HuongGiaiQuyet_Id = dict.Dictionary_Id
     WHERE NgayKham = ?
-    GROUP BY ThoiGianKham, MaYTe, TenBenhNhan, TenNhanVien, ChanDoanKhoaKham, TenPhongBan, KhamBenh.TiepNhan_Id
+    GROUP BY ThoiGianKham, MaYTe, TenBenhNhan, TenNhanVien, ChanDoanKhoaKham, TenPhongBan, KhamBenh.TiepNhan_Id,Dictionary_Name
     """
     try:
         q = cursor.execute(query, day).fetchall()
@@ -240,19 +242,22 @@ def department_id_day(day, cursor):
 # danh sách khám bệnh theo khoa phognf
 def list_department(day,department_id, cursor):
     query = """
-    SELECT ThoiGianKham, MaYTe, TenBenhNhan, ChanDoanKhoaKham,TenNhanVien
+    SELECT ThoiGianKham, MaYTe, TenBenhNhan, ChanDoanKhoaKham,Dictionary_Name,TenNhanVien
     FROM KhamBenh
     INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan]
     ON KhamBenh.BenhNhan_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan].BenhNhan_Id
     INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[NhanVien]
     ON KhamBenh.BacSiKham_Id = [eHospital_NgheAn_Dictionary].[dbo].[NhanVien].NhanVien_Id
-
+    INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[Lst_Dictionary] as dict
+    ON KhamBenh.HuongGiaiQuyet_Id = dict.Dictionary_Id
     WHERE KhamBenh.NgayKham = ? AND KhamBenh.PhongBan_Id = ?
 
-    GROUP BY ThoiGianKham, MaYTe, TenBenhNhan, ChanDoanKhoaKham,TenNhanVien
+    GROUP BY ThoiGianKham, MaYTe, TenBenhNhan, ChanDoanKhoaKham,TenNhanVien,Dictionary_Name
     """
     try:
         q = cursor.execute(query, day, department_id).fetchall()
+        for row in q:
+            row.ThoiGianKham = row.ThoiGianKham.strftime("%Y-%m-%d %H:%M")
         return q
     except:
         print("Lỗi query visited.list_department")

@@ -1290,7 +1290,7 @@ def visited_patients(day_query=None):
     end_last_year_day = day_dict['end_last_year_day']
 
     table_column_title = ['Thời gian khám', 'Mã y tế', 'Tên bệnh nhân',
-                          'Số tiếp nhận', 'Chẩn đoán trong khoa', 'Bác sĩ', 'Khoa']
+                          'Số tiếp nhận', 'Chẩn đoán trong khoa', 'Giải quyết','Bác sĩ', 'Khoa']
 
     list_patients = query_visited.patients(today, cursor)
 
@@ -1592,7 +1592,7 @@ def visited_department(department_id, day_query=None):
     today = day_dict['today']
 
     table_column_title = ['Thời gian', 'Mã Y tế',
-                          'Tên bệnh nhân', 'Chẩn đoán', 'Bác sĩ']
+                          'Tên bệnh nhân', 'Chẩn đoán', 'Giải quyết','Bác sĩ']
 
     list_patients = []
 
@@ -1600,8 +1600,6 @@ def visited_department(department_id, day_query=None):
         list_patients.extend(
             query_visited.list_department(today, d_id, cursor))
 
-    list_patients = list([e1.strftime("%H:%M %d-%m-%Y"), e2, e3, e4, e5]
-                         for e1, e2, e3, e4, e5 in list_patients)
     department_name = ''
     for d_id in department_id_list:
         department_name += (query_visited.name_department(d_id,
