@@ -40,7 +40,7 @@ from slugify import slugify
 #                           server+';DATABASE='+database+';UID='+username+';PWD=' + password)
 #     return cnxn
 
-server_location = 'work'
+server_location = 'home'
 
 def get_db():
     if server_location == 'home':
