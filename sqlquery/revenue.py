@@ -3,7 +3,7 @@ def total_day(day, cursor):
     try:
         q = cursor.execute(
             """
-            SELECT COALESCE(SUM(SoLuong_New*DonGiaDoanhThu),0)
+            SELECT COALESCE(SUM(SoLuong*DonGiaDoanhThu),0)
             FROM XacNhanChiPhi
             INNER JOIN XacNhanChiPhiChiTiet
             ON XacNhanChiPhi.XacNhanChiPhi_Id=XacNhanChiPhiChiTiet.XacNhanChiPhi_Id
@@ -317,7 +317,7 @@ def service_medicine_day(day, phannhom ,cursor):
     SELECT 
     COALESCE(SUM(SoLuong*DonGiaDoanhThu),0) AS 'TongDoanhThu'
     FROM XacNhanChiPhi
-    INNER JOIN (XacNhanChiPhiChiTiet INNER JOIN VienPhiNoiTru_Loai_IDRef ON XacNhanChiPhiChiTiet.Loai_IDRef=VienPhiNoiTru_Loai_IDRef.Loai_IDRef)
+    INNER JOIN (XacNhanChiPhiChiTiet LEFT JOIN VienPhiNoiTru_Loai_IDRef ON XacNhanChiPhiChiTiet.Loai_IDRef=VienPhiNoiTru_Loai_IDRef.Loai_IDRef)
     ON XacNhanChiPhi.XacNhanChiPhi_Id=XacNhanChiPhiChiTiet.XacNhanChiPhi_Id
     WHERE NgayXacNhan = ? AND PhanNhom=?
     GROUP BY PhanNhom

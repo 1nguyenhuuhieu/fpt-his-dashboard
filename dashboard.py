@@ -1,6 +1,6 @@
 from flask import Flask, redirect, url_for, flash
 from flask import render_template
-import pyodbc
+
 from datetime import date, datetime, timedelta
 from dateutil.relativedelta import *
 from time import time
@@ -21,6 +21,7 @@ from sqlquery import patient as query_patient
 from sqlquery import report as query_report
 from sqlquery import user as query_user
 
+import db
 from flask_breadcrumbs import Breadcrumbs, register_breadcrumb
 
 from flask import session
@@ -30,32 +31,7 @@ import sqlite3
 
 from slugify import slugify
 
-# Kết nối database sql server
-# def get_db():
-#     server = '192.168.123.254'
-#     database = 'eHospital_NgheAn'
-#     username = 'sa'
-#     password = 'toanthang'
-#     cnxn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER=' +
-#                           server+';DATABASE='+database+';UID='+username+';PWD=' + password)
-#     return cnxn
-
-server_location = 'home'
-
-def get_db():
-    if server_location == 'home':
-        cnxn = pyodbc.connect(driver='{ODBC Driver 17 for SQL Server}', server='localhost', database='eHospital_NgheAn',
-                              trusted_connection='yes')
-        return cnxn
-    else:
-        server = '192.168.123.254'
-        database = 'eHospital_NgheAn'
-        username = 'sa'
-        password = 'toanthang'
-        cnxn = pyodbc.connect('DRIVER={SQL Server Native Client 11.0};SERVER=' +
-                              server+';DATABASE='+database+';UID='+username+';PWD=' + password)
-        return cnxn
-
+from models import *
 
 total_bed = {
     'TTYT Anh Sơn': (200, 72, 272),
@@ -146,30 +122,6 @@ def get_day(day):
 
     return day_dict
 
-# NGÀY QUERY
-class DayQuery:
-    def __init__(self, today):
-        try:
-            today = datetime.strptime(today, '%Y-%m-%d')
-        except:
-            today = date.today()
-        self.today = today
-        self.yesterday = today - timedelta(days=1)
-        self.mon_day = today - timedelta(days=today.weekday())
-        self.last_week_monday = self.mon_day - timedelta(days=7)
-        self.last_week_sun_day = self.last_week_monday + timedelta(days=6)
-        self.twolast_week_monday = self.last_week_monday - timedelta(days=7)
-        self.twolast_week_sun_day = self.last_week_sun_day - timedelta(days=7)
-        self.first_month_day = today.replace(day=1)
-        self.last_first_month_day = self.first_month_day + \
-            relativedelta(months=-1)
-        self.last_end_month_day = self.first_month_day + timedelta(days=-1)
-        self.first_year_day = today.replace(day=1, month=1)
-        self.last_first_year_day = self.first_year_day + \
-            relativedelta(years=-1)
-        self.end_last_year_day = self.first_year_day + timedelta(days=-1)
-
-
 # Lấy danh sách khoa
 def get_department_id_list(department_id):
     if department_id == 23092310:
@@ -245,7 +197,7 @@ app.jinja_env.filters['zip'] = zip
 @register_breadcrumb(app, '.', 'Trang chủ')
 def home(day_query=None):
     # kết nối database sql server
-    cnxn = get_db()
+    cnxn = db.get_db()
     cursor = cnxn.cursor()
     # lấy ngày xem dashboard
 
@@ -386,7 +338,7 @@ def home(day_query=None):
         'posts': list_post
     }
 
-    cnxn.close()
+    db.close_db()
     return render_template('home/index.html', value=context,  active="home")
 
 
