@@ -16,33 +16,33 @@
               <div class="card-body">
                 <h6 class="card-subtitle mb-2 d-flex justify-content-between align-items-center">
                   <div>
-                    <i class="{{value.top_card.0}} me-2"></i> <a href="{{ url_for('revenue', day_query=value.today)}}"
+                    <i class="{{value.money_card.icon }} me-2"></i> <a href="{{ url_for('revenue', day_query=value.today)}}"
                       class="text-reset text-decoration-none stretched-link">{{
-                      value.top_card.1 }}</a>
+                      value.money_card.title }}</a>
                   </div>
                 </h6>
                 <hr class="my-2">
                 <div class="d-flex flex-row flex-md-column justify-content-between">
-                <h3 class="card-title fw-semibold">{{ value.top_card.2 }} đ </h3>
+                <h3 class="card-title fw-semibold">{{ value.money_card.current_format() }}</h3>
                 <div class="d-flex flex-column justify-content-between">
                   <p class="fw-semibold card-text m-0 text-end p-0
-                  {% if value.top_card.3.0 %}
+                  {% if value.money_card.is_increased() %}
                   text-success
                   {% else %}
                   text-danger
                   {% endif %}
                   ">
                     <span class="">
-                      {% if value.top_card.3.0 %}
+                      {% if value.money_card.is_increased() %}
                       <i class="fa-solid fa-arrow-trend-up me-1 fw-bold text-success"></i>
                       {% else %}
                       <i class="fa-solid fa-arrow-trend-down me-1 fw-bold text-danger"></i>
                       {% endif %}
-                      {{ value.top_card.3.1 }}%</span>
+                      {{ value.money_card.percent() }}%</span>
                     <span>hôm trước</span>
                   </p>
                   <div class="text-end mt-1">
-                    <a href="{{ url_for('revenue', day_query=value.today) }}"
+                    <a href="{{ url_for(value.money_card.link, day_query=value.today) }}"
                     class="text-decoration-none text-end stretched-link btn btn-sm rounded-pill btn-light mt-1">Xem chi tiết<i
                       class="fa-solid fa-arrow-right ms-2"></i></a>
 

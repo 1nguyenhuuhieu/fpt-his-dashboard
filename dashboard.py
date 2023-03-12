@@ -44,18 +44,6 @@ total_bed = {
 }
 
 
-# Tính % tăng, giảm
-def get_change(current, previous):
-    if not current:
-        current = 0
-    if not previous:
-        previous = 0
-    if current == previous:
-        return (current == previous, 0)
-    try:
-        return (current > previous, round((abs(current - previous) / previous) * 100, 1))
-    except ZeroDivisionError:
-        return (current > previous, 0)
 
 # Tính % so với
 def get_percent(current, previous):
@@ -84,43 +72,6 @@ def convert_to_chart_date(list):
     chart = [[k.strftime("%A %Y-%m-%d"), int(v)] for k, v in chart.items()]
 
     return chart
-
-# get day of week, month, year
-def get_day(day):
-    day_dict = {}
-    try:
-        today = datetime.strptime(day, '%Y-%m-%d')
-    except:
-        today = date.today()
-
-    yesterday = today - timedelta(days=1)
-    mon_day = today - timedelta(days=today.weekday())
-    last_week_monday = mon_day - timedelta(days=7)
-    last_week_sun_day = last_week_monday + timedelta(days=6)
-    twolast_week_monday = last_week_monday - timedelta(days=7)
-    twolast_week_sun_day = last_week_sun_day - timedelta(days=7)
-    first_month_day = today.replace(day=1)
-    last_first_month_day = first_month_day + relativedelta(months=-1)
-    last_end_month_day = first_month_day + timedelta(days=-1)
-    first_year_day = today.replace(day=1, month=1)
-    last_first_year_day = first_year_day + relativedelta(years=-1)
-    end_last_year_day = first_year_day + timedelta(days=-1)
-
-    day_dict['today'] = today
-    day_dict['yesterday'] = yesterday
-    day_dict['mon_day'] = mon_day
-    day_dict['last_week_monday'] = last_week_monday
-    day_dict['last_week_sun_day'] = last_week_sun_day
-    day_dict['twolast_week_monday'] = twolast_week_monday
-    day_dict['twolast_week_sun_day'] = twolast_week_sun_day
-    day_dict['first_month_day'] = first_month_day
-    day_dict['last_first_month_day'] = last_first_month_day
-    day_dict['last_end_month_day'] = last_end_month_day
-    day_dict['first_year_day'] = first_year_day
-    day_dict['last_first_year_day'] = last_first_year_day
-    day_dict['end_last_year_day'] = end_last_year_day
-
-    return day_dict
 
 # Lấy danh sách khoa
 def get_department_id_list(department_id):
@@ -192,8 +143,8 @@ Breadcrumbs(app=app)
 app.jinja_env.filters['zip'] = zip
 
 # Trang chủ
-@app.route("/dashboard/<string:day_query>")
-@app.route("/")
+@app.route("/dashboard/<string:day_query>", methods=['GET', 'POST'])
+@app.route("/", methods=['GET', 'POST'])
 @register_breadcrumb(app, '.', 'Trang chủ')
 def home(day_query=None):
     # kết nối database sql server
@@ -203,15 +154,12 @@ def home(day_query=None):
 
     day_class = DayQuery(day_query)
     today = day_class.today
-    yesterday = day_class.yesterday
+    yesterday = day_class.yesterday()
 
     # Tổng Doanh thu trong 1 ngày
     today_money = query_revenue.total_day(today, cursor)
-    today_money_format = f'{today_money:,}'
     yesterday_money = query_revenue.total_day(yesterday, cursor)
-    percent_doanhthu = get_change(today_money, yesterday_money)
-    top_card = ('fa-solid fa-money-bill', "Tổng doanh thu",
-                today_money_format, percent_doanhthu)
+    money_card = MoneyCard(today_money, yesterday_money)
 
     # Tổng Doanh thu dược
     today_money_medicine = query_revenue.service_medicine_day(
@@ -322,7 +270,6 @@ def home(day_query=None):
     today = today.strftime("%Y-%m-%d")
 
     context = {
-        'top_card': top_card,
         'medicine_card': medicine_card,
         'service_card': service_card,
         'patient_card': patient_card,
@@ -335,7 +282,12 @@ def home(day_query=None):
         'recent_action_time': recent_action_time,
         'recent_action_tiepnhan_id': recent_action_tiepnhan_id,
         'recent_detail': recent_detail,
-        'posts': list_post
+        'posts': list_post,
+
+
+        
+        'money_card': money_card
+
     }
 
     db.close_db()
@@ -504,6 +456,7 @@ def revenue(day_query=None):
     top10_doanhthu_table = ([noidung, tenphongkham, count, int(
         tongdoanhthu)] for noidung, tenphongkham, count, tongdoanhthu in top10_doanhthu)
 
+   
     today = today.strftime("%Y-%m-%d")
     context = {
         'today': today,

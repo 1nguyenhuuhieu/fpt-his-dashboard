@@ -2,6 +2,20 @@ from datetime import date, datetime, timedelta
 from dateutil.relativedelta import *
 
 
+# Tính % tăng, giảm
+def get_change(current, previous):
+    if not current:
+        current = 0
+    if not previous:
+        previous = 0
+    if current == previous:
+        return (current == previous, 0)
+    try:
+        return (current > previous, round((abs(current - previous) / previous) * 100, 1))
+    except ZeroDivisionError:
+        return (current > previous, 0)
+
+
 class DayQuery:
     def __init__(self, today):
         try:
@@ -16,40 +30,62 @@ class DayQuery:
     def monday(self):
         return self.today - timedelta(days=self.today.weekday())
     
+    def sunday(self):
+        return self.monday() + timedelta(days=6)
+    
     def lastweek_monday(self):
         return self.today - timedelta(days=self.today.weekday() + 7)
     
     def lastweek_sunday(self):
-        return self.today - timedelta(days=self.today.weekday() + 6)
+        return self.today - timedelta(days=self.today.weekday() + 8)
     
     def last2week_monday(self):
         return self.today - timedelta(days=self.today.weekday() + 14)
     
     def last2week_sunday(self):
-        return self.today - timedelta(days=self.today.weekday() + 13)
+        return self.today - timedelta(days=self.today.weekday() + 15)
 
     def first_day_month(self):
-        return self.today.replace(day=1) + relativedelta(months=1) + timedelta(days=-1)
-    
-    def end_day_month(self):
         return self.today.replace(day=1)
     
-    def last_day_month(self):
-        return self.first_day_month(self.today) + relativedelta(months=-1)
-
+    def end_day_month(self):
+        return self.today.replace(day=1) + relativedelta(months=1) + timedelta(days=-1)
+    
+    def first_day_2month(self):
+        return self.first_day_month() + relativedelta(months=-1)
+    
+    def end_day_2month(self):
+        return self.first_day_2month() + relativedelta(months=1) + timedelta(days=-1)
+    
+    def first_day_year(self):
+        return self.today.replace(day=1, month=1)
+    
+    def end_day_year(self):
+        return self.first_day_year() + relativedelta(years=1) + timedelta(days=-1)
+    
+    def first_day_2year(self):
+        return self.today.replace(day=1, month=1) + relativedelta(years=-1)
+    
+    def end_day_2year(self):
+        return self.first_day_year() + timedelta(days=-1)
     
 
-        # self.yesterday = today - timedelta(days=1)
-        # self.mon_day = today - timedelta(days=today.weekday())
-        # self.last_week_monday = self.mon_day - timedelta(days=7)
-        # self.last_week_sun_day = self.last_week_monday + timedelta(days=6)
+class MoneyCard:
+    def __init__(self, current, previous):
+        self.current = current
+        self.previous = previous
+        self.icon = 'fa-solid fa-money-bill'
+        self.title = 'Tổng doanh thu'
+        self.link = 'revenue'
 
-        # self.twolast_week_monday = self.last_week_monday - timedelta(days=7)
-        # self.twolast_week_sun_day = self.last_week_sun_day - timedelta(days=7)
-        # self.first_month_day = today.replace(day=1)
-        # self.last_first_month_day = self.first_month_day + relativedelta(months=-1)
-        # self.last_end_month_day = self.first_month_day + timedelta(days=-1)
-        # self.first_year_day = today.replace(day=1, month=1)
-        # self.last_first_year_day = self.first_year_day + \
-        #     relativedelta(years=-1)
-        # self.end_last_year_day = self.first_year_day + timedelta(days=-1)
+    def current_format(self):
+        return f'{round(self.current*0.001)*1000:,} đ'
+    
+    def previous_format(self):
+        return f'{self.previous:,}'
+    
+    def is_increased(self):
+        return get_change(self.current, self.previous)[0]
+    
+    def percent(self):
+        return get_change(self.current, self.previous)[1]

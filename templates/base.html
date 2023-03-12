@@ -44,8 +44,11 @@
         <div class="d-md-flex justify-content-between align-items-center px-4 py-2">
           <div class="">
             <h5 class="mb-2 m-sm-0 p-0 text-warning d-none d-sm-block" >
-              {% block header %}
-              {% endblock %}
+              <a href="javascript:window.location.href=window.location.href" class="text-decoration-none text-reset">
+                {% block header %}
+                {% endblock %}
+              </a>
+
             </h5>
           </div>
           {% if not hidden_top_filter %}
@@ -70,25 +73,62 @@
                     <span class="visually-hidden">Toggle Dropdown</span>
                   </button>
                   <ul class="dropdown-menu dropdown-menu-end">
-                    <li><a class="dropdown-item" href="#">Tuần</a></li>
-                    <li><a class="dropdown-item" href="#">Tháng</a></li>
-                    <li><a class="dropdown-item" href="#">Năm</a></li>
+                    <form method="get">
+                    <li><button class="dropdown-item" type="submit" name="time" value="week">Tuần</button></li>
+                    <li><button class="dropdown-item" type="submit" name="time" value="month">Tháng</button></li>
+                    <li><button class="dropdown-item" type="submit" name="time" value="year">Năm</button></li>
                     <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item" href="#">Tùy chỉnh</a></li>
+                    <li><button class="dropdown-item" type="button"  data-bs-toggle="modal" data-bs-target="#customTimeModal" >Tùy chỉnh</button></li>
+
+                    </form>
                   </ul>
                 </div>
 
+                
+
     
             </div>
+
+    
           </div>
           {% endif %}
+
+          
         </div>
+
+        
       </div>
+
+      
    <!-- Header on desktop -->
 
     </div>
+
+    
   </header>
   <div class="container-fluid">
+                                <!-- Modal -->
+                                <div class="modal fade" id="customTimeModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                  <div class="modal-dialog">
+                                    <div class="modal-content">
+                                      <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                      </div>
+                                      <form action="" name="custom">
+                                      <div class="modal-body">
+                                        <input type="datetime-local" name="start" id="">
+                                        <input type="datetime-local" name="end" id="">
+                                        
+                                      </div>
+                                      <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-primary">Save changes</button>
+                                      </div>
+                                    </form>
+                                    </div>
+                                  </div>
+                                </div>
     <div class="row">
       {% include 'sidebar.html' %}
       <main class="col-md-9 ms-sm-auto col-lg-10 bg-light ">
