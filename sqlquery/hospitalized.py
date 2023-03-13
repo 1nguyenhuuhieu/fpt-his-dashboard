@@ -1,13 +1,13 @@
 from datetime import timedelta, datetime
 
 # Số lượng nhập viện trong ngày
-def in_day(day, cursor):
+def in_day(start, end, cursor):
     try:
         q = cursor.execute("""SELECT
         COALESCE(COUNT(BenhAn_Id),0)
         FROM BenhAn
-        WHERE NgayVaoVien=?
-        """, day
+        WHERE ThoiGianVaoVien BETWEEN ? AND ?
+        """, start, end
         ).fetchone()[0]
 
         return q
@@ -97,7 +97,7 @@ def min_betweentime(start, end, cursor):
         return None
 
 # Số lượng bệnh nhân đang nội trú trong ngày
-def total_day(day, cursor):
+def total(day, cursor):
     tomorrow = day + timedelta(days=1)
     try:
         q = cursor.execute("""SELECT

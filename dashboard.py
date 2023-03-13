@@ -45,18 +45,6 @@ total_bed = {
 
 
 
-# Tính % so với
-def get_percent(current, previous):
-    if not current:
-        current = 0
-    if not previous:
-        previous = 0
-    if current == previous:
-        return (True, 100)
-    try:
-        return (current > previous, round((current / previous) * 100, 1))
-    except ZeroDivisionError:
-        return (current > previous, 0)
 
 
 # Convert to google chart data
@@ -150,77 +138,100 @@ def home(day_query=None):
     # kết nối database sql server
     cnxn = db.get_db()
     cursor = cnxn.cursor()
-    # lấy ngày xem dashboard
+    
+    # ngày bắt đầu và kết thúc truy vấn dữ liệu
+    time_filter = request.args.get('time')
+    start_get =  request.args.get('start')
+    end_get = request.args.get('end')
 
-    day_class = DayQuery(day_query)
+    # lấy ngày xem dashboard
+    day_class = DayQuery(day_query,time_filter, start_get, end_get)
     today = day_class.today
-    yesterday = day_class.yesterday()
+    start = day_class.start
+    end = day_class.end
+
+    previous_start = day_class.previous_start
+    previous_end = day_class.previous_end
+
 
     # Tổng Doanh thu trong 1 ngày
-    today_money = query_revenue.total_day(today, cursor)
-    yesterday_money = query_revenue.total_day(yesterday, cursor)
-    money_card = MoneyCard(today_money, yesterday_money)
+    current = query_revenue.total_money_betweentime(start, end, cursor)
+    previous = query_revenue.total_money_betweentime(previous_start, previous_end, cursor)
+    money_card = MoneyCard(current, previous)
 
+    # Service card
+    all_service_card = []
     # Tổng Doanh thu dược
-    today_money_medicine = query_revenue.service_medicine_day(
-        today, 'DU', cursor)
-    percent_duoc = get_percent(today_money_medicine, today_money)
-
-    medicine_card = (today_money_medicine, percent_duoc[1])
+    current = query_revenue.service_medicine_day(start, end, 'DU', cursor)
+    card = ServiceCard('Dược',current, money_card.current, 'fa-solid fa-pills', 'medicine')
+    all_service_card.append(card)
 
     # Tổng Doanh thu dịch vụ
-    today_money_service = query_revenue.service_medicine_day(
-        today, 'DV', cursor)
-    percent_service = get_percent(today_money_service, today_money)
-
-    service_card = (today_money_service, percent_service[1])
+    current = query_revenue.service_medicine_day(start, end, 'DV', cursor)
+    card = ServiceCard('Dịch vụ',current, money_card.current, 'fa-solid fa-stethoscope', 'service')
+    all_service_card.append(card)
 
     # Thống kê bệnh nhân
     patient_card = []
-    today_in_hospital = query_hospitalized.total_day(today, cursor)
-    yesterday_in_hospital = query_hospitalized.total_day(yesterday, cursor)
 
-    percent_in_hospita = get_change(today_in_hospital, yesterday_in_hospital)
-    patient_card.append(
-        ('hospitalized', "Tổng bệnh nhân nội trú", 'fa-solid fa-hospital', today_in_hospital, percent_in_hospita))
+    try:
+        start_day = start.date()
+        end_day = end.date()
+        previous_start_day = previous_start.date()
+        previous_end_day = previous_end.date()
 
-    # Số lượt tiếp nhận
-    today_visited = query_visited.total_day(today, cursor)
-    yesterday_visited = query_visited.total_day(yesterday, cursor)
-    percent_visited = get_change(today_visited, yesterday_visited)
-    patient_card.append(
-        ('visited', "Số lượt khám bệnh", 'fa-solid fa-hospital-user', today_visited, percent_visited))
+    except:
+        start_day = start
+        end_day = end
+        previous_start_day = previous_start
+        previous_end_day = previous_end
+
+    diff = (end_day - start_day).days
+
+    current = 0
+    previous = 0
+    for i in range(diff):
+        day = start_day + timedelta(days=i)
+        previous_day = previous_start_day + timedelta(days=i)
+        if day <= date.today():
+            current += query_hospitalized.total(day, cursor)
+        if previous_day <= date.today():
+            previous += query_hospitalized.total(previous_day, cursor)
+
+    card = PatientHomeCard('fa-solid fa-hospital', 'Lượt nằm viện nội trú', current,previous, 'hospitalized')
+    patient_card.append(card)   
+
+
+    # Số lượt khám bệnh
+    current = query_visited.total(start, end, cursor)
+    previous = query_visited.total(previous_start, previous_end,cursor)
+    card = PatientHomeCard('fa-solid fa-hospital-user', 'Số lượt khám bệnh', current,previous, 'visited'  )
+    patient_card.append(card)
 
     # Số bệnh nhân nhập viện
-    today_hospitalize = query_hospitalized.in_day(today, cursor)
-    yesterday_hospitalize = query_hospitalized.in_day(yesterday, cursor)
-    percent_hospitalize = get_change(today_hospitalize, yesterday_hospitalize)
-    patient_card.append(('new_patients', "Bệnh nhân nội trú mới", 'fa-solid fa-bed-pulse',
-                        today_hospitalize, percent_hospitalize))
+    current = query_hospitalized.in_day(start, end, cursor)
+    previous = query_hospitalized.in_day(previous_start, previous_end, cursor)
+    card = PatientHomeCard('fa-solid fa-bed-pulse', 'Bệnh nhân nội trú mới', current,previous, 'new_patients')
+    patient_card.append(card)
 
     # Lượt chuyển tuyến
-    today_transfer = query_transfer.total_day(
-        today, cursor) + query_transfer.total_department_day(today, cursor)
-    yesterday_transfer = query_transfer.total_day(
-        yesterday, cursor) + query_transfer.total_department_day(yesterday, cursor)
-    percent_transfer = get_change(today_transfer, yesterday_transfer)
+    current = query_transfer.total(start, end, cursor) + query_transfer.total_department(start, end, cursor)
+    previous = query_transfer.total(previous_start, previous_end,cursor) + query_transfer.total_department(previous_start, previous_end, cursor)
+    card = PatientHomeCard('fa-solid fa-truck-medical', 'Chuyển tuyến', current, previous,'transfer' )
+    patient_card.append(card)
 
-    patient_card.append(
-        ('transfer', "Chuyển tuyến", 'fa-solid fa-truck-medical', today_transfer, percent_transfer))
 
     # Số ca phẫu thuật thủ thuật
-    today_surgecies = query_surgery.total_day(today, cursor)
-    yesterday_surgecies = query_surgery.total_day(yesterday, cursor)
-    percent_surgecies = get_change(today_surgecies, yesterday_surgecies)
-    patient_card.append(
-        ('surgery_list', "Phẫu thuật, thủ thuật", 'fa-solid fa-kit-medical', today_surgecies, percent_surgecies))
+    current = query_surgery.total(start, end, cursor)
+    previous = query_surgery.total(previous_start, previous_end, cursor)
+    card = PatientHomeCard('fa-solid fa-kit-medical', 'Phẫu thuật, thủ thuật', current, previous,'surgery_list' )
+    patient_card.append(card)
 
     # Số ca đẻ
-    today_born = query_born.total_day(today, cursor)
-    yesterday_born = query_born.total_day(yesterday, cursor)
-    percent_born = get_change(today_born, yesterday_born)
-    patient_card.append(
-        ('born', "Số trẻ sinh", 'fa-solid fa-baby', today_born, percent_born))
+    current = query_born.total(start, end, cursor)
+    previous = query_born.total(previous_start, previous_end, cursor)
+    card = PatientHomeCard('fa-solid fa-baby', 'Số trẻ sinh', current, previous,'born' )
+    patient_card.append(card)
 
     # Thống kê số lượt khám theo từng phòng khám
     visited_in_department = query_visited.department_day(today, cursor)
@@ -270,9 +281,8 @@ def home(day_query=None):
     today = today.strftime("%Y-%m-%d")
 
     context = {
-        'medicine_card': medicine_card,
-        'service_card': service_card,
-        'patient_card': patient_card,
+        'start': start,
+        'end': end,
         'today': today,
         'soluotkham30ngay': last30days_visited,
         'patient_in_department': patient_in_department_id,
@@ -286,7 +296,9 @@ def home(day_query=None):
 
 
         
-        'money_card': money_card
+        'money_card': money_card,
+        'all_service_card': all_service_card,
+        'patient_card': patient_card
 
     }
 

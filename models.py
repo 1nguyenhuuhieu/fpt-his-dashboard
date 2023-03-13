@@ -15,14 +15,65 @@ def get_change(current, previous):
     except ZeroDivisionError:
         return (current > previous, 0)
 
+# Tính % so với
+def get_percent(current, previous):
+    if not current:
+        current = 0
+    if not previous:
+        previous = 0
+    if current == previous:
+        return (True, 100)
+    try:
+        return (current > previous, round((current / previous) * 100, 1))
+    except ZeroDivisionError:
+        return (current > previous, 0)
 
 class DayQuery:
-    def __init__(self, today):
+    def __init__(self, today, time_filter,request_start, request_end):
         try:
             today = datetime.strptime(today, '%Y-%m-%d')
         except:
             today = date.today()
+        
         self.today = today
+
+        if time_filter is None:
+            start = today
+            end = today + timedelta(days=1)
+            previous_start = start + timedelta(days=-1)
+            previous_end = start
+        elif time_filter == 'week':
+            mon_day = self.today - timedelta(days=self.today.weekday())
+            start = mon_day
+            end = mon_day + timedelta(days=7)
+            previous_start = start + timedelta(days=-7)
+            previous_end = start
+        elif time_filter == 'month':
+            first_day_month = self.today.replace(day=1)
+            start = first_day_month
+            end = first_day_month + relativedelta(months=1)
+            previous_start = start + relativedelta(months=-1)
+            previous_end = start
+        elif time_filter == 'year':
+            first_day_year = self.today.replace(day=1, month=1)
+            start = first_day_year
+            end = start + relativedelta(years=1)
+            previous_start = start + relativedelta(years=-1)
+            previous_end = start
+        elif time_filter == 'custom_filter':
+            start =  request_start
+            start = datetime.strptime(start, '%Y-%m-%dT%H:%M')
+            end = request_end
+            end = datetime.strptime(end, '%Y-%m-%dT%H:%M')
+            diff = (end - start).days
+            previous_start = start - timedelta(days=diff)
+            previous_end = end - timedelta(days=diff)
+
+        self.start = start
+        self.end = end
+        self.previous_start = previous_start
+        self.previous_end = previous_end
+
     
     def yesterday(self):
         return self.today - timedelta(days=1)
@@ -31,13 +82,13 @@ class DayQuery:
         return self.today - timedelta(days=self.today.weekday())
     
     def sunday(self):
-        return self.monday() + timedelta(days=6)
+        return self.monday() + timedelta(days=7)
     
     def lastweek_monday(self):
         return self.today - timedelta(days=self.today.weekday() + 7)
     
     def lastweek_sunday(self):
-        return self.today - timedelta(days=self.today.weekday() + 8)
+        return self.today - timedelta(days=self.today.weekday() + 9)
     
     def last2week_monday(self):
         return self.today - timedelta(days=self.today.weekday() + 14)
@@ -49,26 +100,22 @@ class DayQuery:
         return self.today.replace(day=1)
     
     def end_day_month(self):
-        return self.today.replace(day=1) + relativedelta(months=1) + timedelta(days=-1)
+        return self.first_day_month() + relativedelta(months=1)
     
     def first_day_2month(self):
         return self.first_day_month() + relativedelta(months=-1)
     
     def end_day_2month(self):
-        return self.first_day_2month() + relativedelta(months=1) + timedelta(days=-1)
+        return self.first_day_2month() + relativedelta(months=1)
     
     def first_day_year(self):
         return self.today.replace(day=1, month=1)
     
     def end_day_year(self):
-        return self.first_day_year() + relativedelta(years=1) + timedelta(days=-1)
+        return self.first_day_year() + relativedelta(years=1)
     
     def first_day_2year(self):
         return self.today.replace(day=1, month=1) + relativedelta(years=-1)
-    
-    def end_day_2year(self):
-        return self.first_day_year() + timedelta(days=-1)
-    
 
 class MoneyCard:
     def __init__(self, current, previous):
@@ -82,8 +129,36 @@ class MoneyCard:
         return f'{round(self.current*0.001)*1000:,} đ'
     
     def previous_format(self):
-        return f'{self.previous:,}'
+        return f'{round(self.previous*0.001)*1000:,} đ'
     
+    def is_increased(self):
+        return get_change(self.current, self.previous)[0]
+    
+    def percent(self):
+        return get_change(self.current, self.previous)[1]
+    
+class ServiceCard:
+    def __init__(self,title, current, total, icon, link):
+        self.title = title
+        self.current = current
+        self.icon = icon
+        self.link = link
+        self.total = total
+
+    def current_format(self):
+        return f'{round(self.current*0.001)*1000:,} đ'
+    
+    def percent(self):
+        return get_percent(self.current, self.total)[1]
+    
+class PatientHomeCard:
+    def __init__(self, icon, title, current, previous, link):
+        self.icon = icon
+        self.title = title
+        self.current = current
+        self.previous = previous
+        self.link = link
+         
     def is_increased(self):
         return get_change(self.current, self.previous)[0]
     

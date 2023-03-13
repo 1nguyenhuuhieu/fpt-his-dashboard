@@ -1,18 +1,33 @@
 # Số lượng chuyển viện trong ngày
-def total_day(day, cursor):
+def total(start, end, cursor):
     try:
         q = cursor.execute("""SELECT
         COALESCE(COUNT(ChuyenVien_Id),0)
         FROM dbo.ChuyenVien
-        WHERE NgayChuyen=?
-        """,day
+        WHERE NgayTao BETWEEN ? AND ?
+        """,start, end
         ).fetchone()[0]
 
         return q
     except:
         print("Lỗi query transfer.total_day")
         return None
+
+# Số lượng chuyển viện từ các khoa nội trú
+def total_department(start, end, cursor):
+    query = """
+    SELECT COALESCE(COUNT(BenhAn.BenhAn_Id), 0) as total
+    FROM BenhAn
+    WHERE LyDoXuatVien_Id = 546 AND ThoiGianRaVien BETWEEN ? AND ?
+    """
+    try:
+        q = cursor.execute(query, start, end).fetchone()[0]
+        return q
+    except:
+        print("Lỗi query transfer.total_department")
+        return None   
     
+
 # Số lượng chuyển viện trong khoảng time
 def total_betweentime(start, end, cursor):
     try:
@@ -85,20 +100,7 @@ def min_betweentime(start, end, cursor):
         print("Lỗi query transfer.min_betweentime")
         return None
 
-# Số lượng chuyển viện từ các khoa nội trú
-def total_department_day(day, cursor):
-    query = """
-    SELECT COALESCE(COUNT(BenhAn.BenhAn_Id), 0) as total
-    FROM BenhAn
-    WHERE LyDoXuatVien_Id = 546 AND NgayRaVien = ?
-    """
-    try:
-        q = cursor.execute(query, day).fetchone()[0]
-
-        return q
-    except:
-        print("Lỗi query transfer.total_department_day")
-        return None       
+    
 
 # Số lượng chuyển viện từ các khoa nội trú trong khoảng time
 def total_department_betweentime(start, end, cursor):

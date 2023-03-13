@@ -1,16 +1,16 @@
 # Số ca phẫu thuật trong ngày
-def total_day(day, cursor):
+def total(start, end, cursor):
     try:
         q = cursor.execute("""SELECT
         COALESCE(COUNT(BenhAnPhauThuat_Id),0)
         FROM dbo.BenhAnPhauThuat
-        WHERE NgayThucHien=?
-        """,day
+        WHERE ThoiGianKetThuc BETWEEN ? AND ?
+        """,start, end
         ).fetchone()[0]
 
         return q
     except:
-        print("Lỗi query surgery.total_day")
+        print("Lỗi query surgery.total")
         return None
 
 # danh sách chi tiết ca phẫu thuật

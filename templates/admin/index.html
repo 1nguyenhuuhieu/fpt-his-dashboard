@@ -12,43 +12,30 @@
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
               <i class="fa-solid fa-pen-to-square me-2"></i>Bài viết mới
               </button>
-
           </div>
           <div>
             <a href="{{ url_for('admin_money')}}" class="btn btn-primary">
               <i class="fa-solid fa-pen-to-square me-2"></i>Nhập báo cáo thu tiền dịch vụ
             </a>
-
           </div>
-
-
-
         </div>
-
     </div>
     <div class="col-lg-6">
-      
       {% for post in value.list_post %}
      <h6>{{ post.title }}</h6>
       <p class="text-muted fst-italic">Đăng bởi {{post.username}} lúc {{ post.time_created}}</p>
-
         {{ post.body|safe }}
         <form method="post">
           <input type="hidden" value="{{post.post_id}}" name="post_id">
           <button type="submit" class="btn btn-danger" name="delete_post">Xóa</button>
-
         </form>
-
         {% if not loop.last %}
         <hr>
         {% endif %}
       {% endfor %}
     </div>
-
     </div>
-  
 </div>
-
   <!-- Modal -->
   <div class="modal fade " id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
@@ -76,8 +63,6 @@
       </div>
     </div>
   </div>
-
-
 <script>
     tinymce.init({
   selector: 'textarea',
@@ -92,19 +77,9 @@
   image_class_list: [
     {title: 'Tự động chiều ngang', value: 'img-fluid border rounded shadow-sm m-1'},
 ]
-  
 });
 
-function updateTextContent(){
-  
-
-
-}
-
-
-
 </script>
-
 <script>
   // Prevent Bootstrap dialog from blocking focusin
   document.addEventListener('focusin', (e) => {
@@ -115,7 +90,6 @@ function updateTextContent(){
 <script>
   const urlGenerator = '/news/';
   const todayURL = "{{ url_for('news') }}";
-
 </script>
 
 {% endblock %}

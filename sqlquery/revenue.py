@@ -1,22 +1,5 @@
-# Thống kê tiền doanh thu trong 1 ngày
-def total_day(day, cursor):
-    try:
-        q = cursor.execute(
-            """
-            SELECT COALESCE(SUM(SoLuong*DonGiaDoanhThu),0)
-            FROM XacNhanChiPhi
-            INNER JOIN XacNhanChiPhiChiTiet
-            ON XacNhanChiPhi.XacNhanChiPhi_Id=XacNhanChiPhiChiTiet.XacNhanChiPhi_Id
-            WHERE NgayXacNhan=?
-            """, day
-        ).fetchone()[0]
-        return int(q)
-    except:
-        print('Lỗi query total_day')
-        return 0
-
-# SQL query tổng doanh thu trong khoảng ngày
-def total_money_betweentime(startday, endday, cursor):
+# SQL query tổng doanh thu trong khoảng thời gian
+def total_money_betweentime(start, end, cursor):
     try:
         q = cursor.execute(
             """
@@ -26,13 +9,15 @@ def total_money_betweentime(startday, endday, cursor):
             INNER JOIN XacNhanChiPhiChiTiet
             ON XacNhanChiPhi.XacNhanChiPhi_Id=XacNhanChiPhiChiTiet.XacNhanChiPhi_Id
             WHERE ThoiGianXacNhan BETWEEN ? AND ?
-            """, startday, endday
+            """, start, end
         ).fetchone()[0]
 
-        return f'{int(q):,}'
+        return int(q)
     except:
-        print("Lỗi query revenue.total_money_betweenday")
+        print("Lỗi query revenue.total_money_betweentime")
         return 0
+
+
 
 # SQL query tổng doanh thu trong khoảng ngày
 def bhtt_betweentime(startday, endday, cursor):
@@ -53,7 +38,7 @@ def bhtt_betweentime(startday, endday, cursor):
         print("Lỗi query revenue.bhtt_betweentime")
         return 0
     
-# SQL query tổng doanh thu trong khoảng ngày
+# SQL query tổng doanh thu trong khoảng thời gian
 def bntt_betweentime(startday, endday, cursor):
     try:
         q = cursor.execute(
@@ -312,18 +297,18 @@ def total_bntt_day(day, cursor):
 
 
 # Tổng doanh thu dược trong ngày theo phân nhóm: (DV= Dịch vụ, DU = DƯợc)
-def service_medicine_day(day, phannhom ,cursor):
+def service_medicine_day(start,end, phannhom ,cursor):
     query = """
     SELECT 
     COALESCE(SUM(SoLuong*DonGiaDoanhThu),0) AS 'TongDoanhThu'
     FROM XacNhanChiPhi
     INNER JOIN (XacNhanChiPhiChiTiet LEFT JOIN VienPhiNoiTru_Loai_IDRef ON XacNhanChiPhiChiTiet.Loai_IDRef=VienPhiNoiTru_Loai_IDRef.Loai_IDRef)
     ON XacNhanChiPhi.XacNhanChiPhi_Id=XacNhanChiPhiChiTiet.XacNhanChiPhi_Id
-    WHERE NgayXacNhan = ? AND PhanNhom=?
+    WHERE ThoiGianXacNhan BETWEEN ? AND ? AND PhanNhom=?
     GROUP BY PhanNhom
     """
     try:
-        q = cursor.execute(query, day, phannhom).fetchone()[0]
+        q = cursor.execute(query, start, end, phannhom).fetchone()[0]
         return int(q)
     except:
         print("Lỗi query service_medicine_day")

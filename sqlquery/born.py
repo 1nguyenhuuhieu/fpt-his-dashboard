@@ -1,5 +1,5 @@
 # Số trẻ sinh trong ngày
-def total_day(day, cursor):
+def total(start, end, cursor):
     try:
         q = cursor.execute("""SELECT
         COUNT(BenhAnPhauThuat_Id)
@@ -13,13 +13,13 @@ def total_day(day, cursor):
         N'Đỡ đẻ thường ngôi chỏm',
         N'Đỡ đẻ thường ngôi chỏm; bóc rau'
         )
-        AND NgayThucHien = ?
-        """, day
+        AND ThoiGianKetThuc BETWEEN ? AND ?
+        """, start, end
         ).fetchone()[0]
 
         return q
     except:
-        print("Lỗi query born.total_day")
+        print("Lỗi query born.total")
         return None
 
 

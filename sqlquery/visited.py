@@ -1,18 +1,18 @@
 from datetime import date, datetime, timedelta
 
-# Số lượt tiếp nhận trong ngày
-def total_day(day, cursor):
+# Số lượt khám bệnh trong khoảng ngày
+def total(start, end, cursor):
     try:
         q = cursor.execute("""SELECT
         COALESCE(COUNT(KhamBenh_Id),0)
         FROM dbo.KhamBenh
-        WHERE NgayKham=?;
-        """,day
+        WHERE ThoiGianKham BETWEEN ? AND ?;
+        """,start, end
         ).fetchone()[0]
 
         return int(q)
     except:
-        print("Lỗi query visited.total_day")
+        print("Lỗi query visited.total")
         return None
     
 # Số lượt khám bệnh trong khoảng thời gian
