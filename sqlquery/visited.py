@@ -125,35 +125,6 @@ def total_betweenday(startday, endday, cursor):
     except:
         print("Lỗi query visited.total_betweenday")
         return None
-
-# Số lượt khám bệnh theo từng khoa phòng trong ngày
-def department_day(day, cursor):
-    try:
-        q = cursor.execute(
-            """
-            SELECT
-            (CASE
-                WHEN TenPhongBan IN(N'Phòng Khám Cao Huyết áp (10)', N'Phòng Khám Cao Huyết áp (10)_A' ) THEN N'Phòng Khám Cao Huyết áp (10)'
-                WHEN TenPhongBan IN(N'Phòng Khám Tiểu Đường (08)', N'Phòng Khám Tiểu Đường (08)_A') THEN N'Phòng Khám Tiểu Đường (08)'
-                ELSE TenPhongBan
-            END),
-            COALESCE(COUNT(KhamBenh.KhamBenh_Id),0) AS 'TongLuotKham'
-            FROM KhamBenh INNER JOIN nhh_department
-            ON KhamBenh.PhongBan_Id=nhh_department.PhongBan_Id
-            WHERE NgayKham=?
-            GROUP BY 
-            (CASE
-                WHEN TenPhongBan IN(N'Phòng Khám Cao Huyết áp (10)', N'Phòng Khám Cao Huyết áp (10)_A' ) THEN N'Phòng Khám Cao Huyết áp (10)'
-                WHEN TenPhongBan IN(N'Phòng Khám Tiểu Đường (08)', N'Phòng Khám Tiểu Đường (08)_A') THEN N'Phòng Khám Tiểu Đường (08)'
-                ELSE TenPhongBan END)
-            ORDER BY TongLuotKham DESC
-            """, day
-        ).fetchall()
-
-        return q
-    except:
-        print("Lỗi query visited.department_day")
-        return None
     
 # Số lượt khám bệnh theo từng khoa phòng trong khoảng ngày
 def department_week(startday,endday, cursor):
@@ -233,8 +204,35 @@ def last5(day, cursor):
         print("Lỗi query visited.last5")
         return None
     
+# lượt khám theo khoa phòng
+def department(start, end, cursor):
+    query = """
+            SELECT
+            (CASE
+            WHEN TenPhongBan IN(N'Phòng Khám Cao Huyết áp (10)', N'Phòng Khám Cao Huyết áp (10)_A' ) THEN N'Phòng Khám Cao Huyết áp (10)'
+            WHEN TenPhongBan IN(N'Phòng Khám Tiểu Đường (08)', N'Phòng Khám Tiểu Đường (08)_A') THEN N'Phòng Khám Tiểu Đường (08)'
+            ELSE TenPhongBan
+            END),
+            COALESCE(COUNT(KhamBenh.KhamBenh_Id),0) AS 'TongLuotKham'
+            FROM KhamBenh INNER JOIN nhh_department
+            ON KhamBenh.PhongBan_Id=nhh_department.PhongBan_Id
+            WHERE ThoiGianKham BETWEEN ? AND ?
+            GROUP BY 
+            (CASE
+            WHEN TenPhongBan IN(N'Phòng Khám Cao Huyết áp (10)', N'Phòng Khám Cao Huyết áp (10)_A' ) THEN N'Phòng Khám Cao Huyết áp (10)'
+            WHEN TenPhongBan IN(N'Phòng Khám Tiểu Đường (08)', N'Phòng Khám Tiểu Đường (08)_A') THEN N'Phòng Khám Tiểu Đường (08)'
+            ELSE TenPhongBan END)
+            ORDER BY TongLuotKham DESC
+            """
+
+    try:
+        q = cursor.execute(query, start, end).fetchall()
+        return q
+    except:
+        print("Lỗi query visited.department_id_day")
+        return None      
 # lượt khám theo khoa phòng và department_id
-def department_id_day(day, cursor):
+def department_with_id(start, end, cursor):
     query = """
             SELECT
             (CASE
@@ -250,7 +248,7 @@ def department_id_day(day, cursor):
             END)
             FROM KhamBenh INNER JOIN nhh_department
             ON KhamBenh.PhongBan_Id=nhh_department.PhongBan_Id
-            WHERE NgayKham= ?
+            WHERE ThoiGianKham BETWEEN ? AND ?
             GROUP BY 
             (CASE
             WHEN TenPhongBan IN(N'Phòng Khám Cao Huyết áp (10)', N'Phòng Khám Cao Huyết áp (10)_A' ) THEN N'Phòng Khám Cao Huyết áp (10)'
@@ -265,7 +263,7 @@ def department_id_day(day, cursor):
             """
 
     try:
-        q = cursor.execute(query, day).fetchall()
+        q = cursor.execute(query, start, end).fetchall()
         return q
     except:
         print("Lỗi query visited.department_id_day")
