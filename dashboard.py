@@ -363,7 +363,8 @@ def revenue(day_query=None):
         'top10_doanhthu_table': top10_doanhthu_table,
 
 
-        'money_card': money_card
+        'money_card': money_card,
+        'confirm_card': confirm_card
 
     }
     cnxn.close()
