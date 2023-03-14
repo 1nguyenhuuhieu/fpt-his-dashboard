@@ -3,6 +3,7 @@
 <i class="fa-solid fa-file-invoice me-2"></i>{% block title %}Doanh thu{% endblock %}
 {% endblock %}
 {% block content %}
+{% include 'revenue/chartjs.html' %}
     <div class="row">
         <div class="col-lg-6">
             <div class="row g-2">
@@ -52,30 +53,30 @@
                     <div class="card shadow-sm h-100">
                         <div class="card-body">
                             <h6 class="card-subtitle"><i class="fa-solid fa-clipboard-check me-2 fa-fw"></i>Hoàn tất
-                                thanh toán: {{ value.confirmed_total }} </h6>
+                                thanh toán: {{ value.confirm_card.total }} </h6>
                             <hr class="my-2">
                             <div class="row g-0">
                                 <div class="col-6 text-center border-end">
-                                    <h3 class="card-title m-0">{{ value.confirmed_visited }}</h3>
+                                    <h3 class="card-title m-0">{{ value.confirm_card.visited_confirmed }}</h3>
                                     <p class="text-muted card-text m-0">Ngoại trú</p>
-                                    <span class="m-0 p-0 fw-semibold">{{ value.money_visited }} đ</span>
+                                    <span class="m-0 p-0 fw-semibold">{{ value.confirm_card.visited_money_format() }}</span>
                                 </div>
                                 <div class="col-6 text-center">
-                                    <h3 class="card-title m-0">{{ value.confirmed_hospital}}</h3>
+                                    <h3 class="card-title m-0">{{ value.confirm_card.hospital_confirmed }}</h3>
                                     <p class="text-muted card-text m-0">Nội trú</p>
-                                    <span class="m-0 p-0 fw-semibold">{{ value.money_hospital }} đ</span>
+                                    <span class="m-0 p-0 fw-semibold">{{ value.confirm_card.hospital_money_format() }}</span>
                                 </div>
                             </div>
                             <hr class="my-2">
-                            {% for title, number in value.visited_card_body %}
+                            {% for title, number in value.confirm_card_extra %}
                             <div class="card-text d-flex justify-content-between">
                                 <span>{{ title }}</span>
-                                <span class="fw-bold">33333</span>
-                                
+                                <span class="fw-bold">{{ number }}</span>
+                        
                             </div>
                             {% endfor %}
                             <div class="progress mt-2" role="progressbar" aria-label="Example with label" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
-                                <div class="progress-bar text-bg-success" style="width: {{ value.percent_thanhtoan }}%">Bảo hiểm thanh toán {{ value.percent_thanhtoan }}%</div>
+                                <div class="progress-bar text-bg-success" style="width: {{ value.confirm_card.percent() }}%">Bảo hiểm thanh toán {{ value.confirm_card.percent() }}%</div>
                               </div>
                             <hr class="mt-2">
                             <div id="chart3"></div>

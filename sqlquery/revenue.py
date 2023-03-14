@@ -408,8 +408,7 @@ def tenphanhom_service(start, end, cursor):
         ).fetchall()
 
         for row in q:
-            row.TongDoanhThu = f'{round(int(row.TongDoanhThu)*0.001)*1000:,}'
-
+            row.TongDoanhThu = int(row.TongDoanhThu)
         return q
     except:
         print("Lỗi query tenphanhom_service")

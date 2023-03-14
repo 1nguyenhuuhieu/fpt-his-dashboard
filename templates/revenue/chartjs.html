@@ -1,0 +1,108 @@
+
+<script type="text/javascript">
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+  
+    function drawChart() {
+     
+
+      const data_chart = {{ value.money_card_chart|tojson }}  
+      var data = google.visualization.arrayToDataTable(data_chart);
+  
+      var options = {
+        title: 'Thống kê theo mục',
+        backgroundColor: { fill:'transparent' }
+      };
+  
+      var chart = new google.visualization.PieChart(document.getElementById('chart1'));
+      chart.draw(data, options);
+    }
+  
+  
+    $(window).resize(function(){
+    drawChart();
+  });
+  </script>
+
+
+
+
+<script type="text/javascript">
+    
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(drawChart3);
+  
+    function drawChart3() {
+  
+      var data = google.visualization.arrayToDataTable(data_chart3);
+  
+      var options = {
+        title: 'Thống kê theo mục',
+        backgroundColor: { fill:'transparent' },
+        legend: {position: 'none'}
+      };
+  
+      var chart3= new google.visualization.PieChart(document.getElementById('chart3'));
+      chart3.draw(data, options);
+    }
+  
+  
+    $(window).resize(function(){
+    drawChart3();
+  });
+  </script>
+  
+
+  
+
+    <!-- Biểu đồ 30 ngày gần nhất -->
+    <script>
+
+google.charts.load('current', {packages: ['corechart', 'line']});
+google.charts.setOnLoadCallback(drawBackgroundColor);
+
+function drawBackgroundColor() {
+     const data_chart = {{ value.last_30days_money|tojson }}
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'Ngày');
+      data.addColumn('number', 'Tổng doanh thu');
+
+      data.addRows(data_chart);
+
+      var options = {
+        title: 'Doanh thu 30 ngày gần nhất theo từng ngày',
+
+      };
+
+      var chart = new google.visualization.LineChart(document.getElementById('chart2'));
+      chart.draw(data, options);
+    }
+
+      </script>
+
+
+<!-- chart 4 -->
+
+
+<script type="text/javascript">
+    google.charts.load('current', {'packages':['corechart']});
+    google.charts.setOnLoadCallback(drawChart5);
+  
+    function drawChart5() {
+      const data_chart = {{ value.last_30days_department_money_chart|tojson }}
+
+  
+      var data = google.visualization.arrayToDataTable(data_chart);
+  
+      var options = {
+        title: 'Tổng doanh thu 30 ngày gần nhất theo từng khoa, phòng khám',
+        backgroundColor: { fill:'transparent' },
+        legend: {position: 'none'}
+      };
+  
+      var chart = new google.visualization.PieChart(document.getElementById('chart4'));
+      chart.draw(data, options);
+    }
+      
+
+  </script>

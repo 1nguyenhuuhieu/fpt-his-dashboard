@@ -76,26 +76,6 @@ def home(day_query=None):
     previous_start = day_class.previous_start
     previous_end = day_class.previous_end
 
-    # Tổng Doanh thu
-    current = query_revenue.total_money_betweentime(start, end, cursor)
-    previous = query_revenue.total_money_betweentime(previous_start, previous_end, cursor)
-    money_card = MoneyCard(current, previous)
-
-    # Service card
-    all_service_card = []
-    # Tổng Doanh thu dược
-    current = query_revenue.service_medicine_day(start, end, 'DU', cursor)
-    card = ServiceCard('Dược',current, money_card.current, 'fa-solid fa-pills', 'medicine')
-    all_service_card.append(card)
-
-    # Tổng Doanh thu dịch vụ
-    current = query_revenue.service_medicine_day(start, end, 'DV', cursor)
-    card = ServiceCard('Dịch vụ',current, money_card.current, 'fa-solid fa-stethoscope', 'service')
-    all_service_card.append(card)
-
-    # Thống kê bệnh nhân
-    patient_card = []
-
     try:
         start_day = start.date()
         end_day = end.date()
@@ -106,6 +86,28 @@ def home(day_query=None):
         end_day = end
         previous_start_day = previous_start
     diff = (end_day - start_day).days
+
+
+    # Tổng Doanh thu
+    current = query_revenue.total_money_betweentime(start, end, cursor)
+    previous = query_revenue.total_money_betweentime(previous_start, previous_end, cursor)
+    money_card = MoneyCard(current, previous)
+
+    # Service card
+    all_service_card = []
+    # Tổng Doanh thu dược
+    current = query_revenue.service_money(start, end, 'DU', cursor)
+    card = ServiceCard('Dược',current, money_card.current, 'fa-solid fa-pills', 'medicine')
+    all_service_card.append(card)
+
+    # Tổng Doanh thu dịch vụ
+    current = query_revenue.service_money(start, end, 'DV', cursor)
+    card = ServiceCard('Dịch vụ',current, money_card.current, 'fa-solid fa-stethoscope', 'service')
+    all_service_card.append(card)
+
+    # Thống kê bệnh nhân
+    patient_card = []
+
 
     current = 0
     previous = 0
@@ -203,6 +205,7 @@ def home(day_query=None):
     context = {
         'start': start,
         'end': end,
+        'diff': diff,
         'today': today,
         'soluotkham30ngay': last30days_visited,
         'patient_in_department': patient_in_department_id,
@@ -248,10 +251,9 @@ def revenue(day_query=None):
     previous = query_revenue.total_money_betweentime(previous_start, previous_end, cursor)
     extra_info = query_revenue.tenphanhom_service(start, end, cursor)
     money_card = MoneyRevenueCard('fa-solid fa-money-bill', 'Tổng doanh thu', current, previous, extra_info)
+    
     # chart cho money card
-    money_card_chart = query_revenue.tenphanhom_service(
-        start, end, cursor)
-    money_card_chart = convert_to_chart(money_card_chart)
+    money_card_chart = convert_to_chart(extra_info)
     money_card_chart = money_card_chart.copy()
     money_card_chart.insert(0, ['Mục', 'Số tiền'])
     
@@ -270,9 +272,9 @@ def revenue(day_query=None):
 
     confirm_card = ConfirmRevenueCard('fa-solid fa-clipboard-check', 'Hoàn tất thanh toán',confirmed_visited, confirmed_hospital,money_visited, money_hospital, bhtt, bntt)
     
-    visited_card_body = [
-        ['Bảo hiểm thanh toán', confirm_card.bhyt_money_format],
-        ['Bệnh nhân thanh toán', confirm_card.bntt_money_format],
+    confirm_card_extra = [
+        ['Bảo hiểm thanh toán', confirm_card.bhyt_money_format()],
+        ['Bệnh nhân thanh toán', confirm_card.bntt_money_format()],
     ]
 
     # Doanh thu 30 ngày gần nhất
@@ -347,12 +349,9 @@ def revenue(day_query=None):
    
     today = today.strftime("%Y-%m-%d")
     context = {
-        'today': today,
-        'confirmed_visited': confirmed_visited,
-        'confirmed_hospital': confirmed_hospital,
+        
         'last_30days_money': last_30days_money,
         'last_30days_department_money_chart': last_30days_department_money_chart,
-        'visited_card_body': visited_card_body,
         'confirmed_chart': confirmed_chart,
         'bellow_card': bellow_card,
         'bellow_card_title': bellow_card_title,
@@ -362,9 +361,12 @@ def revenue(day_query=None):
         'recent_confirmed_in_day': recent_confirmed_in_day,
         'top10_doanhthu_table': top10_doanhthu_table,
 
-
+        'today': today,
         'money_card': money_card,
-        'confirm_card': confirm_card
+        'money_card_chart': money_card_chart,
+        'confirm_card': confirm_card,
+        'confirm_card_extra': confirm_card_extra
+
 
     }
     cnxn.close()
