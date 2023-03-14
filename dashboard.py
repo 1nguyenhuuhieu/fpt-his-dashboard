@@ -39,7 +39,7 @@ total_bed = {
     'Khoa Ngoại tổng hợp': (44, 8, 52),
     'Khoa Nội-Truyền nghiễm': (37, 15, 52),
     'Khoa HSCC-Nhi': (44, 10, 54),
-    'Khoa Phụ Sản': (30, 11, 48),
+    'Khoa Phụ Sản': (30, 11, 41),
     'Liên chuyên khoa TMH-RHM-Mắt': (17, 8, 25),
     'Khoa Đông Y&PHCN': (28, 20, 48)
 }
