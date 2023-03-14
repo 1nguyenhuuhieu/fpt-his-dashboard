@@ -274,7 +274,7 @@ class Bed():
         self.total = total
 
     def percent(self):
-        return get_percent(self.current, self.total)
+        return get_percent(self.current, self.total)[1]
     
     def status(self):
         if self.percent() > 95: return 'hot'

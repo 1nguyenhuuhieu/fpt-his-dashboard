@@ -3,7 +3,11 @@
 {% block title %}Bệnh nhân nội trú{% endblock %}{% endblock %}
 {% block content %}
 
-
+<ul>
+  {% for department in value.percent_bed_table %}
+  <li>{{ department.title }} - {{ department.current }}/{{department.total}}  {{ department.percent() }} ({{department.status()}})</li>
+  {% endfor %}
+</ul>
   <!-- Nội trú -->
   <div class="row">
     <!-- Top card  -->

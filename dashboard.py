@@ -519,8 +519,6 @@ def hospitalized(day_query=None):
     for department in percent_bed:
         bed = Bed(department[0], department[1], department[2])
         percent_bed_table.append(bed)
-    
-    print(percent_bed_table)
 
 
     
@@ -553,6 +551,7 @@ def hospitalized(day_query=None):
         'recent_hospitalized_in_day': recent_hospitalized_in_day,
         'last_patients': last_patients,
         'chart_30_days': chart_30_days,
+        'percent_bed_table': percent_bed_table
 
     }
 
