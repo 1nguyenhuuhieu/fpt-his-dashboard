@@ -382,7 +382,8 @@ def revenue(day_query=None):
 @app.route('/revenue/confirmed/<string:day_query>')
 @register_breadcrumb(app, '..revenue.confirmed', 'Danh sách')
 def confirmed(day_query=None):
-    init(request, day_query)
+
+    init_variable(request, day_query)
 
     all_confirmed = query_confirmed.list(today, cursor)
     all_confirmed = ([thoigian.strftime("%H:%M:%S %d-%m-%Y"), soxacnhan, benhnhan_id, loai,

@@ -74,7 +74,7 @@ def bed_caculator(today, cursor):
     return [ttyt, ngoai, noi, hscc, san, lck,  yhct]
 
 
-def init(request, day_query):
+def init_variable(request, day_query):
     # kết nối database sql server
     global cnxn, cursor, time_filter, start_get, end_get, day_class, today, start, end, previous_start, previous_end, diff, previous_start_day
     cnxn = get_db()
