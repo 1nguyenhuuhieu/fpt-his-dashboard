@@ -33,7 +33,7 @@ class DayQuery:
         try:
             today = datetime.strptime(today, '%Y-%m-%d')
         except:
-            today = date.today()
+            today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
         
         self.today = today
 
@@ -248,3 +248,39 @@ class BellowRevenueCard:
         return get_percent(self.current, self.previous)[0]        
     def percent(self):
         return get_percent(self.current, self.previous)[1]
+    
+class TopHospitalCard(CardWithPercent):
+    def __init__(self, icon, title, current, previous, new_in, old_out):
+        super().__init__(icon, title, current, previous)
+        self.new_in = new_in
+        self.old_out = old_out
+class BellowHospitalCard():
+    def __init__(self, current, previous, current_title, previous_title):
+        self.current = current
+        self.previous = previous
+        self.current_title = current_title
+        self.previous_title = previous_title
+
+    def is_increased(self):
+        return get_change(self.current, self.previous)[0]
+    
+    def percent(self):
+        return get_change(self.current, self.previous)[1]
+    
+class Bed():
+    def __init__(self, title, current, total):
+        self.title = title
+        self.current = current
+        self.total = total
+
+    def percent(self):
+        return get_percent(self.current, self.total)
+    
+    def status(self):
+        if self.percent() > 95: return 'hot'
+        elif self.percent() > 70: return 'cool'
+        elif self.percent() > 60: return 'warm'
+        else: return 'ice'
+    
+    
+    

@@ -1,7 +1,7 @@
-from datetime import timedelta, datetime
+from datetime import timedelta
 
-# Số lượng nhập viện trong ngày
-def in_day(start, end, cursor):
+# Số lượng nhập viện trong khoảng thời gian
+def new_in(start, end, cursor):
     try:
         q = cursor.execute("""SELECT
         COALESCE(COUNT(BenhAn_Id),0)
@@ -15,36 +15,6 @@ def in_day(start, end, cursor):
         print("Lỗi query hospitalized.in_day")
         return None
 
-# Số lượng nhập viện trong khoảng ngày
-def in_betweenday(startday, endday, cursor):
-    query = """
-    SELECT
-    NgayVaoVien, COALESCE(COUNT(BenhAn_Id),0)
-    FROM BenhAn
-    WHERE NgayVaoVien BETWEEN ? AND ?
-    GROUP BY NgayVaoVien 
-    """
-    try:
-        q = cursor.execute(query, startday, endday).fetchall()
-        return q
-    except:
-        print("Lỗi query hospitalized.in_betweenday")
-        return None
-    
-# Số lượng nhập viện trong khoảng thời gian
-def in_betweentime(start, end, cursor):
-    query = """
-    SELECT COUNT(BenhAn_Id)
-    FROM BenhAn
-    WHERE ThoiGianVaoVien BETWEEN ? AND ?
-    """
-    try:
-        q = cursor.execute(query, start, end).fetchone()[0]
-        return q
-    except:
-        print("Lỗi query hospitalized.in_betweentime")
-        return None
-    
 # AVG Số lượng nhập viện trong khoảng thời gian
 def avg_betweentime(start, end, cursor):
     query = """
@@ -111,7 +81,7 @@ def total(day, cursor):
 
         return int(q)
     except:
-        print("Lỗi query hospitalized.total_day")
+        print("Lỗi query hospitalized.total")
         return None
 
 # Số lượng bệnh nhân nội trú từng khoa
@@ -121,15 +91,18 @@ def total_department(day, cursor):
     try:
         q = cursor.execute(
         """
-        SELECT TenPhongBan, COALESCE(COUNT(BenhAn.BenhAn_Id),0) AS 'count'
-        FROM nhh_department
-        INNER JOIN BenhAn
-        ON BenhAn.KhoaVao_Id = nhh_department.PhongBan_Id
+        SELECT
+        TenPhongBan,
+        COALESCE(COUNT(BenhAn_Id),0) as 'total'
+        FROM dbo.BenhAn
+        INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_PhongBan]
+        ON BenhAn.KhoaVao_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_PhongBan].PhongBan_Id
         WHERE (NgayRaVien IS NULL
         OR NgayRaVien > ?)
         AND NgayVaoVien < ?
         GROUP BY TenPhongBan
-        ORDER BY count DESC
+        ORDER BY TenPhongBan
+
         """, day, tomorrow
         ).fetchall()
 
@@ -188,18 +161,18 @@ def total_department_id(day, cursor):
 
 
 # Bệnh nhân đang nội trú ra viện trong ngày
-def out_day(day, cursor):
+def old_out(start, end, cursor):
     try:
         q = cursor.execute("""SELECT
         COALESCE(COUNT(BenhAn_Id),0)
         FROM dbo.BenhAn
-        WHERE NgayRaVien = ?
-        """,day
+        WHERE ThoiGianRaVien BETWEEN ? AND ?
+        """,start, end
         ).fetchone()[0]
 
         return int(q)
     except:
-        print("Lỗi query hospitalized.out_day")
+        print("Lỗi query hospitalized.old_out")
         return None
 
 # Thống kê số lượng bệnh nhân nhập viện nội trú từng khoa trong ngày

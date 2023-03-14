@@ -37,11 +37,11 @@ from myfunc import *
 total_bed = {
     'TTYT Anh Sơn': (200, 72, 272),
     'Khoa Ngoại tổng hợp': (44, 8, 52),
-    'Khoa Nội-Truyền nghiễm': (37, 15, 52),
-    'Khoa HSCC-Nhi': (44, 10, 54),
+    'Khoa Nội tổng hơp': (37, 15, 52),
+    'Khoa Hồi sức cấp cứu': (44, 10, 54),
     'Khoa Phụ Sản': (30, 11, 41),
     'Liên chuyên khoa TMH-RHM-Mắt': (17, 8, 25),
-    'Khoa Đông Y&PHCN': (28, 20, 48)
+    'Khoa Y học cổ truyền': (28, 20, 48)
 }
 
 # -------------------------------------------------------------
@@ -53,6 +53,7 @@ Breadcrumbs(app=app)
 # register zip filter for pararell loop
 app.jinja_env.filters['zip'] = zip
 
+print('test')
 # Trang chủ
 @app.route("/dashboard/<string:day_query>", methods=['GET', 'POST'])
 @app.route("/", methods=['GET', 'POST'])
@@ -76,16 +77,7 @@ def home(day_query=None):
     previous_start = day_class.previous_start
     previous_end = day_class.previous_end
 
-    try:
-        start_day = start.date()
-        end_day = end.date()
-        previous_start_day = previous_start.date()
-
-    except:
-        start_day = start
-        end_day = end
-        previous_start_day = previous_start
-    diff = (end_day - start_day).days
+    diff = diff_days(start, end)
 
 
     # Tổng Doanh thu
@@ -109,28 +101,29 @@ def home(day_query=None):
     patient_card = []
 
 
+    # Số bệnh nhân nội trú
     current = 0
     previous = 0
     for i in range(diff):
-        day = start_day + timedelta(days=i)
-        previous_day = previous_start_day + timedelta(days=i)
-        if day <= date.today():
+        day = start + timedelta(days=i)
+        previous_day = previous_start + timedelta(days=i)
+        if day <= datetime.now():
             current += query_hospitalized.total(day, cursor)
-        if previous_day <= date.today():
+        if previous_day <= datetime.now():
             previous += query_hospitalized.total(previous_day, cursor)
 
-    card = PatientHomeCard('fa-solid fa-hospital', 'Lượt nằm viện nội trú', current,previous, 'hospitalized')
+    card = PatientHomeCard('fa-solid fa-hospital', 'Lượt nội trú', current,previous, 'hospitalized')
     patient_card.append(card)   
 
     # Số lượt khám bệnh
     current = query_visited.total(start, end, cursor)
     previous = query_visited.total(previous_start, previous_end,cursor)
-    card = PatientHomeCard('fa-solid fa-hospital-user', 'Số lượt khám bệnh', current,previous, 'visited'  )
+    card = PatientHomeCard('fa-solid fa-hospital-user', 'Lượt khám bệnh', current,previous, 'visited'  )
     patient_card.append(card)
 
     # Số bệnh nhân nhập viện
-    current = query_hospitalized.in_day(start, end, cursor)
-    previous = query_hospitalized.in_day(previous_start, previous_end, cursor)
+    current = query_hospitalized.new_in(start, end, cursor)
+    previous = query_hospitalized.new_in(previous_start, previous_end, cursor)
     card = PatientHomeCard('fa-solid fa-bed-pulse', 'Bệnh nhân nội trú mới', current,previous, 'new_patients')
     patient_card.append(card)
 
@@ -161,12 +154,11 @@ def home(day_query=None):
     visited_in_department_chart.insert(0, ["Phòng", 'Lượt khám'])
 
     # Thống kê Số bệnh nhân nội trú từng khoa
-    count = 0
     patient_in_department = []
     patient_in_department_id = []
     for i in range(diff):
-        day = start_day + timedelta(days=i)
-        if day <= date.today():
+        day = start + timedelta(days=i)
+        if day <= datetime.now():
             query = query_hospitalized.total_department(day, cursor)
             query_id = query_hospitalized.total_department_id(day, cursor)
             if not i:
@@ -228,10 +220,9 @@ def home(day_query=None):
 @register_breadcrumb(app, '..revenue', 'Doanh thu')
 def revenue(day_query=None):
 
-    # kết nối database sql server
     cnxn = get_db()
     cursor = cnxn.cursor()
-
+    
     # ngày bắt đầu và kết thúc truy vấn dữ liệu
     time_filter = request.args.get('time')
     start_get =  request.args.get('start')
@@ -246,16 +237,7 @@ def revenue(day_query=None):
     previous_start = day_class.previous_start
     previous_end = day_class.previous_end
 
-    try:
-        start_day = start.date()
-        end_day = end.date()
-        previous_start_day = previous_start.date()
-
-    except:
-        start_day = start
-        end_day = end
-        previous_start_day = previous_start
-    diff = (end_day - start_day).days
+    diff = diff_days(start, end)
 
     # Money card
     current = query_revenue.total_money_betweentime(start, end, cursor)
@@ -382,21 +364,32 @@ def revenue(day_query=None):
 @app.route('/revenue/confirmed/<string:day_query>')
 @register_breadcrumb(app, '..revenue.confirmed', 'Danh sách')
 def confirmed(day_query=None):
+    
+    cnxn = get_db()
+    cursor = cnxn.cursor()
+    
+    # ngày bắt đầu và kết thúc truy vấn dữ liệu
+    time_filter = request.args.get('time')
+    start_get =  request.args.get('start')
+    end_get = request.args.get('end')
 
-    init_variable(request, day_query)
+    # lấy ngày xem dashboard
+    day_class = DayQuery(day_query,time_filter, start_get, end_get)
+    today = day_class.today
+    start = day_class.start
+    end = day_class.end
+    diff = diff_days(start, end)
 
-    all_confirmed = query_confirmed.list(today, cursor)
-    all_confirmed = ([thoigian.strftime("%H:%M:%S %d-%m-%Y"), soxacnhan, benhnhan_id, loai,
-                     f'{int(doanhthu):,}', f'{int(thanhtoan):,}', nhanvien] for thoigian, soxacnhan, benhnhan_id, loai, doanhthu, thanhtoan, nhanvien in all_confirmed)
+    all_confirmed = query_confirmed.list(start, end, cursor)
 
     table_column_title = ['Thời gian', 'Mã y tế', 'Số xác nhận',
                           'Loại', 'Doanh thu', 'Thanh toán', 'Nhân viên']
 
-    staff_money = query_confirmed.staff_money(today, cursor)
+    staff_money = query_confirmed.staff_money(start, end, cursor)
     staff_money = list([staff, f'{int(money1):,}', f'{int(money2):,}']
                        for money1, money2, staff in staff_money)
 
-    staff_confirmed = query_confirmed.staff_confirmed(today, cursor)
+    staff_confirmed = query_confirmed.staff_confirmed(start, end, cursor)
     staff_confirmed_chart = list([i, j] for i, j in staff_confirmed)
     staff_confirmed_chart.insert(0, ['Tên nhân viên', 'Số lượt xác nhận'])
 
@@ -404,78 +397,57 @@ def confirmed(day_query=None):
 
     context = {
         'today': today,
+        'start': start,
+        'end': end,
+        'diff': diff,
         'list': all_confirmed,
         'table_column_title': table_column_title,
         'staff_money': staff_money,
         'staff_confirmed_chart': staff_confirmed_chart
     }
 
-    cnxn.close()
+    close_db()
 
     return render_template('revenue/confirmed_list.html', value=context, active='revenue')
 
 
-@app.route('/confirmed/detail/<string:SoXacNhan_Id>')
-@register_breadcrumb(app, './revenue/detail', 'Chi tiết')
-def confirmed_detail(SoXacNhan_Id):
-    cnxn = get_db()
-    cursor = cnxn.cursor()
-    detail = sql_query.confirmed_detail(SoXacNhan_Id, cursor)
-    detail_json = jsonify(
-        Ngaytao=detail[0].strftime("%Y-%m-%d"),
-        SoXacNhan=detail[1],
-        BenhNhan_Id=detail[2],
-        TongDoanhThu=int(detail[3]),
-        TongThanhToan=int(detail[4]),
-        TenPhongKham=detail[5],
-        TenNhanVien=detail[6]
-    )
-    cnxn.close()
-    return detail_json
-
 # Trang bệnh nhân nội trú
-
-
 @app.route('/hospitalized/<string:day_query>')
 @app.route('/hospitalized')
 @register_breadcrumb(app, '.hospitalized', 'Nội trú')
 def hospitalized(day_query=None):
 
-    day_dict = get_day(day_query)
-    today = day_dict['today']
-    yesterday = day_dict['yesterday']
-    mon_day = day_dict['mon_day']
-    last_week_monday = day_dict['last_week_monday']
-    last_week_sun_day = day_dict['last_week_sun_day']
-    twolast_week_monday = day_dict['twolast_week_monday']
-    twolast_week_sun_day = day_dict['twolast_week_sun_day']
-    first_month_day = day_dict['first_month_day']
-    last_first_month_day = day_dict['last_first_month_day']
-    last_end_month_day = day_dict['last_end_month_day']
-    first_year_day = day_dict['first_year_day']
-    last_first_year_day = day_dict['last_first_year_day']
-    end_last_year_day = day_dict['end_last_year_day']
-
     cnxn = get_db()
     cursor = cnxn.cursor()
+    
+    # ngày bắt đầu và kết thúc truy vấn dữ liệu
+    time_filter = request.args.get('time')
+    start_get =  request.args.get('start')
+    end_get = request.args.get('end')
 
-    card_top = []
+    # lấy ngày xem dashboard
+    day_class = DayQuery(day_query,time_filter, start_get, end_get)
+    today = day_class.today
+    start = day_class.start
+    end = day_class.end
 
-    today_in_hospital = query_hospitalized.total_day(today, cursor)
-    recent_today_in_hospital = query_hospitalized.in_day(today, cursor)
-    yesterday_in_hostpital = query_hospitalized.total_day(yesterday, cursor)
-    out_hospital_day = query_hospitalized.out_day(today, cursor)
-    percent_change = get_change(today_in_hospital, yesterday_in_hostpital)
-    percent = get_percent(today_in_hospital, yesterday_in_hostpital)
+    previous_start = day_class.previous_start
 
-    card_top.append(["Bệnh nhân nội trú", today_in_hospital,
-                    percent_change, percent, yesterday_in_hostpital])
+    diff = diff_days(start, end)
+    # Số bệnh nhân nội trú
+    current = 0
+    previous = 0
+    for i in range(diff):
+        day = start + timedelta(days=i)
+        previous_day = previous_start + timedelta(days=i)
+        if day <= datetime.now():
+            current += query_hospitalized.total(day, cursor)
+        if previous_day <= datetime.now():
+            previous += query_hospitalized.total(previous_day, cursor)
 
-    transfer_day = query_transfer.total_day(today, cursor)
-
-    card_top_body = []
-    card_top_body.append(['Nhập mới', recent_today_in_hospital])
-    card_top_body.append(['Ra viện', out_hospital_day])
+    new_in = query_hospitalized.new_in(start, end, cursor)
+    old_out = query_hospitalized.old_out(start, end, cursor)
+    card_top = TopHospitalCard('fa-solid fa-hospital', 'Lượt nội trú', current, previous, new_in, old_out)
 
     # Thống kê Số bệnh nhân nội trú từng khoa
     patient_in_department = query_hospitalized.total_department(today, cursor)
@@ -494,7 +466,7 @@ def hospitalized(day_query=None):
     last_30_day_chart = []
     for day in range(30):
         day_q = today - timedelta(days=day)
-        count_patient = query_hospitalized.total_day(day_q, cursor)
+        count_patient = query_hospitalized.total(day_q, cursor)
 
         last_30_day_chart.append(
             [day_q.strftime("%A %d-%m-%Y"), count_patient])
@@ -508,43 +480,56 @@ def hospitalized(day_query=None):
     last_patients = ([time_in_department.strftime("%H:%M %d/%m/%Y"), patient_name, department]
                      for time_in_department, patient_name, department in last_patients)
 
-    card_bellow = []
-    this_week = query_hospitalized.total_in_between(mon_day, today, cursor)
-    this_month = query_hospitalized.total_in_between(
-        first_month_day, today, cursor)
-    this_year = query_hospitalized.total_in_between(
-        first_year_day, today, cursor)
+    bellow_card = []
 
-    last_week = query_hospitalized.total_in_between(
-        last_week_monday, last_week_sun_day, cursor)
-    last_month = query_hospitalized.total_in_between(
-        last_first_month_day, last_end_month_day, cursor)
-    last_year = query_hospitalized.total_in_between(
-        last_first_year_day, end_last_year_day, cursor)
+    current = query_hospitalized.new_in(day_class.monday(), day_class.sunday(), cursor)
+    previous = query_hospitalized.new_in(day_class.lastweek_monday(), day_class.monday(), cursor)
+    card = BellowHospitalCard(current, previous, 'Tuần này', 'Tuần trước')
+    bellow_card.append(card)
 
-    week_percent = get_percent(this_week, last_week)
-    month_percent = get_percent(this_month, last_month)
-    year_percent = get_percent(this_year, last_year)
+    current = query_hospitalized.new_in(day_class.first_day_month(), day_class.end_day_month(), cursor)
+    previous = query_hospitalized.new_in(day_class.first_day_2month(), day_class.first_day_month(), cursor)
+    card = BellowHospitalCard(current, previous, 'Tháng này', 'Tháng trước')
+    bellow_card.append(card)
 
-    card_bellow.append(
-        ['Tuần này', this_week, 'Tuần trước', last_week, week_percent])
-    card_bellow.append(
-        ['Tháng này', this_month, 'Tháng trước', last_month, month_percent])
-    card_bellow.append(
-        ['Năm này', this_year, 'Năm trước', last_year, year_percent])
+    current = query_hospitalized.new_in(day_class.first_day_year(), day_class.end_day_year(), cursor)
+    previous = query_hospitalized.new_in(day_class.first_day_2year(), day_class.first_day_year(), cursor)
+    card = BellowHospitalCard(current, previous, 'Năm này', 'Năm trước')
+    bellow_card.append(card)
 
-    last_50_day = today + timedelta(days=-50)
-    last_30_day_in_hostpital_chart = query_hospitalized.in_betweenday(
-        last_50_day, today, cursor)
-    last_30_day_in_hostpital_chart = convert_to_chart_date(
-        last_30_day_in_hostpital_chart)
+    # Tính công suất giường bệnh
+    r=     ['TTYT Anh Sơn', 0,272]
+    percent_bed = [
+        ['Khoa Hồi sức cấp cứu',0, 0,54],
+        ['Khoa Ngoại tổng hợp', 0,0,52],
+        ['Khoa Nội tổng hơp', 0,0,52],
+        ['Khoa Phụ Sản', 0,0,41],
+        ['Khoa Y học cổ truyền', 0,0,48],
+        ['Liên chuyên khoa TMH-RHM-Mắt',0, 0,25]
+    ]
+    for i in range(diff):
+        day = start + timedelta(days=i)
+        if day <= datetime.now():
+            total = query_hospitalized.total(day, cursor)
+            departments = query_hospitalized.total_department(day, cursor)
+            for index, department in enumerate(departments):
+                percent_bed[index][1] += department[1]
+                percent_bed[index][2] += percent_bed[index][3]
+    percent_bed_table = []
+    for department in percent_bed:
+        bed = Bed(department[0], department[1], department[2])
+        percent_bed_table.append(bed)
+    
+    print(percent_bed_table)
 
-    bed_list = bed_caculator(today, cursor)
+
+    
     chart_30_days = []
+
     # chart công suất toàn viện 30 ngày
     for n in range(31):
         day = today - timedelta(n)
-        today_real_bed = query_hospitalized.total_day(day, cursor)
+        today_real_bed = query_hospitalized.total(day, cursor)
         total_percent = get_percent(
             today_real_bed, total_bed['TTYT Anh Sơn'][2])
         percent = total_percent[1]
@@ -561,21 +546,17 @@ def hospitalized(day_query=None):
     today = today.strftime("%Y-%m-%d")
     context = {
         'today': today,
-        'card_top': card_top,
-        'card_bellow': card_bellow,
-        'card_top_body': card_top_body,
         'patient_in_department': patient_in_department_id,
         'patient_in_department_today': patient_in_department_today,
         'patient_in_department_chart': patient_in_department_chart,
         'last_30_day_chart': last_30_day_chart,
-        'last_30_day_in_hostpital_chart': last_30_day_in_hostpital_chart,
         'recent_hospitalized_in_day': recent_hospitalized_in_day,
         'last_patients': last_patients,
-        'bed_list': bed_list,
-        'chart_30_days': chart_30_days
+        'chart_30_days': chart_30_days,
+
     }
 
-    cnxn.close()
+    close_db()
     return render_template('hospitalized/index.html', value=context, active="hospitalized")
 
 

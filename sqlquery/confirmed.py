@@ -38,13 +38,13 @@ def visited_loai(start, end, loai, cursor):
         return None   
      
 # SQL số lượt xác nhận trong ngày
-def list(day, cursor):
+def list(start, end, cursor):
     try:
         q = cursor.execute(
             """
             
             SELECT
-            XacNhanChiPhi.NgayTao,
+            XacNhanChiPhi.NgayTao as 'time',
             MaYTe,
             XacNhanChiPhi.SoXacNhan,
             
@@ -70,7 +70,7 @@ def list(day, cursor):
             INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan]
             ON [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan].BenhNhan_Id = XacNhanChiPhi.BenhNhan_Id
 
-            WHERE XacNhanChiPhi.NgayXacNhan = ?
+            WHERE XacNhanChiPhi.ThoiGianXacNhan BETWEEN ? AND ?
 
             GROUP BY
             XacNhanChiPhi.BenhNhan_Id,
@@ -78,8 +78,13 @@ def list(day, cursor):
             XacNhanChiPhi.NgayTao, XacNhanChiPhi.Loai,
             [eHospital_NgheAn_Dictionary].[dbo].[NhanVien].TenNhanVien,
             XacNhanChiPhi.SoXacNhan
-            """, day
+            """, start, end
         ).fetchall()
+
+        for row in q:
+            row.time = row.time.strftime("%Y/%m/%d %H:%M")
+            row.doanhthu = f'{int(row.doanhthu):,}'
+            row.thanhtoan = f'{int(row.thanhtoan):,}'
 
         return q
     except:
@@ -132,7 +137,7 @@ def last(day, cursor):
         return None
 
 # SQL số lượt xác nhận trong ngày
-def staff_money(day, cursor):
+def staff_money(start,end, cursor):
     try:
         q = cursor.execute(
             """
@@ -158,13 +163,13 @@ def staff_money(day, cursor):
             INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan]
             ON [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan].BenhNhan_Id = XacNhanChiPhi.BenhNhan_Id
 
-            WHERE XacNhanChiPhi.NgayXacNhan = ?
+            WHERE XacNhanChiPhi.ThoiGianXacNhan BETWEEN ? AND ?
 
             GROUP BY
             [eHospital_NgheAn_Dictionary].[dbo].[NhanVien].TenNhanVien
 
             ORDER BY doanhthu DESC
-            """, day
+            """, start, end
         ).fetchall()
 
         return q
@@ -173,7 +178,7 @@ def staff_money(day, cursor):
         return None
 
 # SQL số lượt xác nhận trong ngày
-def staff_confirmed(day, cursor):
+def staff_confirmed(start, end, cursor):
     try:
         q = cursor.execute(
             """
@@ -193,13 +198,13 @@ def staff_confirmed(day, cursor):
             INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan]
             ON [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan].BenhNhan_Id = XacNhanChiPhi.BenhNhan_Id
 
-            WHERE XacNhanChiPhi.NgayXacNhan = ?
+            WHERE XacNhanChiPhi.ThoiGianXacNhan BETWEEN ? AND ?
 
             GROUP BY
             [eHospital_NgheAn_Dictionary].[dbo].[NhanVien].TenNhanVien
 
             ORDER BY confirmed DESC
-            """, day
+            """, start, end
         ).fetchall()
 
         return q

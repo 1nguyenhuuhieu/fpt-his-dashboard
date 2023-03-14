@@ -1,5 +1,6 @@
 from db import *
 from models import *
+from datetime import date
 # Convert to google chart data
 def convert_to_chart(list):
     chart = dict(list)
@@ -73,34 +74,15 @@ def bed_caculator(today, cursor):
 
     return [ttyt, ngoai, noi, hscc, san, lck,  yhct]
 
-
-def init_variable(request, day_query):
-    # kết nối database sql server
-    global cnxn, cursor, time_filter, start_get, end_get, day_class, today, start, end, previous_start, previous_end, diff, previous_start_day
-    cnxn = get_db()
-    cursor = cnxn.cursor()
-    
-    # ngày bắt đầu và kết thúc truy vấn dữ liệu
-    time_filter = request.args.get('time')
-    start_get =  request.args.get('start')
-    end_get = request.args.get('end')
-
-    # lấy ngày xem dashboard
-    day_class = DayQuery(day_query,time_filter, start_get, end_get)
-    today = day_class.today
-    start = day_class.start
-    end = day_class.end
-
-    previous_start = day_class.previous_start
-    previous_end = day_class.previous_end
+def diff_days(start, end):
 
     try:
         start_day = start.date()
         end_day = end.date()
-        previous_start_day = previous_start.date()
 
     except:
         start_day = start
         end_day = end
-        previous_start_day = previous_start
     diff = (end_day - start_day).days
+
+    return diff
