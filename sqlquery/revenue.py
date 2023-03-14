@@ -18,6 +18,30 @@ def total_money_betweentime(start, end, cursor):
         return 0
 
 
+# SQL query tổng doanh thu trong khoảng thời gian group by ngày
+def total_chart(start, end, cursor):
+    try:
+        q = cursor.execute(
+            """
+            SELECT
+            XacNhanChiPhi.NgayXacNhan,
+            SUM(SoLuong*DonGiaDoanhThu) as 'total'
+            FROM XacNhanChiPhi
+            INNER JOIN XacNhanChiPhiChiTiet
+            ON XacNhanChiPhi.XacNhanChiPhi_Id=XacNhanChiPhiChiTiet.XacNhanChiPhi_Id
+            WHERE ThoiGianXacNhan BETWEEN ? AND ?
+            GROUP BY XacNhanChiPhi.NgayXacNhan
+            """, start, end
+        ).fetchall()
+        for row in q:
+            row.total = int(row.total)
+        return q
+    except:
+        print("Lỗi query revenue.total_chart")
+        return 0
+
+
+
 # SQL query tổng doanh thu trong khoảng ngày
 def bhtt_betweentime(startday, endday, cursor):
     try:
@@ -335,7 +359,7 @@ def day_betweenday(startday, endday, cursor):
 
 
 # SQl query thống kê doanh thu theo từng khoa phòng trong khoảng ngày
-def day_department_betweenday(startday, endday, cursor):
+def departments(start, end, cursor):
     try:
         q = cursor.execute(
             """
@@ -351,21 +375,59 @@ def day_department_betweenday(startday, endday, cursor):
             INNER JOIN XacNhanChiPhiChiTiet
             ON XacNhanChiPhi.XacNhanChiPhi_Id=XacNhanChiPhiChiTiet.XacNhanChiPhi_Id
 
-            WHERE NgayXacNhan BETWEEN ? AND ?
+            WHERE ThoiGianXacNhan BETWEEN ? AND ?
+            GROUP BY 
+            (CASE
+                WHEN TenPhongKham IN(N'Phòng Khám Cao Huyết áp (10)', N'Phòng Khám Cao Huyết áp (10)_A' ) THEN N'Phòng Khám Cao Huyết áp (10)'
+                WHEN TenPhongKham IN(N'Phòng Khám Tiểu Đường (08)', N'Phòng Khám Tiểu Đường (08)_A') THEN N'Phòng Khám Tiểu Đường (08)'
+                ELSE TenPhongKham END)
+            ORDER BY TongDoanhThu DESC
+            """, start, end
+        ).fetchall()
+
+        for row in q:
+            row.TongDoanhThu = f'{round(int(row.TongDoanhThu)*0.001)*1000:,} đ'
+
+        return q
+    except:
+        print("Lỗi query revenue.departments")
+        return 0
+
+# SQl query thống kê doanh thu theo từng khoa phòng trong khoảng ngày
+def departments_chart(start, end, cursor):
+    try:
+        q = cursor.execute(
+            """
+            SELECT
+            (CASE
+                WHEN TenPhongKham IN(N'Phòng Khám Cao Huyết áp (10)', N'Phòng Khám Cao Huyết áp (10)_A' ) THEN N'Phòng Khám Cao Huyết áp (10)'
+                WHEN TenPhongKham IN(N'Phòng Khám Tiểu Đường (08)', N'Phòng Khám Tiểu Đường (08)_A') THEN N'Phòng Khám Tiểu Đường (08)'
+                ELSE TenPhongKham END),
+            
+            COALESCE(SUM(SoLuong*DonGiaDoanhThu),0) AS 'TongDoanhThu'
+
+            FROM XacNhanChiPhi
+            INNER JOIN XacNhanChiPhiChiTiet
+            ON XacNhanChiPhi.XacNhanChiPhi_Id=XacNhanChiPhiChiTiet.XacNhanChiPhi_Id
+
+            WHERE ThoiGianXacNhan BETWEEN ? AND ?
             GROUP BY 
             (CASE
                 WHEN TenPhongKham IN(N'Phòng Khám Cao Huyết áp (10)', N'Phòng Khám Cao Huyết áp (10)_A' ) THEN N'Phòng Khám Cao Huyết áp (10)'
                 WHEN TenPhongKham IN(N'Phòng Khám Tiểu Đường (08)', N'Phòng Khám Tiểu Đường (08)_A') THEN N'Phòng Khám Tiểu Đường (08)'
                 ELSE TenPhongKham END)
             ORDER BY TongDoanhThu
-            """, startday, endday
+            """, start, end
         ).fetchall()
+
+        for row in q:
+            row.TongDoanhThu = int(row.TongDoanhThu)
 
         return q
     except:
-        print("Lỗi query revenue.day_department_betweenday")
+        print("Lỗi query revenue.departments")
         return 0
-
+    
 # SQL query tổng doanh thu ngoại trú, nội trú trong ngày
 def total_loai(start, end,loai,cursor):
     try:
@@ -406,13 +468,41 @@ def tenphanhom_service(start, end, cursor):
             ORDER BY TongDoanhThu   
             """, start, end
         ).fetchall()
-
         for row in q:
             row.TongDoanhThu = int(row.TongDoanhThu)
         return q
     except:
         print("Lỗi query tenphanhom_service")
         return 0
+
+# SQL Query thống kê doanh thu trong ngày dựa theo từng ten phan nhom
+def tenphanhom_service_format(start, end, cursor):
+    try:
+        q = cursor.execute(
+            """
+            SELECT 
+                (CASE
+                WHEN TenPhanNhom IS NULL THEN N'Dược Ngoại Trú'
+                WHEN TenPhanNhom=N'Dược' THEN N'Dược Nội Trú'
+                ELSE TenPhanNhom
+                END
+            ),
+            COALESCE(SUM(SoLuong*DonGiaDoanhThu),0) AS 'TongDoanhThu'
+            FROM XacNhanChiPhi
+            INNER JOIN (XacNhanChiPhiChiTiet INNER JOIN VienPhiNoiTru_Loai_IDRef ON XacNhanChiPhiChiTiet.Loai_IDRef=VienPhiNoiTru_Loai_IDRef.Loai_IDRef)
+            ON XacNhanChiPhi.XacNhanChiPhi_Id=XacNhanChiPhiChiTiet.XacNhanChiPhi_Id
+            WHERE ThoiGianXacNhan BETWEEN ? AND ?
+            GROUP BY TenPhanNhom
+            ORDER BY TongDoanhThu   
+            """, start, end
+        ).fetchall()
+        for row in q:
+            row.TongDoanhThu = f'{round(int(row.TongDoanhThu)*0.001)*1000:,} đ'
+        return q
+    except:
+        print("Lỗi query tenphanhom_service_format")
+        return 0
+
 
 # SQL query tổng tiền trong khoảng ngày
 def total_between(startday, endday, cursor):

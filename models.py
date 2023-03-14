@@ -229,8 +229,21 @@ class BellowRevenueCard:
         self.noitru = current - ngoaitru
         self.avg_money = avg_money
         self.avg_confirmed = avg_confirmed
-        self.time = f'ngày {s_time.strftime("%H:%M %d-%m-%Y")} đến {e_time.strftime("%H:%M %d-%m-%Y")}'
+        self.time = f'từ {s_time.strftime("%H:%M %d-%m-%Y")} đến {e_time.strftime("%H:%M %d-%m-%Y")}'
 
+    def current_format(self):
+        return f'{round(self.current*0.001)*1000:,} đ'
+    def previous_format(self):
+        return f'{round(self.previous*0.001)*1000:,} đ'
+    def ngoaitru_format(self):
+        return f'{round(self.ngoaitru*0.001)*1000:,} đ'
+    def noitru_format(self):
+        return f'{round(self.noitru*0.001)*1000:,} đ'
+    def avg_money_format(self):
+        return f'{round(self.avg_money*0.001)*1000:,} đ'
+    def avg_confirmed_format(self):
+        return f'{round(self.avg_confirmed*0.001)*1000:,} đ'
+    
     def is_increased(self):
         return get_percent(self.current, self.previous)[0]        
     def percent(self):

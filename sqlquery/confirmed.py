@@ -85,6 +85,51 @@ def list(day, cursor):
     except:
         print("Lỗi query confirmed.list")
         return None
+    
+# SQL số lượt xác nhận trong ngày
+def last(day, cursor):
+    try:
+        q = cursor.execute(
+            """
+            
+            SELECT
+            TOP 5
+            XacNhanChiPhi.NgayTao as 'time',
+            TenBenhNhan,
+            [eHospital_NgheAn_Dictionary].[dbo].[NhanVien].TenNhanVien
+            FROM
+            (XacNhanChiPhi
+            INNER JOIN
+            XacNhanChiPhiChiTiet
+            ON XacNhanChiPhi.XacNhanChiPhi_Id = XacNhanChiPhiChiTiet.XacNhanChiPhi_Id)
+
+            INNER JOIN
+
+            ([eHospital_NgheAn_Dictionary].[dbo].[NhanVien]
+            INNER JOIN
+            [eHospital_NgheAn_Dictionary].[dbo].[NhanVien_User_Mapping]
+            ON [eHospital_NgheAn_Dictionary].[dbo].[NhanVien].NhanVien_Id = [eHospital_NgheAn_Dictionary].[dbo].[NhanVien_User_Mapping].NhanVien_Id)
+
+            ON XacNhanChiPhi.NguoiTao_Id = [eHospital_NgheAn_Dictionary].[dbo].[NhanVien_User_Mapping].User_Id
+
+            INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan]
+            ON [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan].BenhNhan_Id = XacNhanChiPhi.BenhNhan_Id
+
+            WHERE XacNhanChiPhi.NgayXacNhan = ?
+
+            GROUP BY
+            XacNhanChiPhi.NgayTao,
+            TenBenhNhan,
+            [eHospital_NgheAn_Dictionary].[dbo].[NhanVien].TenNhanVien
+            ORDER BY XacNhanChiPhi.NgayTao DESC
+            """, day
+        ).fetchall()
+        for row in q:
+            row.time = row.time.strftime("%H:%M %d/%m/%Y")
+        return q
+    except:
+        print("Lỗi query confirmed.list")
+        return None
 
 # SQL số lượt xác nhận trong ngày
 def staff_money(day, cursor):

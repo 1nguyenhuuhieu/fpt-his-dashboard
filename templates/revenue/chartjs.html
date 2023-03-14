@@ -11,7 +11,8 @@
   
       var options = {
         title: 'Thống kê theo mục',
-        backgroundColor: { fill:'transparent' }
+        backgroundColor: { fill:'transparent' },
+        legend: {position: 'bottom'}
       };
   
       var chart = new google.visualization.PieChart(document.getElementById('chart1'));
@@ -33,13 +34,13 @@
     google.charts.setOnLoadCallback(drawChart3);
   
     function drawChart3() {
-  
-      var data = google.visualization.arrayToDataTable(data_chart3);
+      const data_chart = {{ value.confirm_card_chart|tojson }}
+      var data = google.visualization.arrayToDataTable(data_chart);
   
       var options = {
         title: 'Thống kê theo mục',
         backgroundColor: { fill:'transparent' },
-        legend: {position: 'none'}
+        legend: {position: 'bottom'}
       };
   
       var chart3= new google.visualization.PieChart(document.getElementById('chart3'));
@@ -62,7 +63,9 @@ google.charts.load('current', {packages: ['corechart', 'line']});
 google.charts.setOnLoadCallback(drawBackgroundColor);
 
 function drawBackgroundColor() {
-     const data_chart = {{ value.last_30days_money|tojson }}
+      {% if value.total_chart %}
+      const data_chart = {{ value.total_chart|tojson }}
+      {% endif %}
       var data = new google.visualization.DataTable();
       data.addColumn('string', 'Ngày');
       data.addColumn('number', 'Tổng doanh thu');
@@ -70,7 +73,7 @@ function drawBackgroundColor() {
       data.addRows(data_chart);
 
       var options = {
-        title: 'Doanh thu 30 ngày gần nhất theo từng ngày',
+        title: 'Doanh thu theo từng ngày',
 
       };
 
@@ -89,15 +92,16 @@ function drawBackgroundColor() {
     google.charts.setOnLoadCallback(drawChart5);
   
     function drawChart5() {
-      const data_chart = {{ value.last_30days_department_money_chart|tojson }}
 
-  
+      {% if value.departments_chart %}
+      const data_chart = {{ value.departments_chart|tojson }}
+      {% endif %}
       var data = google.visualization.arrayToDataTable(data_chart);
   
       var options = {
-        title: 'Tổng doanh thu 30 ngày gần nhất theo từng khoa, phòng khám',
+        title: 'Doanh thu theo từng khoa, phòng khám',
         backgroundColor: { fill:'transparent' },
-        legend: {position: 'none'}
+        legend: {position: 'bottom'}
       };
   
       var chart = new google.visualization.PieChart(document.getElementById('chart4'));

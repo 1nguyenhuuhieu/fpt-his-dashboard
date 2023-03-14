@@ -21,7 +21,7 @@ from sqlquery import patient as query_patient
 from sqlquery import report as query_report
 from sqlquery import user as query_user
 
-import db
+from db import *
 from flask_breadcrumbs import Breadcrumbs, register_breadcrumb
 
 from flask import session
@@ -59,7 +59,7 @@ app.jinja_env.filters['zip'] = zip
 @register_breadcrumb(app, '.', 'Trang chủ')
 def home(day_query=None):
     # kết nối database sql server
-    cnxn = db.get_db()
+    cnxn = get_db()
     cursor = cnxn.cursor()
     
     # ngày bắt đầu và kết thúc truy vấn dữ liệu
@@ -192,12 +192,12 @@ def home(day_query=None):
 
 
     # tin tức
-    con_sqlite = db.get_db_dashboard()
+    con_sqlite = get_db_dashboard()
     cursor_sqlite = con_sqlite.cursor()
     list_post = query_user.posts(cursor_sqlite)
 
-    db.close_db()
-    db.close_db_dashboard()
+    close_db()
+    close_db_dashboard()
 
     # convert để hiện thị ở top filter
     today = today.strftime("%Y-%m-%d")
@@ -229,7 +229,7 @@ def home(day_query=None):
 def revenue(day_query=None):
 
     # kết nối database sql server
-    cnxn = db.get_db()
+    cnxn = get_db()
     cursor = cnxn.cursor()
 
     # ngày bắt đầu và kết thúc truy vấn dữ liệu
@@ -246,14 +246,26 @@ def revenue(day_query=None):
     previous_start = day_class.previous_start
     previous_end = day_class.previous_end
 
+    try:
+        start_day = start.date()
+        end_day = end.date()
+        previous_start_day = previous_start.date()
+
+    except:
+        start_day = start
+        end_day = end
+        previous_start_day = previous_start
+    diff = (end_day - start_day).days
+
     # Money card
     current = query_revenue.total_money_betweentime(start, end, cursor)
     previous = query_revenue.total_money_betweentime(previous_start, previous_end, cursor)
-    extra_info = query_revenue.tenphanhom_service(start, end, cursor)
+    extra_info = query_revenue.tenphanhom_service_format(start, end, cursor)
     money_card = MoneyRevenueCard('fa-solid fa-money-bill', 'Tổng doanh thu', current, previous, extra_info)
     
     # chart cho money card
-    money_card_chart = convert_to_chart(extra_info)
+    tmp = query_revenue.tenphanhom_service(start, end, cursor)
+    money_card_chart = convert_to_chart(tmp)
     money_card_chart = money_card_chart.copy()
     money_card_chart.insert(0, ['Mục', 'Số tiền'])
     
@@ -271,12 +283,15 @@ def revenue(day_query=None):
     bntt = query_revenue.bntt(start, end, cursor)    
 
     confirm_card = ConfirmRevenueCard('fa-solid fa-clipboard-check', 'Hoàn tất thanh toán',confirmed_visited, confirmed_hospital,money_visited, money_hospital, bhtt, bntt)
+    confirm_card_chart = [
+        ['Loại', 'Doanh thu'],
+        ['Ngoại trú', money_visited ],
+        ['Nội trú', money_hospital]]
     
     confirm_card_extra = [
         ['Bảo hiểm thanh toán', confirm_card.bhyt_money_format()],
         ['Bệnh nhân thanh toán', confirm_card.bntt_money_format()],
     ]
-
     # Doanh thu 30 ngày gần nhất
     last30day = today - timedelta(days=50)
     last_30days_money = query_revenue.day_betweenday(last30day, today, cursor)
@@ -284,20 +299,11 @@ def revenue(day_query=None):
         "%A %d-%m-%Y"), int(tongdoanhthu)] for ngayxacnhan, tongdoanhthu in last_30days_money]
     last_30days_money.reverse()
 
-    # Doanh thu 30 ngày gần nhất theo từng khoa phòng
-    last_30days_department_money = query_revenue.day_department_betweenday(
-        last30day, today, cursor)
-    # Tạo dữ liệu cho chart
-    last_30days_department_money_chart = convert_to_chart(
-        last_30days_department_money)
-
-    last_30days_department_money_chart.insert(0, ['Khoa', 'Số tiền'])
-
 
     bellow_card = []
     # Thống kê trong kì này và kì trước
+    is_first_loop = True
     for s,e in zip([start,previous_start], [end, previous_end]):
-        is_first_loop = True
         current = query_revenue.total_money_betweentime(s, e, cursor)
         money_visited = query_revenue.total_loai(
             start, end, 'NgoaiTru', cursor)
@@ -309,254 +315,74 @@ def revenue(day_query=None):
             s, e, 'NoiTru', cursor)
         
         if is_first_loop:
-            icon = 's'
-            title = 'kì này'
+            icon = "fa-solid fa-calendar-day"
+            title = 'Kì này'
             is_first_loop = False
         else:
-            icon = 's'
-            title = 'kì trước'
+            icon = 'fa-solid fa-backward-step'
+            title = 'Kì trước'
 
         card = BellowRevenueCard(icon, title, current, money_card.previous,money_visited, avg_money, avg_confirmed, s, e)
 
         bellow_card.append(card)
 
-    bellow_card_title = [
-        'Tổng', 'Ngoại trú', 'Nội trú', 'Trung bình ngày', 'Trung bình mỗi xác nhận']
+    # 5 lượt xác nhận thanh toán gần nhất
+    recent_confirmed = query_confirmed.last(today, cursor)
 
-    confirmed_chart = [
-        ['Loại', 'Doanh thu'],
-        ['Ngoại trú', money_visited],
-        ['Nội trú', money_hospital],
-    ]
+
 
     # Doanh thu theo từng phòng khám, từng khoa
-    money_department = query_revenue.department_day(today, cursor)
-    money_department = convert_to_chart(money_department)
-    last_update_time = sql_query.last_money_update(cursor)
-    last_update_time = last_update_time.strftime("%H:%M:%S  %d-%m-%Y")
-
-    last_confirmed = sql_query.last_confirmer(cursor)
-
-    recent_confirmed_in_day = sql_query.recent_confirmed_review(today, cursor)
-
-    recent_confirmed_in_day = ([soxacnhan, thoigian.strftime("%H:%M:%S"), int(doanhthu), int(
-        thanhtoan), nhanvien] for soxacnhan, thoigian, doanhthu, thanhtoan, nhanvien in recent_confirmed_in_day)
+    departments = query_revenue.departments(start, end, cursor)
+    departments_chart = query_revenue.departments_chart(start, end, cursor)
+    departments_chart = convert_to_chart(departments_chart)
+    departments_chart.insert(0, ['Khoa', 'Doanh thu'])
 
     top10_doanhthu = query_revenue.top_service(today, cursor)
     top10_doanhthu_table = ([noidung, tenphongkham, count, int(
         tongdoanhthu)] for noidung, tenphongkham, count, tongdoanhthu in top10_doanhthu)
+    
+    if diff > 30:
+        total_chart = query_revenue.total_chart(start, end, cursor)
+    else:
+        last_30_days = today + timedelta(days=-30)
+        total_chart = query_revenue.total_chart(last_30_days, today, cursor)
 
+    total_chart = convert_to_chart(total_chart)
    
     today = today.strftime("%Y-%m-%d")
     context = {
         
         'last_30days_money': last_30days_money,
-        'last_30days_department_money_chart': last_30days_department_money_chart,
-        'confirmed_chart': confirmed_chart,
-        'bellow_card': bellow_card,
-        'bellow_card_title': bellow_card_title,
-        'money_department': money_department,
-        'last_update_time': last_update_time,
-        'last_confirmed': last_confirmed,
-        'recent_confirmed_in_day': recent_confirmed_in_day,
+        'departments_chart': departments_chart,
         'top10_doanhthu_table': top10_doanhthu_table,
 
         'today': today,
+        'start': start,
+        'end': end,
+        'diff': diff,
         'money_card': money_card,
         'money_card_chart': money_card_chart,
         'confirm_card': confirm_card,
-        'confirm_card_extra': confirm_card_extra
+        'confirm_card_extra': confirm_card_extra,
+        'confirm_card_chart': confirm_card_chart,
+        'bellow_card': bellow_card,
+
+        'departments': departments,
+        'recent_confirmed': recent_confirmed,
+        'total_chart': total_chart
 
 
     }
-    cnxn.close()
+    close_db()
 
     return render_template('revenue/index.html', value=context, active="revenue")
 
-
-# Trang doanh thu
-@app.route('/revenue/detail/<string:day_query>')
-@app.route('/revenue/detail')
-@register_breadcrumb(app, '..revenue.detail', 'Thống kê')
-def revenue_detail(day_query=None):
-    # kết nối database sql server
-    cnxn = get_db()
-    cursor = cnxn.cursor()
-
-    # lấy ngày xem dashboard
-    day_dict = get_day(day_query)
-    today = day_dict['today']
-    yesterday = day_dict['yesterday']
-    mon_day = day_dict['mon_day']
-    last_week_monday = day_dict['last_week_monday']
-    last_week_sun_day = day_dict['last_week_sun_day']
-    twolast_week_monday = day_dict['twolast_week_monday']
-    twolast_week_sun_day = day_dict['twolast_week_sun_day']
-    first_month_day = day_dict['first_month_day']
-    last_first_month_day = day_dict['last_first_month_day']
-    last_end_month_day = day_dict['last_end_month_day']
-    first_year_day = day_dict['first_year_day']
-    last_first_year_day = day_dict['last_first_year_day']
-    end_last_year_day = day_dict['end_last_year_day']
-
-    # Thống kê trong tuần
-    week_money = query_revenue.total_between(mon_day, today, cursor)
-    week_avg_confirmed = query_revenue.avg_confirmed(mon_day, today, cursor)
-    week_avg_money = query_revenue.avg_between(
-        startday=mon_day, endday=today, cursor=cursor)
-    visited_money_week = query_revenue.visited_hospitalized_between(
-        mon_day, today, 'NgoaiTru', cursor)
-    hospital_money_week = query_revenue.visited_hospitalized_between(
-        mon_day, today, 'NoiTru', cursor)
-
-    # Thống kê trong tuần trước
-    last_week_money = query_revenue.total_between(
-        last_week_monday, last_week_sun_day, cursor)
-    last_week_avg_money = query_revenue.avg_between(
-        last_week_monday, last_week_sun_day, cursor)
-    last_week_avg_confirmed = query_revenue.avg_confirmed(
-        last_week_monday, last_week_sun_day, cursor)
-    visited_money_last_week = query_revenue.visited_hospitalized_between(
-        last_week_monday, last_week_sun_day, 'NgoaiTru', cursor)
-    hospital_money_last_week = query_revenue.visited_hospitalized_between(
-        last_week_monday, last_week_sun_day, 'NoiTru', cursor)
-
-    week_progress_bar_title = 'So với tuần trước'
-    week_progress_bar_value = get_percent(week_money, last_week_money)
-
-    twolast_week_money = query_revenue.total_between(
-        twolast_week_monday, twolast_week_sun_day, cursor)
-    last_week_progress_bar_title = 'So với tuần trước'
-    last_week_progress_bar_value = get_percent(
-        last_week_money, twolast_week_money)
-
-    # Thống kê trong tháng
-    month_money = query_revenue.total_between_union(
-        first_month_day, today, cursor)
-    month_avg_money = query_revenue.avg_between_union(
-        first_month_day, today, cursor)
-
-    month_avg_confirmed = query_revenue.avg_confirmed_union(
-        first_month_day, today, cursor)
-
-    visited_money_month = query_revenue.visited_between_union(
-        first_month_day, today, cursor)
-    hospital_money_month = query_revenue.hospitalized_between_union(
-        first_month_day, today, cursor)
-
-    last_month_money = query_revenue.total_between(
-        last_first_month_day, last_end_month_day, cursor)
-
-    month_progress_bar_title = 'So với tháng trước'
-    month_progress_bar_value = get_percent(month_money, last_month_money)
-
-    month_card_list = [
-        'fa-solid fa-calendar-days',
-        'Trong tháng này',
-        f'ngày {first_month_day.strftime("%d-%m-%Y")} đến {today.strftime("%d-%m-%Y")}',
-        [month_money,
-         visited_money_month,
-         hospital_money_month,
-         month_avg_money,
-         month_avg_confirmed],
-        month_progress_bar_title,
-        month_progress_bar_value,
-        last_month_money,
-
-    ]
-
-    # Thống kê trong năm
-
-    year_money = query_revenue.total_between_union(
-        first_year_day, today, cursor)
-
-    year_avg_money = query_revenue.avg_between_union(
-        first_year_day, today, cursor)
-    year_avg_confirmed = query_revenue.avg_confirmed_union(
-        first_year_day, today, cursor)
-
-    visited_money_year = query_revenue.visited_between_union(
-        first_year_day, today, cursor)
-    hospital_money_year = query_revenue.hospitalized_between_union(
-        first_year_day, today, cursor)
-
-    last_year_money = query_revenue.total_between_union(
-        last_first_year_day, end_last_year_day, cursor)
-
-    year_progress_bar_title = 'So với năm trước'
-    year_progress_bar_value = get_percent(year_money, last_year_money)
-
-    year_card_list = [
-        'fa-regular fa-calendar',
-        'Trong năm này',
-        f'ngày {first_year_day.strftime("%d-%m-%Y")} đến {today.strftime("%d-%m-%Y")}',
-        [
-            year_money,
-            visited_money_year,
-            hospital_money_year,
-            year_avg_money,
-            year_avg_confirmed],
-        year_progress_bar_title,
-        year_progress_bar_value,
-        last_year_money
-    ]
-
-    bellow_card = [
-        [
-            'fa-solid fa-calendar-week',
-            'Trong tuần này',
-            f'ngày {mon_day.strftime("%d-%m-%Y")} đến {today.strftime("%d-%m-%Y")}',
-            [week_money,
-             visited_money_week,
-             hospital_money_week,
-             week_avg_money,
-             week_avg_confirmed],
-            week_progress_bar_title,
-            week_progress_bar_value,
-            last_week_money
-        ],
-        [
-            'fa-solid fa-calendar-week',
-            'Trong tuần trước',
-            f'ngày {last_week_monday.strftime("%d-%m-%Y")} đến {last_week_sun_day.strftime("%d-%m-%Y")}',
-            [last_week_money,
-             visited_money_last_week,
-             hospital_money_last_week,
-             last_week_avg_money,
-             last_week_avg_confirmed],
-            last_week_progress_bar_title,
-            last_week_progress_bar_value,
-            twolast_week_money
-        ],
-        month_card_list,
-        year_card_list
-
-    ]
-    bellow_card_money_title = [
-        'Tổng', 'Ngoại trú', 'Nội trú', 'Trung bình ngày', 'Trung bình mỗi xác nhận']
-
-    today = today.strftime("%Y-%m-%d")
-    context = {
-        'today': today,
-        'bellow_card': bellow_card,
-        'bellow_card_money_title': bellow_card_money_title
-
-    }
-    cnxn.close()
-    return render_template('revenue/detail.html', value=context, active='revenue')
-
 # Danh sách xác nhận thanh toán
-
-
 @app.route('/revenue/confirmed')
 @app.route('/revenue/confirmed/<string:day_query>')
 @register_breadcrumb(app, '..revenue.confirmed', 'Danh sách')
 def confirmed(day_query=None):
-    cnxn = get_db()
-    cursor = cnxn.cursor()
-
-    day_dict = get_day(day_query)
-    today = day_dict['today']
+    init(request, day_query)
 
     all_confirmed = query_confirmed.list(today, cursor)
     all_confirmed = ([thoigian.strftime("%H:%M:%S %d-%m-%Y"), soxacnhan, benhnhan_id, loai,
