@@ -18,7 +18,6 @@ def total_money_betweentime(start, end, cursor):
         return 0
 
 
-
 # SQL query tổng doanh thu trong khoảng ngày
 def bhtt_betweentime(startday, endday, cursor):
     try:
@@ -260,44 +259,42 @@ def min_bntt_betweentime(startday, endday, cursor):
 
 
 # Thống kê tiền BHYTtrong 1 ngày
-def total_bhyt_day(day, cursor):
+def bhtt(start, end, cursor):
     try:
         q = cursor.execute(
             """
-            SELECT COALESCE(SUM(SoLuong_New*DonGiaHoTroChiTra_New),0)
+            SELECT COALESCE(SUM(SoLuong*DonGiaHoTroChiTra),0)
             FROM XacNhanChiPhi
             INNER JOIN XacNhanChiPhiChiTiet
             ON XacNhanChiPhi.XacNhanChiPhi_Id=XacNhanChiPhiChiTiet.XacNhanChiPhi_Id
-            WHERE NgayXacNhan=?
-            """, day
+            WHERE ThoiGianXacNhan BETWEEN ? AND ?
+            """, start, end
         ).fetchone()[0]
         return int(q)
     except:
-        print('Lỗi query total_bhyt_day')
+        print('Lỗi query bhtt')
         return 0
 
 # Thống kê tiền BNTT trong 1 ngày
-def total_bntt_day(day, cursor):
+def bntt(start, end, cursor):
     try:
         q = cursor.execute(
             """
-            SELECT COALESCE(SUM(SoLuong_New*DonGiaThanhToan),0)
+            SELECT COALESCE(SUM(SoLuong*DonGiaThanhToan),0)
             FROM XacNhanChiPhi
             INNER JOIN XacNhanChiPhiChiTiet
             ON XacNhanChiPhi.XacNhanChiPhi_Id=XacNhanChiPhiChiTiet.XacNhanChiPhi_Id
-            WHERE NgayXacNhan=?
-            """, day
+            WHERE ThoiGianXacNhan BETWEEN ? AND ?
+            """, start, end
         ).fetchone()[0]
-
         return int(q)
     except:
         print('Lỗi query total_bhtt_day')
         return 0
 
 
-
 # Tổng doanh thu dược trong ngày theo phân nhóm: (DV= Dịch vụ, DU = DƯợc)
-def service_medicine_day(start,end, phannhom ,cursor):
+def service_money(start,end, phannhom ,cursor):
     query = """
     SELECT 
     COALESCE(SUM(SoLuong*DonGiaDoanhThu),0) AS 'TongDoanhThu'
@@ -370,7 +367,7 @@ def day_department_betweenday(startday, endday, cursor):
         return 0
 
 # SQL query tổng doanh thu ngoại trú, nội trú trong ngày
-def visited_hospitalized_day(day,loai,cursor):
+def total_loai(start, end,loai,cursor):
     try:
         q = cursor.execute(
             """
@@ -378,18 +375,18 @@ def visited_hospitalized_day(day,loai,cursor):
             FROM XacNhanChiPhiChiTiet
             INNER JOIN XacNhanChiPhi
             ON XacNhanChiPhiChiTiet.XacNhanChiPhi_Id=XacNhanChiPhi.XacNhanChiPhi_Id
-            WHERE NgayXacNhan=? AND XacNhanChiPhiChiTiet.Loai=?
-            """, day, loai
+            WHERE ThoiGianXacNhan BETWEEN ? AND ? AND XacNhanChiPhiChiTiet.Loai=?
+            """, start,end, loai
         ).fetchone()[0]
 
         return int(q)
     except:
-        print("Lỗi query revenue.visited_hospitalized_day")
+        print("Lỗi query revenue.total_loai")
         return 0
 
 
 # SQL Query thống kê doanh thu trong ngày dựa theo từng ten phan nhom
-def tenphanhom_service_medicine_day(day, cursor):
+def tenphanhom_service(start, end, cursor):
     try:
         q = cursor.execute(
             """
@@ -401,19 +398,21 @@ def tenphanhom_service_medicine_day(day, cursor):
                 END
             ),
             COALESCE(SUM(SoLuong*DonGiaDoanhThu),0) AS 'TongDoanhThu'
-  
             FROM XacNhanChiPhi
             INNER JOIN (XacNhanChiPhiChiTiet INNER JOIN VienPhiNoiTru_Loai_IDRef ON XacNhanChiPhiChiTiet.Loai_IDRef=VienPhiNoiTru_Loai_IDRef.Loai_IDRef)
             ON XacNhanChiPhi.XacNhanChiPhi_Id=XacNhanChiPhiChiTiet.XacNhanChiPhi_Id
-            WHERE NgayXacNhan = ?
+            WHERE ThoiGianXacNhan BETWEEN ? AND ?
             GROUP BY TenPhanNhom
             ORDER BY TongDoanhThu   
-            """, day
+            """, start, end
         ).fetchall()
+
+        for row in q:
+            row.TongDoanhThu = f'{round(int(row.TongDoanhThu)*0.001)*1000:,}'
 
         return q
     except:
-        print("Lỗi query doanhthu_dichvu_duoc_day")
+        print("Lỗi query tenphanhom_service")
         return 0
 
 # SQL query tổng tiền trong khoảng ngày
@@ -445,7 +444,7 @@ def avg_between(startday, endday, cursor):
             FROM XacNhanChiPhi
             INNER JOIN XacNhanChiPhiChiTiet
             ON XacNhanChiPhi.XacNhanChiPhi_Id=XacNhanChiPhiChiTiet.XacNhanChiPhi_Id
-            WHERE NgayXacNhan BETWEEN ? AND ?
+            WHERE ThoiGianXacNhan BETWEEN ? AND ?
             GROUP BY NgayXacNhan) as avg_total_money
             """, startday, endday
         ).fetchone()[0]
@@ -466,7 +465,7 @@ def avg_confirmed(startday, endday, cursor):
             FROM XacNhanChiPhi
             INNER JOIN XacNhanChiPhiChiTiet
             ON XacNhanChiPhi.XacNhanChiPhi_Id=XacNhanChiPhiChiTiet.XacNhanChiPhi_Id
-            WHERE NgayXacNhan BETWEEN ? AND ?
+            WHERE ThoiGianXacNhan BETWEEN ? AND ?
             GROUP BY XacNhanChiPhi.XacNhanChiPhi_Id) as avg_total_confirmed
             """, startday, endday
         ).fetchone()[0]

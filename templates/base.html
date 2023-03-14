@@ -126,7 +126,24 @@
               {% include 'breadcrumb.html' %}
               <hr class="my-2">
               {% include 'recent.html' %}
+
+              <div class="alert alert-danger d-none alert-dismissible fade show my-2" role="alert" id="loading">
+                <div class="d-flex align-items-center">
+                  <div class="spinner-grow spinner-grow-sm me-3" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                  <span>Đang tải dữ liệu</span>
+
+                </div>
+
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  
+              </div>
+  
             </div>
+
+        
+      
           </div>
           {% block content %}
           {% endblock %}
@@ -152,7 +169,6 @@
   <script src="{{url_for('static', filename='js/myjs.js')}}"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.2/moment.min.js"></script>
 
-
   {% if value.today %}
   <script>
     const dateToday = document.getElementById('date_today');
@@ -163,6 +179,19 @@
     dateToday.textContent = dayLocale
   </script>
   {% endif %}
+
+  <script>
+
+    let btns = document.querySelectorAll('button[type="submit"]');
+    btns.forEach(btn => {
+
+    btn.addEventListener('click', (event)=> {
+      const loadingElement = document.getElementById('loading')
+      loadingElement.classList.remove("d-none");
+    });
+
+});
+  </script>
 
 </body>
 

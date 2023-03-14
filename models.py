@@ -117,7 +117,26 @@ class DayQuery:
     def first_day_2year(self):
         return self.today.replace(day=1, month=1) + relativedelta(years=-1)
 
-class MoneyCard:
+class CardWithPercent:
+    def __init__(self,icon, title, current, previous):
+        self.current = current
+        self.previous = previous
+        self.icon = icon
+        self.title = title
+
+    def current_format(self):
+        return f'{round(self.current*0.001)*1000:,} đ'
+    
+    def previous_format(self):
+        return f'{round(self.previous*0.001)*1000:,} đ'
+    
+    def is_increased(self):
+        return get_change(self.current, self.previous)[0]
+    
+    def percent(self):
+        return get_change(self.current, self.previous)[1]
+    
+class MoneyCard():
     def __init__(self, current, previous):
         self.current = current
         self.previous = previous
@@ -164,3 +183,55 @@ class PatientHomeCard:
     
     def percent(self):
         return get_change(self.current, self.previous)[1]
+    
+class MoneyRevenueCard(CardWithPercent):
+    def __init__(self,icon,title, current, previous, extra_info):
+        super().__init__(icon, title, current, previous)
+        self.extra_info = extra_info
+
+class ConfirmRevenueCard:
+    def __init__(self, icon, title, visited_confirmed, hospital_confirmed, visited_money, hospital_money, bhyt_money, bntt_money):
+        self.icon = icon
+        self.title = title
+        self.visited_confirmed = visited_confirmed
+        self.hospital_confirmed = hospital_confirmed
+        self.visited_money = visited_money
+        self.hospital_money = hospital_money
+        self.bhyt_money = bhyt_money
+        self.bntt_money = bntt_money
+        self.total = visited_confirmed + hospital_confirmed
+
+    def visited_money_format(self):
+        return f'{round(self.visited_money*0.001)*1000:,} đ'
+    
+    def hospital_money_format(self):
+        return f'{round(self.hospital_money*0.001)*1000:,} đ'
+    
+    def visited_money_format(self):
+        return f'{round(self.visited_money*0.001)*1000:,} đ'
+    
+    def bhyt_money_format(self):
+        return f'{round(self.bhyt_money*0.001)*1000:,} đ'
+    
+    def bntt_money_format(self):
+        return f'{round(self.bntt_money*0.001)*1000:,} đ'
+
+    def percent(self):
+        return get_percent(self.bhyt_money, self.bntt_money + self.bhyt_money)[1]
+    
+class BellowRevenueCard:
+    def __init__(self, icon, title, current, previous, ngoaitru, avg_money, avg_confirmed, s_time, e_time):
+        self.icon = icon
+        self.title = title
+        self.current = current
+        self.previous = previous
+        self.ngoaitru = ngoaitru
+        self.noitru = current - ngoaitru
+        self.avg_money = avg_money
+        self.avg_confirmed = avg_confirmed
+        self.time = f'ngày {s_time.strftime("%H:%M %d-%m-%Y")} đến {e_time.strftime("%H:%M %d-%m-%Y")}'
+
+    def is_increased(self):
+        return get_percent(self.current, self.previous)[0]        
+    def percent(self):
+        return get_percent(self.current, self.previous)[1]

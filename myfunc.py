@@ -2,14 +2,14 @@
 # Convert to google chart data
 def convert_to_chart(list):
     chart = dict(list)
-    chart = [[k, int(v)] for k, v in chart.items()]
+    chart = [[k, v] for k, v in chart.items()]
 
     return chart
 
 # Convert to google chart data with first param = date
 def convert_to_chart_date(list):
     chart = dict(list)
-    chart = [[k.strftime("%A %Y-%m-%d"), int(v)] for k, v in chart.items()]
+    chart = [[k.strftime("%A %Y-%m-%d"), v] for k, v in chart.items()]
 
     return chart
 

@@ -18,7 +18,7 @@ def detail(tiepnhan_id, cursor):
         return None       
 
 # SQL query số lượt xác nhận theo loại ngoại trú hoặc nội trú
-def visited_hospitalized_day(day, loai, cursor):
+def visited_loai(start, end, loai, cursor):
     try:
         q = cursor.execute(
             """
@@ -27,14 +27,14 @@ def visited_hospitalized_day(day, loai, cursor):
             FROM TiepNhan
             INNER JOIN XacNhanChiPhi
             ON TiepNhan.TiepNhan_Id = XacNhanChiPhi.TiepNhan_Id
-            WHERE XacNhanChiPhi.NgayXacNhan = ?
+            WHERE XacNhanChiPhi.ThoiGianXacNhan BETWEEN ? AND ?
             AND Loai=?
-            """, day, loai
+            """, start, end,loai
         ).fetchone()[0]
 
         return q
     except:
-        print("Lỗi query confirmed.visited_hospitalized_day")
+        print("Lỗi query confirmed.visited_loai")
         return None   
      
 # SQL số lượt xác nhận trong ngày
