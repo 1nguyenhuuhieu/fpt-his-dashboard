@@ -498,7 +498,6 @@ def hospitalized(day_query=None):
     bellow_card.append(card)
 
     # Tính công suất giường bệnh
-    r=     ['TTYT Anh Sơn', 0,272]
     percent_bed = [
         ['Khoa Hồi sức cấp cứu',0, 0,54],
         ['Khoa Ngoại tổng hợp', 0,0,52],
@@ -520,7 +519,17 @@ def hospitalized(day_query=None):
         bed = Bed(department[0], department[1], department[2])
         percent_bed_table.append(bed)
 
+    current = sum(bed.current for bed in percent_bed_table)
+    total = sum(bed.total for bed in percent_bed_table)
+    bed = Bed('TTYT Anh Sơn', current, total)
+    department_bed = percent_bed_table.copy()
+    percent_bed_table.insert(0, bed)
 
+    # PieChart số lượt nội trú mỗi khoa trong khoảng ngày
+    department_patient_dict = {department.title: department.current for department in department_bed}
+    department_patient_dict = dict(sorted(department_patient_dict.items(), key=lambda item: item[1], reverse=True))
+    department_patient_chart = convert_to_chart(department_patient_dict)
+    department_patient_chart.insert(0, ['Khoa', 'Lượt nội trú'])
     
     chart_30_days = []
 
@@ -544,6 +553,9 @@ def hospitalized(day_query=None):
     today = today.strftime("%Y-%m-%d")
     context = {
         'today': today,
+        'start': start,
+        'end': end,
+        'diff': diff,
         'patient_in_department': patient_in_department_id,
         'patient_in_department_today': patient_in_department_today,
         'patient_in_department_chart': patient_in_department_chart,
@@ -551,7 +563,12 @@ def hospitalized(day_query=None):
         'recent_hospitalized_in_day': recent_hospitalized_in_day,
         'last_patients': last_patients,
         'chart_30_days': chart_30_days,
-        'percent_bed_table': percent_bed_table
+
+
+        'percent_bed_table': percent_bed_table,
+        'card_top': card_top,
+        'bellow_card': bellow_card,
+        'department_patient_chart': department_patient_chart
 
     }
 

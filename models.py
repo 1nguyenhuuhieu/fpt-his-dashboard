@@ -134,6 +134,9 @@ class CardWithPercent:
         return get_change(self.current, self.previous)[0]
     
     def percent(self):
+        return get_percent(self.current, self.previous)[1]
+    
+    def change(self):
         return get_change(self.current, self.previous)[1]
     
 class MoneyCard():
@@ -265,6 +268,9 @@ class BellowHospitalCard():
         return get_change(self.current, self.previous)[0]
     
     def percent(self):
+        return get_percent(self.current, self.previous)[1]
+    
+    def change(self):
         return get_change(self.current, self.previous)[1]
     
 class Bed():
