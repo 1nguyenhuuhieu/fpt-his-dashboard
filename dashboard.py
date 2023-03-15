@@ -529,6 +529,7 @@ def hospitalized(day_query=None):
     department_patient_dict = {department.title: department.current for department in department_bed}
     department_patient_dict = dict(sorted(department_patient_dict.items(), key=lambda item: item[1], reverse=True))
     department_patient_chart = convert_to_chart(department_patient_dict)
+    list_department = department_patient_chart.copy()
     department_patient_chart.insert(0, ['Khoa', 'Lượt nội trú'])
     
     chart_30_days = []
@@ -568,7 +569,8 @@ def hospitalized(day_query=None):
         'percent_bed_table': percent_bed_table,
         'card_top': card_top,
         'bellow_card': bellow_card,
-        'department_patient_chart': department_patient_chart
+        'department_patient_chart': department_patient_chart,
+        'list_department': list_department
 
     }
 
@@ -1246,26 +1248,35 @@ def visited_department(department_id, day_query=None):
 
 
 # Trang bệnh nhân nội trú theo từng khoa
-@app.route('/hospitalized/<int:department_id>/<string:day_query>')
-@app.route('/hospitalized/<int:department_id>')
+@app.route('/hospitalized/<string:department_name>/<string:day_query>')
+@app.route('/hospitalized/<string:department_name>')
 @register_breadcrumb(app, '..hospitalized.department', 'Danh sách')
-def hospitalized_department(department_id, day_query=None):
-
-    department_id_list = get_department_id_list(department_id)
+def hospitalized_department(department_name, day_query=None):
+    
     cnxn = get_db()
     cursor = cnxn.cursor()
-    day_dict = get_day(day_query)
-    today = day_dict['today']
+    
+    # ngày bắt đầu và kết thúc truy vấn dữ liệu
+    time_filter = request.args.get('time')
+    start_get =  request.args.get('start')
+    end_get = request.args.get('end')
+
+    # lấy ngày xem dashboard
+    day_class = DayQuery(day_query,time_filter, start_get, end_get)
+    today = day_class.today
+    start = day_class.start
+    end = day_class.end
+
+    previous_start = day_class.previous_start
+    previous_end = day_class.previous_end
+
+    diff = diff_days(start, end)
 
     table_column_title = ['Thời gian', 'Mã Y tế',
                           'Tên bệnh nhân', 'Chẩn đoán', 'Bác sĩ']
 
-    list_patients = query_hospitalized.list_department(
-        today, department_id, cursor)
-
-    list_patients = list([e1.strftime("%H:%M %d-%m-%Y"), e2, e3, e4, e5]
-                         for e1, e2, e3, e4, e5 in list_patients)
-    department_name = query_visited.name_department(department_id, cursor)
+    list_patients = query_hospitalized.patiens_department(
+        today, department_name, cursor)
 
     today = today.strftime("%Y-%m-%d")
 
@@ -1273,7 +1284,6 @@ def hospitalized_department(department_id, day_query=None):
         'today': today,
         'list': list_patients,
         'table_column_title': table_column_title,
-        'department_id': department_id,
         'department_name': department_name,
     }
     cnxn.close()

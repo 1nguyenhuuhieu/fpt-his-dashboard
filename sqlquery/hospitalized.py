@@ -359,3 +359,28 @@ def list_department(day, department_id, cursor):
     except:
         print("Lỗi query hospitalized.list_department")
         return None
+    
+# Danh sách bệnh nhân nội trú theo khoa
+def patiens_department(day, department_name, cursor):
+    tomorrow = day + timedelta(days=1)
+    print(department_name)
+    query = """
+        SELECT ThoiGianVaoVien, MaYTe, TenBenhNhan, ChanDoanVaoKhoa,TenNhanVien
+        FROM BenhAn
+        INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan]
+        ON BenhAn.BenhNhan_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan].BenhNhan_Id
+        LEFT JOIN [eHospital_NgheAn_Dictionary].[dbo].[NhanVien]
+        ON BenhAn.BacSiDieuTri_Id = [eHospital_NgheAn_Dictionary].[dbo].[NhanVien].NhanVien_Id
+        WHERE (BenhAn.NgayRaVien IS NULL OR BenhAn.NgayRaVien > ?)
+                AND BenhAn.NgayVaoVien < ?
+        
+        AND BenhAn.KhoaVao_Id = ?
+        GROUP BY ThoiGianVaoVien, MaYTe, TenBenhNhan, ChanDoanVaoKhoa,TenNhanVien
+        """
+    try:
+        q = cursor.execute(query, day,tomorrow, department_name).fetchall()
+        return q
+    except:
+        print("Lỗi query hospitalized.patiens_department")
+        return None
+    
