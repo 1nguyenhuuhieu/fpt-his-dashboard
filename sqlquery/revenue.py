@@ -416,7 +416,7 @@ def departments_chart(start, end, cursor):
                 WHEN TenPhongKham IN(N'Phòng Khám Cao Huyết áp (10)', N'Phòng Khám Cao Huyết áp (10)_A' ) THEN N'Phòng Khám Cao Huyết áp (10)'
                 WHEN TenPhongKham IN(N'Phòng Khám Tiểu Đường (08)', N'Phòng Khám Tiểu Đường (08)_A') THEN N'Phòng Khám Tiểu Đường (08)'
                 ELSE TenPhongKham END)
-            ORDER BY TongDoanhThu
+            ORDER BY TongDoanhThu DESC
             """, start, end
         ).fetchall()
 
@@ -806,13 +806,12 @@ def services(day, cursor):
         return 0
 
 
-def services_type(day,type, cursor):
+def list_medicine(start, end, cursor):
     try:
         q = cursor.execute(
             """
             SELECT
             XacNhanChiPhiChiTiet.NoiDung,
-            Loai_IDRef_Name,
             XacNhanChiPhi.TenPhongKham,
             COALESCE(COUNT(XacNhanChiPhiChiTiet_Id),0) as 'count',
             COALESCE(SUM(SoLuong*DonGiaDoanhThu), 0) as 'tongdoanhthu'
@@ -821,17 +820,19 @@ def services_type(day,type, cursor):
             ON XacNhanChiPhiChiTiet.XacNhanChiPhi_Id=XacNhanChiPhi.XacNhanChiPhi_Id
             INNER JOIN VienPhiNoiTru_Loai_IDRef
             ON XacNhanChiPhiChiTiet.Loai_IDRef = VienPhiNoiTru_Loai_IDRef.Loai_IDRef
-            WHERE XacNhanChiPhi.NgayXacNhan = ? AND PhanNhom = ?
+            WHERE XacNhanChiPhi.ThoiGianXacNhan BETWEEN ? AND ? AND PhanNhom = 'DU'
             GROUP BY
             XacNhanChiPhiChiTiet.NoiDung,
-            Loai_IDRef_Name,
             XacNhanChiPhi.TenPhongKham
 
             ORDER BY tongdoanhthu DESC
-            """, day, type
+            """, start, end
         ).fetchall()
+
+        for row in q:
+            row.tongdoanhthu = f'{int(row.tongdoanhthu):,}'
 
         return q
     except:
-        print("Lỗi query revenue.top_service")
+        print("Lỗi query revenue.list_medicine")
         return 0

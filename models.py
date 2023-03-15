@@ -287,6 +287,3 @@ class Bed():
         elif self.percent() > 70: return 'cool'
         elif self.percent() > 60: return 'warm'
         else: return 'ice'
-    
-    
-    

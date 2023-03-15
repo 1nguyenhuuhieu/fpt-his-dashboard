@@ -55,6 +55,8 @@ app.jinja_env.filters['zip'] = zip
 
 print('test')
 # Trang chủ
+
+
 @app.route("/dashboard/<string:day_query>", methods=['GET', 'POST'])
 @app.route("/", methods=['GET', 'POST'])
 @register_breadcrumb(app, '.', 'Trang chủ')
@@ -62,14 +64,14 @@ def home(day_query=None):
     # kết nối database sql server
     cnxn = get_db()
     cursor = cnxn.cursor()
-    
+
     # ngày bắt đầu và kết thúc truy vấn dữ liệu
     time_filter = request.args.get('time')
-    start_get =  request.args.get('start')
+    start_get = request.args.get('start')
     end_get = request.args.get('end')
 
     # lấy ngày xem dashboard
-    day_class = DayQuery(day_query,time_filter, start_get, end_get)
+    day_class = DayQuery(day_query, time_filter, start_get, end_get)
     today = day_class.today
     start = day_class.start
     end = day_class.end
@@ -79,27 +81,28 @@ def home(day_query=None):
 
     diff = diff_days(start, end)
 
-
     # Tổng Doanh thu
     current = query_revenue.total_money_betweentime(start, end, cursor)
-    previous = query_revenue.total_money_betweentime(previous_start, previous_end, cursor)
+    previous = query_revenue.total_money_betweentime(
+        previous_start, previous_end, cursor)
     money_card = MoneyCard(current, previous)
 
     # Service card
     all_service_card = []
     # Tổng Doanh thu dược
     current = query_revenue.service_money(start, end, 'DU', cursor)
-    card = ServiceCard('Dược',current, money_card.current, 'fa-solid fa-pills', 'medicine')
+    card = ServiceCard('Dược', current, money_card.current,
+                       'fa-solid fa-pills', 'medicine')
     all_service_card.append(card)
 
     # Tổng Doanh thu dịch vụ
     current = query_revenue.service_money(start, end, 'DV', cursor)
-    card = ServiceCard('Dịch vụ',current, money_card.current, 'fa-solid fa-stethoscope', 'service')
+    card = ServiceCard('Dịch vụ', current, money_card.current,
+                       'fa-solid fa-stethoscope', 'service')
     all_service_card.append(card)
 
     # Thống kê bệnh nhân
     patient_card = []
-
 
     # Số bệnh nhân nội trú
     current = 0
@@ -112,65 +115,75 @@ def home(day_query=None):
         if previous_day <= datetime.now():
             previous += query_hospitalized.total(previous_day, cursor)
 
-    card = PatientHomeCard('fa-solid fa-hospital', 'Lượt nội trú', current,previous, 'hospitalized')
-    patient_card.append(card)   
+    card = PatientHomeCard('fa-solid fa-hospital',
+                           'Lượt nội trú', current, previous, 'hospitalized')
+    patient_card.append(card)
 
     # Số lượt khám bệnh
     current = query_visited.total(start, end, cursor)
-    previous = query_visited.total(previous_start, previous_end,cursor)
-    card = PatientHomeCard('fa-solid fa-hospital-user', 'Lượt khám bệnh', current,previous, 'visited'  )
+    previous = query_visited.total(previous_start, previous_end, cursor)
+    card = PatientHomeCard('fa-solid fa-hospital-user',
+                           'Lượt khám bệnh', current, previous, 'visited')
     patient_card.append(card)
 
     # Số bệnh nhân nhập viện
     current = query_hospitalized.new_in(start, end, cursor)
     previous = query_hospitalized.new_in(previous_start, previous_end, cursor)
-    card = PatientHomeCard('fa-solid fa-bed-pulse', 'Bệnh nhân nội trú mới', current,previous, 'new_patients')
+    card = PatientHomeCard('fa-solid fa-bed-pulse',
+                           'Bệnh nhân nội trú mới', current, previous, 'new_patients')
     patient_card.append(card)
 
     # Lượt chuyển tuyến
-    current = query_transfer.total(start, end, cursor) + query_transfer.total_department(start, end, cursor)
-    previous = query_transfer.total(previous_start, previous_end,cursor) + query_transfer.total_department(previous_start, previous_end, cursor)
-    card = PatientHomeCard('fa-solid fa-truck-medical', 'Chuyển tuyến', current, previous,'transfer' )
+    current = query_transfer.total(
+        start, end, cursor) + query_transfer.total_department(start, end, cursor)
+    previous = query_transfer.total(previous_start, previous_end, cursor) + \
+        query_transfer.total_department(previous_start, previous_end, cursor)
+    card = PatientHomeCard('fa-solid fa-truck-medical',
+                           'Chuyển tuyến', current, previous, 'transfer')
     patient_card.append(card)
 
     # Số ca phẫu thuật thủ thuật
     current = query_surgery.total(start, end, cursor)
     previous = query_surgery.total(previous_start, previous_end, cursor)
-    card = PatientHomeCard('fa-solid fa-kit-medical', 'Phẫu thuật, thủ thuật', current, previous,'surgery_list' )
+    card = PatientHomeCard('fa-solid fa-kit-medical',
+                           'Phẫu thuật, thủ thuật', current, previous, 'surgery_list')
     patient_card.append(card)
 
     # Số ca đẻ
     current = query_born.total(start, end, cursor)
     previous = query_born.total(previous_start, previous_end, cursor)
-    card = PatientHomeCard('fa-solid fa-baby', 'Số trẻ sinh', current, previous,'born' )
+    card = PatientHomeCard(
+        'fa-solid fa-baby', 'Số trẻ sinh', current, previous, 'born')
     patient_card.append(card)
 
     # Số lượt khám theo từng phòng khám
-    visited_in_department_id = query_visited.department_with_id(start,end, cursor)
+    visited_in_department_id = query_visited.department_with_id(
+        start, end, cursor)
 
     # Dữ liệu cho lượt khám bệnh chart
-    visited_in_department = query_visited.department(start,end, cursor)
+    visited_in_department = query_visited.department(start, end, cursor)
     visited_in_department_chart = convert_to_chart(visited_in_department)
     visited_in_department_chart.insert(0, ["Phòng", 'Lượt khám'])
 
     # Thống kê Số bệnh nhân nội trú từng khoa
     patient_in_department = []
-    patient_in_department_id = []
     for i in range(diff):
         day = start + timedelta(days=i)
         if day <= datetime.now():
             query = query_hospitalized.total_department(day, cursor)
-            query_id = query_hospitalized.total_department_id(day, cursor)
             if not i:
                 patient_in_department = query
-                patient_in_department_id = query_id
             else:
                 for index, row in enumerate(query):
                     patient_in_department[index][1] += row[1]
-                    patient_in_department_id[index][1] += row[1]
-    
-    patient_in_department = convert_to_chart(patient_in_department)
-    patient_in_department_chart = patient_in_department.copy()
+
+    # Sắp xếp các khoa theo số lượng bệnh nhân nội trú
+    department_patient_dict = {
+        department[0]: department[1] for department in patient_in_department}
+    department_patient_dict = dict(
+        sorted(department_patient_dict.items(), key=lambda item: item[1], reverse=True))
+    department_patient = convert_to_chart(department_patient_dict)
+    patient_in_department_chart = department_patient.copy()
     patient_in_department_chart.insert(0, ["Khoa", 'Bệnh nhân'])
 
     # Chart 30 day số lượt khám
@@ -179,9 +192,7 @@ def home(day_query=None):
         last30days, today, cursor)
     last30days_visited = [[day.strftime(
         "%A %d-%m-%Y"), int(visited)] for day, visited in last30days_visited]
-
     last30days_visited.reverse()
-
 
     # tin tức
     con_sqlite = get_db_dashboard()
@@ -200,7 +211,7 @@ def home(day_query=None):
         'diff': diff,
         'today': today,
         'soluotkham30ngay': last30days_visited,
-        'patient_in_department': patient_in_department_id,
+        'list_department': department_patient,
         'patient_in_department_chart': patient_in_department_chart,
         'visited_in_department': visited_in_department_id,
         'visited_in_department_chart': visited_in_department_chart,
@@ -208,7 +219,6 @@ def home(day_query=None):
         'money_card': money_card,
         'all_service_card': all_service_card,
         'patient_card': patient_card
-
     }
 
     return render_template('home/index.html', value=context,  active="home")
@@ -222,14 +232,14 @@ def revenue(day_query=None):
 
     cnxn = get_db()
     cursor = cnxn.cursor()
-    
+
     # ngày bắt đầu và kết thúc truy vấn dữ liệu
     time_filter = request.args.get('time')
-    start_get =  request.args.get('start')
+    start_get = request.args.get('start')
     end_get = request.args.get('end')
 
     # lấy ngày xem dashboard
-    day_class = DayQuery(day_query,time_filter, start_get, end_get)
+    day_class = DayQuery(day_query, time_filter, start_get, end_get)
     today = day_class.today
     start = day_class.start
     end = day_class.end
@@ -241,16 +251,18 @@ def revenue(day_query=None):
 
     # Money card
     current = query_revenue.total_money_betweentime(start, end, cursor)
-    previous = query_revenue.total_money_betweentime(previous_start, previous_end, cursor)
+    previous = query_revenue.total_money_betweentime(
+        previous_start, previous_end, cursor)
     extra_info = query_revenue.tenphanhom_service_format(start, end, cursor)
-    money_card = MoneyRevenueCard('fa-solid fa-money-bill', 'Tổng doanh thu', current, previous, extra_info)
-    
+    money_card = MoneyRevenueCard(
+        'fa-solid fa-money-bill', 'Tổng doanh thu', current, previous, extra_info)
+
     # chart cho money card
     tmp = query_revenue.tenphanhom_service(start, end, cursor)
     money_card_chart = convert_to_chart(tmp)
     money_card_chart = money_card_chart.copy()
     money_card_chart.insert(0, ['Mục', 'Số tiền'])
-    
+
     # Confirm card
     confirmed_visited = query_confirmed.visited_loai(
         start, end, 'NgoaiTru', cursor)
@@ -260,16 +272,17 @@ def revenue(day_query=None):
         start, end, 'NgoaiTru', cursor)
     money_hospital = query_revenue.total_loai(
         start, end, 'NoiTru', cursor)
-    
-    bhtt = query_revenue.bhtt(start, end, cursor)
-    bntt = query_revenue.bntt(start, end, cursor)    
 
-    confirm_card = ConfirmRevenueCard('fa-solid fa-clipboard-check', 'Hoàn tất thanh toán',confirmed_visited, confirmed_hospital,money_visited, money_hospital, bhtt, bntt)
+    bhtt = query_revenue.bhtt(start, end, cursor)
+    bntt = query_revenue.bntt(start, end, cursor)
+
+    confirm_card = ConfirmRevenueCard('fa-solid fa-clipboard-check', 'Hoàn tất thanh toán',
+                                      confirmed_visited, confirmed_hospital, money_visited, money_hospital, bhtt, bntt)
     confirm_card_chart = [
         ['Loại', 'Doanh thu'],
-        ['Ngoại trú', money_visited ],
+        ['Ngoại trú', money_visited],
         ['Nội trú', money_hospital]]
-    
+
     confirm_card_extra = [
         ['Bảo hiểm thanh toán', confirm_card.bhyt_money_format()],
         ['Bệnh nhân thanh toán', confirm_card.bntt_money_format()],
@@ -281,11 +294,10 @@ def revenue(day_query=None):
         "%A %d-%m-%Y"), int(tongdoanhthu)] for ngayxacnhan, tongdoanhthu in last_30days_money]
     last_30days_money.reverse()
 
-
     bellow_card = []
     # Thống kê trong kì này và kì trước
     is_first_loop = True
-    for s,e in zip([start,previous_start], [end, previous_end]):
+    for s, e in zip([start, previous_start], [end, previous_end]):
         current = query_revenue.total_money_betweentime(s, e, cursor)
         money_visited = query_revenue.total_loai(
             start, end, 'NgoaiTru', cursor)
@@ -295,7 +307,7 @@ def revenue(day_query=None):
             s, e, 'NgoaiTru', cursor)
         money_hospital = query_revenue.total_loai(
             s, e, 'NoiTru', cursor)
-        
+
         if is_first_loop:
             icon = "fa-solid fa-calendar-day"
             title = 'Kì này'
@@ -304,14 +316,13 @@ def revenue(day_query=None):
             icon = 'fa-solid fa-backward-step'
             title = 'Kì trước'
 
-        card = BellowRevenueCard(icon, title, current, money_card.previous,money_visited, avg_money, avg_confirmed, s, e)
+        card = BellowRevenueCard(
+            icon, title, current, money_card.previous, money_visited, avg_money, avg_confirmed, s, e)
 
         bellow_card.append(card)
 
     # 5 lượt xác nhận thanh toán gần nhất
     recent_confirmed = query_confirmed.last(today, cursor)
-
-
 
     # Doanh thu theo từng phòng khám, từng khoa
     departments = query_revenue.departments(start, end, cursor)
@@ -319,10 +330,12 @@ def revenue(day_query=None):
     departments_chart = convert_to_chart(departments_chart)
     departments_chart.insert(0, ['Khoa', 'Doanh thu'])
 
+  
+
     top10_doanhthu = query_revenue.top_service(today, cursor)
     top10_doanhthu_table = ([noidung, tenphongkham, count, int(
         tongdoanhthu)] for noidung, tenphongkham, count, tongdoanhthu in top10_doanhthu)
-    
+
     if diff > 30:
         total_chart = query_revenue.total_chart(start, end, cursor)
     else:
@@ -330,10 +343,10 @@ def revenue(day_query=None):
         total_chart = query_revenue.total_chart(last_30_days, today, cursor)
 
     total_chart = convert_to_chart(total_chart)
-   
+
     today = today.strftime("%Y-%m-%d")
     context = {
-        
+
         'last_30days_money': last_30days_money,
         'departments_chart': departments_chart,
         'top10_doanhthu_table': top10_doanhthu_table,
@@ -360,21 +373,23 @@ def revenue(day_query=None):
     return render_template('revenue/index.html', value=context, active="revenue")
 
 # Danh sách xác nhận thanh toán
+
+
 @app.route('/revenue/confirmed')
 @app.route('/revenue/confirmed/<string:day_query>')
 @register_breadcrumb(app, '..revenue.confirmed', 'Danh sách')
 def confirmed(day_query=None):
-    
+
     cnxn = get_db()
     cursor = cnxn.cursor()
-    
+
     # ngày bắt đầu và kết thúc truy vấn dữ liệu
     time_filter = request.args.get('time')
-    start_get =  request.args.get('start')
+    start_get = request.args.get('start')
     end_get = request.args.get('end')
 
     # lấy ngày xem dashboard
-    day_class = DayQuery(day_query,time_filter, start_get, end_get)
+    day_class = DayQuery(day_query, time_filter, start_get, end_get)
     today = day_class.today
     start = day_class.start
     end = day_class.end
@@ -419,14 +434,14 @@ def hospitalized(day_query=None):
 
     cnxn = get_db()
     cursor = cnxn.cursor()
-    
+
     # ngày bắt đầu và kết thúc truy vấn dữ liệu
     time_filter = request.args.get('time')
-    start_get =  request.args.get('start')
+    start_get = request.args.get('start')
     end_get = request.args.get('end')
 
     # lấy ngày xem dashboard
-    day_class = DayQuery(day_query,time_filter, start_get, end_get)
+    day_class = DayQuery(day_query, time_filter, start_get, end_get)
     today = day_class.today
     start = day_class.start
     end = day_class.end
@@ -447,7 +462,8 @@ def hospitalized(day_query=None):
 
     new_in = query_hospitalized.new_in(start, end, cursor)
     old_out = query_hospitalized.old_out(start, end, cursor)
-    card_top = TopHospitalCard('fa-solid fa-hospital', 'Lượt nội trú', current, previous, new_in, old_out)
+    card_top = TopHospitalCard(
+        'fa-solid fa-hospital', 'Lượt nội trú', current, previous, new_in, old_out)
 
     # Thống kê Số bệnh nhân nội trú từng khoa
     patient_in_department = query_hospitalized.total_department(today, cursor)
@@ -482,29 +498,35 @@ def hospitalized(day_query=None):
 
     bellow_card = []
 
-    current = query_hospitalized.new_in(day_class.monday(), day_class.sunday(), cursor)
-    previous = query_hospitalized.new_in(day_class.lastweek_monday(), day_class.monday(), cursor)
+    current = query_hospitalized.new_in(
+        day_class.monday(), day_class.sunday(), cursor)
+    previous = query_hospitalized.new_in(
+        day_class.lastweek_monday(), day_class.monday(), cursor)
     card = BellowHospitalCard(current, previous, 'Tuần này', 'Tuần trước')
     bellow_card.append(card)
 
-    current = query_hospitalized.new_in(day_class.first_day_month(), day_class.end_day_month(), cursor)
-    previous = query_hospitalized.new_in(day_class.first_day_2month(), day_class.first_day_month(), cursor)
+    current = query_hospitalized.new_in(
+        day_class.first_day_month(), day_class.end_day_month(), cursor)
+    previous = query_hospitalized.new_in(
+        day_class.first_day_2month(), day_class.first_day_month(), cursor)
     card = BellowHospitalCard(current, previous, 'Tháng này', 'Tháng trước')
     bellow_card.append(card)
 
-    current = query_hospitalized.new_in(day_class.first_day_year(), day_class.end_day_year(), cursor)
-    previous = query_hospitalized.new_in(day_class.first_day_2year(), day_class.first_day_year(), cursor)
+    current = query_hospitalized.new_in(
+        day_class.first_day_year(), day_class.end_day_year(), cursor)
+    previous = query_hospitalized.new_in(
+        day_class.first_day_2year(), day_class.first_day_year(), cursor)
     card = BellowHospitalCard(current, previous, 'Năm này', 'Năm trước')
     bellow_card.append(card)
 
     # Tính công suất giường bệnh
     percent_bed = [
-        ['Khoa Hồi sức cấp cứu',0, 0,54],
-        ['Khoa Ngoại tổng hợp', 0,0,52],
-        ['Khoa Nội tổng hơp', 0,0,52],
-        ['Khoa Phụ Sản', 0,0,41],
-        ['Khoa Y học cổ truyền', 0,0,48],
-        ['Liên chuyên khoa TMH-RHM-Mắt',0, 0,25]
+        ['Khoa Hồi sức cấp cứu', 0, 0, 54],
+        ['Khoa Ngoại tổng hợp', 0, 0, 52],
+        ['Khoa Nội tổng hơp', 0, 0, 52],
+        ['Khoa Phụ Sản', 0, 0, 41],
+        ['Khoa Y học cổ truyền', 0, 0, 48],
+        ['Liên chuyên khoa TMH-RHM-Mắt', 0, 0, 25]
     ]
     for i in range(diff):
         day = start + timedelta(days=i)
@@ -526,12 +548,14 @@ def hospitalized(day_query=None):
     percent_bed_table.insert(0, bed)
 
     # PieChart số lượt nội trú mỗi khoa trong khoảng ngày
-    department_patient_dict = {department.title: department.current for department in department_bed}
-    department_patient_dict = dict(sorted(department_patient_dict.items(), key=lambda item: item[1], reverse=True))
+    department_patient_dict = {
+        department.title: department.current for department in department_bed}
+    department_patient_dict = dict(
+        sorted(department_patient_dict.items(), key=lambda item: item[1], reverse=True))
     department_patient_chart = convert_to_chart(department_patient_dict)
     list_department = department_patient_chart.copy()
     department_patient_chart.insert(0, ['Khoa', 'Lượt nội trú'])
-    
+
     chart_30_days = []
 
     # chart công suất toàn viện 30 ngày
@@ -866,8 +890,10 @@ def visited(day_query=None):
     last30days_visited.reverse()
 
     # tổng số lượt khám 30 ngày gần nhất theo từng khoa phòng
-    last30days_visited_department = query_visited.department_week(last30days,today, cursor)
-    last30days_visited_department = convert_to_chart(last30days_visited_department)
+    last30days_visited_department = query_visited.department_week(
+        last30days, today, cursor)
+    last30days_visited_department = convert_to_chart(
+        last30days_visited_department)
     last30days_visited_department.insert(0, ["Phòng khám", 'Bệnh nhân'])
 
     today = today.strftime("%Y-%m-%d")
@@ -914,7 +940,7 @@ def visited_patients(day_query=None):
     end_last_year_day = day_dict['end_last_year_day']
 
     table_column_title = ['Thời gian khám', 'Mã y tế', 'Tên bệnh nhân',
-                          'Số tiếp nhận', 'Chẩn đoán trong khoa', 'Giải quyết','Bác sĩ', 'Khoa']
+                          'Số tiếp nhận', 'Chẩn đoán trong khoa', 'Giải quyết', 'Bác sĩ', 'Khoa']
 
     list_patients = query_visited.patients(today, cursor)
 
@@ -1128,37 +1154,51 @@ def medicine(day_query=None):
     cnxn = get_db()
     cursor = cnxn.cursor()
 
-    day_dict = get_day(day_query)
-    today = day_dict['today']
-    yesterday = day_dict['yesterday']
-    mon_day = day_dict['mon_day']
-    last_week_monday = day_dict['last_week_monday']
-    last_week_sun_day = day_dict['last_week_sun_day']
-    twolast_week_monday = day_dict['twolast_week_monday']
-    twolast_week_sun_day = day_dict['twolast_week_sun_day']
-    first_month_day = day_dict['first_month_day']
-    last_first_month_day = day_dict['last_first_month_day']
-    last_end_month_day = day_dict['last_end_month_day']
-    first_year_day = day_dict['first_year_day']
-    last_first_year_day = day_dict['last_first_year_day']
-    end_last_year_day = day_dict['end_last_year_day']
+    # ngày bắt đầu và kết thúc truy vấn dữ liệu
+    time_filter = request.args.get('time')
+    start_get = request.args.get('start')
+    end_get = request.args.get('end')
 
-    table_column_title = ['Nội dung', 'Tên',
+    # lấy ngày xem dashboard
+    day_class = DayQuery(day_query, time_filter, start_get, end_get)
+    today = day_class.today
+    start = day_class.start
+    end = day_class.end
+
+    previous_start = day_class.previous_start
+    previous_end = day_class.previous_end
+
+    diff = diff_days(start, end)
+
+    table_column_title = ['Nội dung',
                           'Khoa/Phòng', 'Số lượt', 'Tổng doanh thu']
 
-    list_patients = query_revenue.services_type(today, 'DU', cursor)
-    list_patients = list(
-        [e1, e2, e3, e4, f'{ int(e5):,}'] for e1, e2, e3, e4, e5 in list_patients)
+    list_medicine = query_revenue.list_medicine(start, end, cursor)
+
+    departments_chart = query_revenue.departments_chart(start, end, cursor)
+    departments_chart = convert_to_chart(departments_chart)
+    departments_chart.insert(0, ['Khoa/Phòng', 'Doanh thu'])
+
+    # medicine card
+    current = query_revenue.service_money(start, end, 'DU', cursor)
+    previous = query_revenue.service_money(previous_start, previous_end, 'DU', cursor)
+    card = CardWithPercent('fa-solid fa-pills', 'Doanh thu dược', current, previous)
+
 
     today = today.strftime("%Y-%m-%d")
 
     context = {
         'today': today,
-        'list': list_patients,
+        'start': start,
+        'end': end,
+        'diff': diff,
+        'card': card,
+        'list': list_medicine,
         'table_column_title': table_column_title,
+        'departments_chart': departments_chart
     }
-    cnxn.close()
-    return render_template('revenue/medicine.html', value=context, active='revenue', order_column=4)
+    close_db()
+    return render_template('revenue/medicine.html', value=context, active='revenue', order_column=3, not_patient_btn=True)
 
 
 # Doanh thu theo dịch vụ
@@ -1216,7 +1256,7 @@ def visited_department(department_id, day_query=None):
     today = day_dict['today']
 
     table_column_title = ['Thời gian', 'Mã Y tế',
-                          'Tên bệnh nhân', 'Chẩn đoán', 'Giải quyết','Bác sĩ']
+                          'Tên bệnh nhân', 'Chẩn đoán', 'Giải quyết', 'Bác sĩ']
 
     list_patients = []
 
@@ -1252,17 +1292,17 @@ def visited_department(department_id, day_query=None):
 @app.route('/hospitalized/<string:department_name>')
 @register_breadcrumb(app, '..hospitalized.department', 'Danh sách')
 def hospitalized_department(department_name, day_query=None):
-    
+
     cnxn = get_db()
     cursor = cnxn.cursor()
-    
+
     # ngày bắt đầu và kết thúc truy vấn dữ liệu
     time_filter = request.args.get('time')
-    start_get =  request.args.get('start')
+    start_get = request.args.get('start')
     end_get = request.args.get('end')
 
     # lấy ngày xem dashboard
-    day_class = DayQuery(day_query,time_filter, start_get, end_get)
+    day_class = DayQuery(day_query, time_filter, start_get, end_get)
     today = day_class.today
     start = day_class.start
     end = day_class.end
@@ -1751,12 +1791,13 @@ def detail_post(post_id):
     return render_template('news/post.html', value=context, active='news', hidden_top_filter=True)
 
 # trang báo cáo thu tiền dịch vụ
+
+
 @app.route('/admin/money', methods=['GET', 'POST'])
 @register_breadcrumb(app, '..admin.money', 'Tiền dịch vụ')
 def admin_money():
     day_dict = get_day(None)
     today = day_dict['today']
-
 
     if session.get('username'):
         con = sqlite3.connect("dashboard.db")
@@ -1770,19 +1811,20 @@ def admin_money():
         """
         list_reports = cursor.execute(sql_list_report).fetchall()
         titles = cursor.execute(sql_list_report).description
-            
-        list_form_title_money = [["Tiền khám bệnh"],["Viện phí"],["Xét nghiệm"],["Điện tim"],["Test covid 19"],["Lưu huyết não"],["Siêu âm"],["XQ"],["Nội soi dạ dày, thực quản"],["Nội soi TMH"],["Nội soi CTC"],["Khám sức khỏe"],["Bó bột gây mê"],["Chụp CT"],["Tiêm SAT"],["Tiêm phòng dại"],["Tiêm VGB 1ml"],["Tiêm VGB 0.5ml"],["Vắc xin Rotamin"],["Vắc xin Sởi - Quai bị - Rubella"],["Vắc xin Cúm"],["Vắc xin Quimihib"],["Thuốc"]]
+
+        list_form_title_money = [["Tiền khám bệnh"], ["Viện phí"], ["Xét nghiệm"], ["Điện tim"], ["Test covid 19"], ["Lưu huyết não"], ["Siêu âm"], ["XQ"], ["Nội soi dạ dày, thực quản"], ["Nội soi TMH"], ["Nội soi CTC"], [
+            "Khám sức khỏe"], ["Bó bột gây mê"], ["Chụp CT"], ["Tiêm SAT"], ["Tiêm phòng dại"], ["Tiêm VGB 1ml"], ["Tiêm VGB 0.5ml"], ["Vắc xin Rotamin"], ["Vắc xin Sởi - Quai bị - Rubella"], ["Vắc xin Cúm"], ["Vắc xin Quimihib"], ["Thuốc"]]
         for i in list_form_title_money:
-            i.append(slugify(i[0]).replace('-','_'))
+            i.append(slugify(i[0]).replace('-', '_'))
 
         if request.method == 'POST' and 'new_report' in request.form:
-           
+
             values = []
-     
+
             for i in (request.form):
-            
+
                 values.append(request.form[i])
-            
+
             values.pop(-1)
 
             sql = """
@@ -1793,7 +1835,6 @@ def admin_money():
             con.commit()
             return redirect(url_for('admin_money'))
 
-        
         if request.method == 'POST' and 'delete_report' in request.form:
             sql = """
             DELETE FROM report_money WHERE id = ?
@@ -1803,8 +1844,6 @@ def admin_money():
             cursor.execute(sql, (request.form['report_id']))
             con.commit()
             return redirect(url_for('admin_money'))
-        
-
 
         today = today.strftime("%Y-%m-%d")
         context = {
@@ -1820,6 +1859,8 @@ def admin_money():
         return redirect(url_for('user_login'))
 
 # Trang danh bạ
+
+
 @app.route('/addressbook')
 @register_breadcrumb(app, '..addressbook', 'Danh bạ nhân viên')
 def addressbook():

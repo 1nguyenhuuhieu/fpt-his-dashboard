@@ -14,7 +14,7 @@
             {% for row in value.list %}
             <tr>
                 {% for col in row %}
-                {% if loop.index == 2 %}
+                {% if loop.index == 2 and value.not_patient_btn %}
                 <td> <button class="btn btn-sm btn-primary" data-clipboard-text="{{ col }}" data-bs-toggle="modal" data-bs-target="#patientDetailModal" onclick="getPatientDetail(this.textContent)">{{ col }}</button></td>
                 {% else %}
                 <td>{{ col }}</td>

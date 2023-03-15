@@ -3,12 +3,77 @@
 <i class="fa-solid fa-arrow-up-wide-short me-2"></i>{% block title %}Doanh thu dược{% endblock %}
 {% endblock %}
 {% block content %}
+<div class="row">
+    <div class="col-lg-4">
+        {% if value.card %}
+        {% set card=value.card%}
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2"><i class="{{ card.icon }} me-2 fa-fw"></i>{{ card.title }}
+                        </h6>
+                        <p class="card-text text-muted fst-italic m-0">
+                            <small>{{ card.time }}</small>
+                        </p>
+                        <hr class="my-2">
+                        <div class="card-text d-flex justify-content-between">
+         
+                            <span class="fw-bold h3">{{ card.current_format() }}</span>
+                        </div>
+                        <hr class="my-2">
+                        <span class="fw-semibold
+                        {{ 'text-success' if card.is_increased() else 'text-danger'}}
+                        ">
+                            <i class="fa-solid {{ 'fa-arrow-trend-up' if card.is_increased() else 'fa-arrow-trend-down'}}  me-1"></i>
+                            {{ card.change() }}%
+                        kì trước</span>
+                        <span>
+                            {{ card.previous_format()}}
+                        </span>
+                        <div class="progress" role="progressbar" aria-label="Animated striped example"
+                            aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
+                            <div class="progress-bar
+                            {{ 'bg-success' if card.is_increased() else 'bg-danger'}}" style="width: {{ card.percent()}}%">{{ card.percent()}}%</div>
+                        </div>
+                
+                </div>
+            </div>
+            {% endif %}
+
+    </div>
+    <div class="col-lg-8">
+        <div class="bg-white rounded border shadow-sm p-2 h-100">
+            <div id="barChart1"></div>
+            </div>
+    </div>
+</div>
 
 {% include 'include/table.html' %}
 
 <script>
     const urlGenerator = '/revenue/medicine/';
     const todayURL = "{{ url_for('medicine') }}";
+</script>
+
+<!-- barChart1 -->
+<script>
+google.charts.load('current', {packages: ['corechart', 'bar']});
+google.charts.setOnLoadCallback(drawBasic);
+
+function drawBasic() {
+    {% if value.departments_chart %}
+    const dataChart = {{ value.departments_chart|tojson }}
+    {% endif %}
+
+      var data = google.visualization.arrayToDataTable(dataChart);
+
+      var options = {
+        title: 'Doanh thu dược từng khoa/phòng',
+      };
+
+      var chart = new google.visualization.PieChart(document.getElementById('barChart1'));
+
+      chart.draw(data, options);
+    }
 </script>
 
 

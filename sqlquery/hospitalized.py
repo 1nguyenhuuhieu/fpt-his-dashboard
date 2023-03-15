@@ -371,10 +371,12 @@ def patiens_department(day, department_name, cursor):
         ON BenhAn.BenhNhan_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan].BenhNhan_Id
         LEFT JOIN [eHospital_NgheAn_Dictionary].[dbo].[NhanVien]
         ON BenhAn.BacSiDieuTri_Id = [eHospital_NgheAn_Dictionary].[dbo].[NhanVien].NhanVien_Id
+        INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_PhongBan] as dm_phongban
+        ON BenhAn.KhoaVao_Id = dm_phongban.PhongBan_Id
         WHERE (BenhAn.NgayRaVien IS NULL OR BenhAn.NgayRaVien > ?)
                 AND BenhAn.NgayVaoVien < ?
-        
-        AND BenhAn.KhoaVao_Id = ?
+                
+        AND dm_phongban.TenPhongBan= ?
         GROUP BY ThoiGianVaoVien, MaYTe, TenBenhNhan, ChanDoanVaoKhoa,TenNhanVien
         """
     try:
