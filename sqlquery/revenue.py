@@ -836,3 +836,36 @@ def list_medicine(start, end, cursor):
     except:
         print("Lỗi query revenue.list_medicine")
         return 0
+
+
+
+def list_service(start, end, cursor):
+    try:
+        q = cursor.execute(
+            """
+            SELECT
+            XacNhanChiPhiChiTiet.NoiDung,
+            XacNhanChiPhi.TenPhongKham,
+            COALESCE(COUNT(XacNhanChiPhiChiTiet_Id),0) as 'count',
+            COALESCE(SUM(SoLuong*DonGiaDoanhThu), 0) as 'tongdoanhthu'
+            FROM XacNhanChiPhiChiTiet
+            INNER JOIN XacNhanChiPhi 
+            ON XacNhanChiPhiChiTiet.XacNhanChiPhi_Id=XacNhanChiPhi.XacNhanChiPhi_Id
+            INNER JOIN VienPhiNoiTru_Loai_IDRef
+            ON XacNhanChiPhiChiTiet.Loai_IDRef = VienPhiNoiTru_Loai_IDRef.Loai_IDRef
+            WHERE XacNhanChiPhi.ThoiGianXacNhan BETWEEN ? AND ? AND PhanNhom = 'DV'
+            GROUP BY
+            XacNhanChiPhiChiTiet.NoiDung,
+            XacNhanChiPhi.TenPhongKham
+
+            ORDER BY tongdoanhthu DESC
+            """, start, end
+        ).fetchall()
+
+        for row in q:
+            row.tongdoanhthu = f'{int(row.tongdoanhthu):,}'
+
+        return q
+    except:
+        print("Lỗi query revenue.list_service")
+        return 0

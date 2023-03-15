@@ -1,0 +1,35 @@
+<div class="card shadow-sm h-100 text-bg-warning">
+    <div class="card-body">
+        <h6 class="card-subtitle mb-2"><i class="{{ card.icon }} me-2 fa-fw"></i>{{ card.title }}
+            </h6>
+            <p class="card-text text-muted fst-italic m-0">
+                <small>{{ card.time }}</small>
+            </p>
+            <hr class="my-2">
+            <div class="card-text d-flex justify-content-between">
+
+                <span class="fw-bold h3">{{ card.current_format() }}</span>
+            </div>
+            <hr class="my-2">
+            <div class="d-flex justify-content-between">
+                <span class="fw-semibold
+                {{ 'text-success' if card.is_increased() else 'text-danger'}}
+                ">
+                    <i class="fa-solid {{ 'fa-arrow-trend-up' if card.is_increased() else 'fa-arrow-trend-down'}}  me-1"></i>
+                    {{ card.change() }}%
+                kì trước</span>
+                
+            <span class="fw-semibold text-muted">
+                {{ card.previous_format()}}
+            </span>
+
+            </div>
+
+            <div class="progress mt-2" role="progressbar" aria-label="Animated striped example"
+                aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">
+                <div class="progress-bar
+                {{ 'bg-success' if card.is_increased() else 'bg-danger'}}" style="width: {{ card.percent()}}%">{{ card.percent()}}%</div>
+            </div>
+    
+    </div>
+</div>

@@ -3,12 +3,47 @@
 <i class="fa-solid fa-arrow-up-wide-short me-2"></i>{% block title %}Doanh thu dịch vụ{% endblock %}
 {% endblock %}
 {% block content %}
+<div class="row">
+    <div class="col-lg-4">
+        {% if value.card %}
+        {% set card=value.card%}
+            {% include 'include/card.html' %}
+            {% endif %}
+    </div>
+    <div class="col-lg-8 mt-3 mt-sm-0">
+        <div class="bg-white rounded border shadow-sm p-2 h-100">
+            <div id="barChart1"></div>
+            </div>
+    </div>
+</div>
 
 {% include 'include/table.html' %}
 
 <script>
-    const urlGenerator = '/revenue/medicine/';
-    const todayURL = "{{ url_for('medicine') }}";
+    const urlGenerator = '/revenue/service/';
+    const todayURL = "{{ url_for('service') }}";
+</script>
+
+<!-- barChart1 -->
+<script>
+google.charts.load('current', {packages: ['corechart', 'bar']});
+google.charts.setOnLoadCallback(drawBasic);
+
+function drawBasic() {
+    {% if value.departments_chart %}
+    const dataChart = {{ value.departments_chart|tojson }}
+    {% endif %}
+
+      var data = google.visualization.arrayToDataTable(dataChart);
+
+      var options = {
+        title: 'Doanh thu dịch vụ từng khoa/phòng',
+      };
+
+      var chart = new google.visualization.PieChart(document.getElementById('barChart1'));
+
+      chart.draw(data, options);
+    }
 </script>
 
 

@@ -1206,41 +1206,53 @@ def medicine(day_query=None):
 @app.route('/revenue/service/')
 @register_breadcrumb(app, '..revenue.service', 'Dịch vụ')
 def service(day_query=None):
-
     cnxn = get_db()
     cursor = cnxn.cursor()
 
-    day_dict = get_day(day_query)
-    today = day_dict['today']
-    yesterday = day_dict['yesterday']
-    mon_day = day_dict['mon_day']
-    last_week_monday = day_dict['last_week_monday']
-    last_week_sun_day = day_dict['last_week_sun_day']
-    twolast_week_monday = day_dict['twolast_week_monday']
-    twolast_week_sun_day = day_dict['twolast_week_sun_day']
-    first_month_day = day_dict['first_month_day']
-    last_first_month_day = day_dict['last_first_month_day']
-    last_end_month_day = day_dict['last_end_month_day']
-    first_year_day = day_dict['first_year_day']
-    last_first_year_day = day_dict['last_first_year_day']
-    end_last_year_day = day_dict['end_last_year_day']
+    # ngày bắt đầu và kết thúc truy vấn dữ liệu
+    time_filter = request.args.get('time')
+    start_get = request.args.get('start')
+    end_get = request.args.get('end')
 
-    table_column_title = ['Nội dung', 'Tên',
+    # lấy ngày xem dashboard
+    day_class = DayQuery(day_query, time_filter, start_get, end_get)
+    today = day_class.today
+    start = day_class.start
+    end = day_class.end
+
+    previous_start = day_class.previous_start
+    previous_end = day_class.previous_end
+
+    diff = diff_days(start, end)
+
+    table_column_title = ['Nội dung',
                           'Khoa/Phòng', 'Số lượt', 'Tổng doanh thu']
 
-    list_patients = query_revenue.services_type(today, 'DV', cursor)
-    list_patients = list(
-        [e1, e2, e3, e4, f'{ int(e5):,}'] for e1, e2, e3, e4, e5 in list_patients)
+    list_medicine = query_revenue.list_service(start, end, cursor)
+
+    departments_chart = query_revenue.departments_chart(start, end, cursor)
+    departments_chart = convert_to_chart(departments_chart)
+    departments_chart.insert(0, ['Khoa/Phòng', 'Doanh thu'])
+
+    # medicine card
+    current = query_revenue.service_money(start, end, 'DV', cursor)
+    previous = query_revenue.service_money(previous_start, previous_end, 'DV', cursor)
+    card = CardWithPercent('fa-solid fa-stethoscope', 'Doanh thu dịch vụ', current, previous)
 
     today = today.strftime("%Y-%m-%d")
 
     context = {
         'today': today,
-        'list': list_patients,
+        'start': start,
+        'end': end,
+        'diff': diff,
+        'card': card,
+        'list': list_medicine,
         'table_column_title': table_column_title,
+        'departments_chart': departments_chart
     }
-    cnxn.close()
-    return render_template('revenue/service.html', value=context, active='revenue', order_column=4)
+    close_db()
+    return render_template('revenue/service.html', value=context, active='revenue', order_column=3, not_patient_btn=True)
 
 
 # Trang bệnh nhân khám bệnh theo từng khoa
