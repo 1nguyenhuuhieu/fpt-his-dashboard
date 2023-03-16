@@ -141,13 +141,15 @@
                             <h6 class="m-0">Doanh thu khoa phòng</h6>
                         </div>
                         <ul class="list-group list-group-flush">
+                            {% if value.departments %}
                             {% for department in value.departments %}
-                            <a href="$"
+                            <a href="{{ url_for('revenue_department', department_name=department.0, day_query=value.today)}}"
                                 class="list-group-item list-group-item-action d-flex justify-content-between align-items-center ">
                                 {{ department.0 }}
                                 <span class="fw-bold">{{ department.1 }}</span>
                             </a>
                             {% endfor %}
+                            {% endif %}
                         </ul>
                     </div>
                 </div>

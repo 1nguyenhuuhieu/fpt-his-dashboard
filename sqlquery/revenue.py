@@ -813,6 +813,7 @@ def list_medicine(start, end, cursor):
             SELECT
             XacNhanChiPhiChiTiet.NoiDung,
             XacNhanChiPhi.TenPhongKham,
+            XacNhanChiPhiChiTiet.DonGiaDoanhThu as dongia,
             COALESCE(COUNT(XacNhanChiPhiChiTiet_Id),0) as 'count',
             COALESCE(SUM(SoLuong*DonGiaDoanhThu), 0) as 'tongdoanhthu'
             FROM XacNhanChiPhiChiTiet
@@ -823,7 +824,8 @@ def list_medicine(start, end, cursor):
             WHERE XacNhanChiPhi.ThoiGianXacNhan BETWEEN ? AND ? AND PhanNhom = 'DU'
             GROUP BY
             XacNhanChiPhiChiTiet.NoiDung,
-            XacNhanChiPhi.TenPhongKham
+            XacNhanChiPhi.TenPhongKham,
+            XacNhanChiPhiChiTiet.DonGiaDoanhThu
 
             ORDER BY tongdoanhthu DESC
             """, start, end
@@ -831,6 +833,7 @@ def list_medicine(start, end, cursor):
 
         for row in q:
             row.tongdoanhthu = f'{int(row.tongdoanhthu):,}'
+            row.dongia = f'{int(row.dongia):,}'
 
         return q
     except:
@@ -846,6 +849,7 @@ def list_service(start, end, cursor):
             SELECT
             XacNhanChiPhiChiTiet.NoiDung,
             XacNhanChiPhi.TenPhongKham,
+            XacNhanChiPhiChiTiet.DonGiaDoanhThu as dongia,
             COALESCE(COUNT(XacNhanChiPhiChiTiet_Id),0) as 'count',
             COALESCE(SUM(SoLuong*DonGiaDoanhThu), 0) as 'tongdoanhthu'
             FROM XacNhanChiPhiChiTiet
@@ -856,7 +860,8 @@ def list_service(start, end, cursor):
             WHERE XacNhanChiPhi.ThoiGianXacNhan BETWEEN ? AND ? AND PhanNhom = 'DV'
             GROUP BY
             XacNhanChiPhiChiTiet.NoiDung,
-            XacNhanChiPhi.TenPhongKham
+            XacNhanChiPhi.TenPhongKham,
+            XacNhanChiPhiChiTiet.DonGiaDoanhThu
 
             ORDER BY tongdoanhthu DESC
             """, start, end
@@ -864,8 +869,74 @@ def list_service(start, end, cursor):
 
         for row in q:
             row.tongdoanhthu = f'{int(row.tongdoanhthu):,}'
+            row.dongia = f'{int(row.dongia):,}'
 
         return q
     except:
         print("Lỗi query revenue.list_service")
-        return 0
+        return None
+
+# danh sách chi phí theo tên khoa/phòng
+def list_department(start, end,name, cursor):
+    query = """
+        SELECT
+        XacNhanChiPhiChiTiet.NoiDung,
+        XacNhanChiPhiChiTiet.DonGiaDoanhThu as dongia,
+        COALESCE(COUNT(XacNhanChiPhiChiTiet_Id),0) as 'count',
+        COALESCE(SUM(SoLuong*DonGiaDoanhThu), 0) as 'tongdoanhthu'
+        FROM XacNhanChiPhiChiTiet
+        INNER JOIN XacNhanChiPhi 
+        ON XacNhanChiPhiChiTiet.XacNhanChiPhi_Id=XacNhanChiPhi.XacNhanChiPhi_Id
+        WHERE XacNhanChiPhi.ThoiGianXacNhan BETWEEN ? AND ? AND XacNhanChiPhi.TenPhongKham = ?
+        GROUP BY
+        XacNhanChiPhiChiTiet.NoiDung,
+        XacNhanChiPhiChiTiet.DonGiaDoanhThu
+        ORDER BY tongdoanhthu DESC    
+        """
+    try:
+        rows = cursor.execute(query, start, end, name).fetchall()
+        for row in rows:
+            row.tongdoanhthu = f'{int(row.tongdoanhthu):,}'
+            row.dongia = f'{int(row.dongia):,}'
+        return rows
+    except:
+        print("Lỗi query revenue.list_department")
+        return None
+
+# Tổng chi phí theo tên khoa phòng
+def total_department(start, end,name, cursor):
+    query = """
+        SELECT
+        COALESCE(SUM(SoLuong*DonGiaDoanhThu), 0) as 'tongdoanhthu'
+        FROM XacNhanChiPhiChiTiet
+        INNER JOIN XacNhanChiPhi 
+        ON XacNhanChiPhiChiTiet.XacNhanChiPhi_Id=XacNhanChiPhi.XacNhanChiPhi_Id
+        WHERE XacNhanChiPhi.ThoiGianXacNhan BETWEEN ? AND ? AND XacNhanChiPhi.TenPhongKham = ?
+        """
+    try:
+        row = cursor.execute(query, start, end, name).fetchone()[0]
+        return int(row)
+    except:
+        print("Lỗi query revenue.total_department")
+        return None
+    
+
+def revenue_department(start, end,name, cursor):
+    query = """
+        SELECT
+        COALESCE(SUM(SoLuong*DonGiaDoanhThu), 0) as 'tongdoanhthu'
+        FROM XacNhanChiPhiChiTiet
+        INNER JOIN XacNhanChiPhi 
+        ON XacNhanChiPhiChiTiet.XacNhanChiPhi_Id=XacNhanChiPhi.XacNhanChiPhi_Id
+        INNER JOIN VienPhiNoiTru_Loai_IDRef
+        ON XacNhanChiPhiChiTiet.Loai_IDRef = VienPhiNoiTru_Loai_IDRef.Loai_IDRef
+        WHERE XacNhanChiPhi.ThoiGianXacNhan BETWEEN ? AND ? AND XacNhanChiPhi.TenPhongKham = ?
+        GROUP BY
+        ORDER BY tongdoanhthu DESC    
+        """
+    try:
+        rows = cursor.execute(query, start, end, name).fetchall()
+        return rows
+    except:
+        print("Lỗi query revenue.list_department")
+        return None

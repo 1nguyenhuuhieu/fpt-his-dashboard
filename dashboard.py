@@ -1171,7 +1171,7 @@ def medicine(day_query=None):
     diff = diff_days(start, end)
 
     table_column_title = ['Nội dung',
-                          'Khoa/Phòng', 'Số lượt', 'Tổng doanh thu']
+                          'Khoa/Phòng', 'Đơn giá','Số lượt', 'Tổng doanh thu']
 
     list_medicine = query_revenue.list_medicine(start, end, cursor)
 
@@ -1226,7 +1226,7 @@ def service(day_query=None):
     diff = diff_days(start, end)
 
     table_column_title = ['Nội dung',
-                          'Khoa/Phòng', 'Số lượt', 'Tổng doanh thu']
+                          'Khoa/Phòng', 'Đơn giá','Số lượt', 'Tổng doanh thu']
 
     list_medicine = query_revenue.list_service(start, end, cursor)
 
@@ -1253,6 +1253,61 @@ def service(day_query=None):
     }
     close_db()
     return render_template('revenue/service.html', value=context, active='revenue', order_column=3, not_patient_btn=True)
+
+
+# Doanh thu theo khoa phòng
+@app.route('/revenue/department/<string:department_name>/<string:day_query>')
+@app.route('/revenue/service/<string:department_name>')
+@register_breadcrumb(app, '..revenue.department', 'Khoa/Phòng')
+def revenue_department(department_name,day_query=None):
+    cnxn = get_db()
+    cursor = cnxn.cursor()
+
+    # ngày bắt đầu và kết thúc truy vấn dữ liệu
+    time_filter = request.args.get('time')
+    start_get = request.args.get('start')
+    end_get = request.args.get('end')
+
+    # lấy ngày xem dashboard
+    day_class = DayQuery(day_query, time_filter, start_get, end_get)
+    today = day_class.today
+    start = day_class.start
+    end = day_class.end
+
+    previous_start = day_class.previous_start
+    previous_end = day_class.previous_end
+
+    diff = diff_days(start, end)
+
+    table_column_title = ['Nội dung', 'Đơn giá','Số lượt', 'Tổng doanh thu']
+
+    list_medicine = query_revenue.list_department(start, end,department_name, cursor)
+
+    departments_chart = query_revenue.departments_chart(start, end, cursor)
+    departments_chart = convert_to_chart(departments_chart)
+    departments_chart.insert(0, ['Khoa/Phòng', 'Doanh thu'])
+
+    # card
+    current = query_revenue.total_department(start, end, department_name, cursor)
+    previous = query_revenue.total_department(previous_start, previous_end, department_name, cursor)
+    card = CardWithPercent('fa-solid fa-stethoscope', department_name, current, previous)
+
+    today = today.strftime("%Y-%m-%d")
+
+    context = {
+        'today': today,
+        'start': start,
+        'end': end,
+        'diff': diff,
+        'card': card,
+        'list': list_medicine,
+        'table_column_title': table_column_title,
+        'departments_chart': departments_chart,
+        'department_name': department_name
+    }
+    close_db()
+    return render_template('revenue/department.html', value=context, active='revenue', order_column=3, not_patient_btn=True)
+
 
 
 # Trang bệnh nhân khám bệnh theo từng khoa
