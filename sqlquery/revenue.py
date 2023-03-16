@@ -774,8 +774,8 @@ def avg_confirmed_union(startday, endday, cursor):
         return 0
 
 
-# SQL top 10 khoa phòng nhiều doanh thu nhất trong ngày
-def services(day, cursor):
+# SQL danh sách doanh thu trong khoảng ngày
+def services(start, end, cursor):
     try:
         q = cursor.execute(
             """
@@ -783,6 +783,7 @@ def services(day, cursor):
             XacNhanChiPhiChiTiet.NoiDung,
             Loai_IDRef_Name,
             XacNhanChiPhi.TenPhongKham,
+            XacNhanChiPhiChiTiet.DonGiaDoanhThu,
             COALESCE(COUNT(XacNhanChiPhiChiTiet_Id),0) as 'count',
             COALESCE(SUM(SoLuong*DonGiaDoanhThu), 0) as 'tongdoanhthu'
             FROM XacNhanChiPhiChiTiet
@@ -790,20 +791,22 @@ def services(day, cursor):
             ON XacNhanChiPhiChiTiet.XacNhanChiPhi_Id=XacNhanChiPhi.XacNhanChiPhi_Id
             INNER JOIN VienPhiNoiTru_Loai_IDRef
             ON XacNhanChiPhiChiTiet.Loai_IDRef = VienPhiNoiTru_Loai_IDRef.Loai_IDRef
-            WHERE XacNhanChiPhi.NgayXacNhan = ?
+            WHERE XacNhanChiPhi.ThoiGianXacNhan BETWEEN ? AND ?
             GROUP BY
             XacNhanChiPhiChiTiet.NoiDung,
+            XacNhanChiPhiChiTiet.DonGiaDoanhThu,
             Loai_IDRef_Name,
             XacNhanChiPhi.TenPhongKham
 
             ORDER BY tongdoanhthu DESC
-            """, day
+            """, start, end
         ).fetchall()
-
+        for row in q:
+            row.tongdoanhthu = f'{int(row.tongdoanhthu):,}'
         return q
     except:
-        print("Lỗi query revenue.top_service")
-        return 0
+        print("Lỗi query revenue.services")
+        return None
 
 
 def list_medicine(start, end, cursor):

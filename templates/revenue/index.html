@@ -19,14 +19,21 @@
                                     </span>
                                 </h6>
                                 <hr class="my-2">
-                                <h3 class="card-title">{{ value.money_card.current_format() }}</h3>
+                                <h3 class="card-title fw-semibold">{{ value.money_card.current_format() }}</h3>
                                 <p class="text-muted card-text">
-                                    <span class="fw-semibold
-                                    {{ 'text-success' if value.money_card.is_increased() else 'text-danger'}}
-                                    ">
-                                        <i class="fa-solid {{ 'fa-arrow-trend-up' if value.money_card.is_increased() else 'fa-arrow-trend-down'}}  me-1"></i>
-                                        {{ value.money_card.change() }}%
-                                    kì trước</span>
+                                    <div class="d-flex justify-content-between">
+                                        <span class="fw-semibold
+                                        {{ 'text-success' if value.money_card.is_increased() else 'text-danger'}}
+                                        ">
+                                            <i class="fa-solid {{ 'fa-arrow-trend-up' if value.money_card.is_increased() else 'fa-arrow-trend-down'}}  me-1"></i>
+                                            {{ value.money_card.change() }}%
+                                        kì trước</span>
+                                        <span class="text-muted">
+                                            {{value.money_card.previous_format()}}
+
+                                        </span>
+
+                                    </div>
                                 </p>
                                 <hr>
                                 {% for title, money in value.money_card.extra_info %}

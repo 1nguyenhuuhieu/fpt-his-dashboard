@@ -20,7 +20,7 @@
 {% include 'include/table.html' %}
 
 <script>
-    const urlGenerator = '/revenue/department/';
+    const urlGenerator = '/revenue/department/{{ value.department_name }}/';
     const todayURL = "{{ url_for('revenue_department', department_name=value.department_name) }}";
 </script>
 
@@ -38,6 +38,11 @@ function drawBasic() {
 
       var options = {
         title: 'Doanh thu khoa/phòng so với tổng doanh thu',
+        slices: {  1: {offset: 0.2}
+          },
+          legend: {
+            position:'labeled'
+          }
       };
 
       var chart = new google.visualization.PieChart(document.getElementById('barChart1'));

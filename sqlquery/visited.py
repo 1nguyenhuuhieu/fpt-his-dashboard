@@ -14,6 +14,54 @@ def total(start, end, cursor):
     except:
         print("Lỗi query visited.total")
         return None
+
+
+# Số lượt nhập viện khi khám bệnh
+# Used for: visited
+def in_hospital(start, end, cursor):
+    query = """
+        SELECT
+        COALESCE(COUNT(KhamBenh_Id),0)
+        FROM dbo.KhamBenh
+        WHERE ThoiGianKham BETWEEN ? AND ? AND HuongGiaiQuyet_Id=457;
+        """
+    try:
+        rows = cursor.execute(query,start, end).fetchone()[0]
+        return rows
+    except:
+        print("Lỗi query visited.in_hospital")
+        return None
+
+# Số lượt chuyển viện viện khi khám bệnh
+# Used for: visited    
+def transfer(start, end, cursor):
+    query = """
+        SELECT
+        COALESCE(COUNT(KhamBenh_Id),0)
+        FROM dbo.KhamBenh
+        WHERE ThoiGianKham BETWEEN ? AND ? AND HuongGiaiQuyet_Id=458;
+        """
+    try:
+        rows = cursor.execute(query,start, end).fetchone()[0]
+        return rows
+    except:
+        print("Lỗi query visited.transfer")
+        return None
+
+# Số lượt khám bệnh trong  ngày
+def total_day(day, cursor):
+    try:
+        q = cursor.execute("""SELECT
+        COALESCE(COUNT(KhamBenh_Id),0)
+        FROM dbo.KhamBenh
+        WHERE NgayKham = ?;
+        """,day
+        ).fetchone()[0]
+
+        return q
+    except:
+        print("Lỗi query visited.total_day")
+        return 0
     
 # Số lượt khám bệnh trong khoảng thời gian
 def total_betweentime(start, end, cursor):
@@ -92,13 +140,14 @@ def min_betweentime(start, end, cursor):
         return None
 
 
-# Số lượt khám mỗi ngày từ ngày start tới ngày end lấy 30 ngày
+# Số lượt khám mỗi ngày từ ngày start tới ngày end
+# used for: home
 def day_betweenday(startday, endday, cursor):
     try:
         q = cursor.execute(
             """
-            SELECT TOP 30 NgayKham,
-            COUNT(KhamBenh_Id)
+            SELECT NgayKham,
+            COALESCE(COUNT(KhamBenh_Id),0)
             FROM KhamBenh
             WHERE NgayKham BETWEEN ? AND ?
             GROUP BY NgayKham
@@ -106,10 +155,12 @@ def day_betweenday(startday, endday, cursor):
             """, startday, endday
         ).fetchall()
 
+
         return q
     except:
-        print("Lỗi query visited.perday_betweenday")
+        print("Lỗi query visited.day_betweenday")
         return None
+    
 # Số lượt khám mỗi ngày từ ngày start tới ngày end lấy 30 ngày
 def total_betweenday(startday, endday, cursor):
     try:
@@ -127,7 +178,7 @@ def total_betweenday(startday, endday, cursor):
         return None
     
 # Số lượt khám bệnh theo từng khoa phòng trong khoảng ngày
-def department_week(startday,endday, cursor):
+def departments(start,end, cursor):
 
     try:
         q = cursor.execute(
@@ -139,16 +190,17 @@ def department_week(startday,endday, cursor):
                 ELSE TenPhongBan
             END),
             COALESCE(COUNT(KhamBenh.KhamBenh_Id),0) AS 'TongLuotKham'
-            FROM KhamBenh INNER JOIN nhh_department
-            ON KhamBenh.PhongBan_Id=nhh_department.PhongBan_Id
-            WHERE NgayKham BETWEEN ? AND ?
+            FROM KhamBenh
+            INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_PhongBan] as dm_phongban
+            ON KhamBenh.PhongBan_Id=dm_phongban.PhongBan_Id
+            WHERE ThoiGianKham BETWEEN ? AND ?
             GROUP BY 
             (CASE
                 WHEN TenPhongBan IN(N'Phòng Khám Cao Huyết áp (10)', N'Phòng Khám Cao Huyết áp (10)_A' ) THEN N'Phòng Khám Cao Huyết áp (10)'
                 WHEN TenPhongBan IN(N'Phòng Khám Tiểu Đường (08)', N'Phòng Khám Tiểu Đường (08)_A') THEN N'Phòng Khám Tiểu Đường (08)'
                 ELSE TenPhongBan END)
             ORDER BY TongLuotKham DESC
-            """, startday, endday
+            """, start, end
         ).fetchall()
 
         return q
@@ -204,33 +256,6 @@ def last5(day, cursor):
         print("Lỗi query visited.last5")
         return None
     
-# lượt khám theo khoa phòng
-def department(start, end, cursor):
-    query = """
-            SELECT
-            (CASE
-            WHEN TenPhongBan IN(N'Phòng Khám Cao Huyết áp (10)', N'Phòng Khám Cao Huyết áp (10)_A' ) THEN N'Phòng Khám Cao Huyết áp (10)'
-            WHEN TenPhongBan IN(N'Phòng Khám Tiểu Đường (08)', N'Phòng Khám Tiểu Đường (08)_A') THEN N'Phòng Khám Tiểu Đường (08)'
-            ELSE TenPhongBan
-            END),
-            COALESCE(COUNT(KhamBenh.KhamBenh_Id),0) AS 'TongLuotKham'
-            FROM KhamBenh INNER JOIN nhh_department
-            ON KhamBenh.PhongBan_Id=nhh_department.PhongBan_Id
-            WHERE ThoiGianKham BETWEEN ? AND ?
-            GROUP BY 
-            (CASE
-            WHEN TenPhongBan IN(N'Phòng Khám Cao Huyết áp (10)', N'Phòng Khám Cao Huyết áp (10)_A' ) THEN N'Phòng Khám Cao Huyết áp (10)'
-            WHEN TenPhongBan IN(N'Phòng Khám Tiểu Đường (08)', N'Phòng Khám Tiểu Đường (08)_A') THEN N'Phòng Khám Tiểu Đường (08)'
-            ELSE TenPhongBan END)
-            ORDER BY TongLuotKham DESC
-            """
-
-    try:
-        q = cursor.execute(query, start, end).fetchall()
-        return q
-    except:
-        print("Lỗi query visited.department_id_day")
-        return None      
 # lượt khám theo khoa phòng và department_id
 def department_with_id(start, end, cursor):
     query = """
@@ -375,3 +400,24 @@ def department_id_between(startday,enday, d_id,cursor):
         except:
             print("Lỗi query visited.department_id_between")
             return None      
+
+# Số lượt khám theo bác sĩ
+def doctors(start, end, cursor):
+    query = """
+            SELECT
+            TenNhanVien as name,
+            COALESCE(COUNT(KhamBenh_Id), 0) as total
+            FROM KhamBenh
+            INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[NhanVien] as nhanvien
+            ON KhamBenh.BacSiKham_Id = nhanvien.NhanVien_Id
+            WHERE ThoiGianKham BETWEEN ? AND ?
+            GROUP BY TenNhanVien
+            ORDER BY total DESC
+    """
+    try:
+        q = cursor.execute(query, start, end).fetchall()
+        return q
+    except:
+        print("Lỗi query visited.doctors")
+        return None 
+    
