@@ -53,7 +53,6 @@ Breadcrumbs(app=app)
 # register zip filter for pararell loop
 app.jinja_env.filters['zip'] = zip
 
-print('test')
 # Trang chủ
 
 
@@ -1283,14 +1282,15 @@ def revenue_department(department_name,day_query=None):
 
     list_medicine = query_revenue.list_department(start, end,department_name, cursor)
 
-    departments_chart = query_revenue.departments_chart(start, end, cursor)
-    departments_chart = convert_to_chart(departments_chart)
-    departments_chart.insert(0, ['Khoa/Phòng', 'Doanh thu'])
 
     # card
     current = query_revenue.total_department(start, end, department_name, cursor)
     previous = query_revenue.total_department(previous_start, previous_end, department_name, cursor)
     card = CardWithPercent('fa-solid fa-stethoscope', department_name, current, previous)
+
+
+    total = query_revenue.total_money_betweentime(start, end, cursor)
+    departments_chart = [['Khoa', 'Doanh thu'], [department_name,current], ['Các khoa còn lại', total-current]]
 
     today = today.strftime("%Y-%m-%d")
 
