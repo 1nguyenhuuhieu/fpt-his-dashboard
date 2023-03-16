@@ -859,6 +859,10 @@ def visited(day_query=None):
     # Số lượt khám theo tên bác sĩ
     doctors = query_visited.doctors(start, end, cursor)
 
+    # Lượt khám theo phòng khám
+    visited_in_department_id = query_visited.department_with_id(
+        start, end, cursor)
+
 
     today = today.strftime("%Y-%m-%d")
     context = {
@@ -869,7 +873,8 @@ def visited(day_query=None):
         'card_top': card_top,
         'bellow_card': bellow_card,
         'pie_chart_1': list_count_chart,
-        'doctors': doctors
+        'doctors': doctors,
+        'visited_in_department': visited_in_department_id
     }
 
     close_db()
