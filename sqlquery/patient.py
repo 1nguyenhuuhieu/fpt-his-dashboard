@@ -34,7 +34,7 @@ def patients(cursor):
 # Lịchh sử tiếp nhận của bệnh nhân
 def visited_history(mayte, cursor):
     query = """
-       SELECT TenPhongBan,ChanDoanKhoaKham,  TenNhanVien,ThoiGianKham, Dictionary_Name, KhamBenh_Id, KhamBenh.TiepNhan_Id
+       SELECT TenPhongBan,ChanDoanKhoaKham,  TenNhanVien,ThoiGianKham, Dictionary_Name, KhamBenh_Id, KhamBenh.TiepNhan_Id as tiepnhan_id
         FROM KhamBenh
         INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan]
         ON KhamBenh.BenhNhan_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan].BenhNhan_Id
@@ -136,4 +136,35 @@ def donthuoc(khambenh_id, cursor):
     except:
         print("Lỗi khi query patient.donthuoc")
         return 0
+        
+
+# Chỉ định CLS
+def cls_yeucau(tiepnhan_id, cursor):
+    query = """
+     SELECT CLSYeuCau_Id, NoiDungChiTiet
+    FROM CLSYeuCau
+    WHERE TiepNhan_Id = ?
+    """
+    try:
+        q = cursor.execute(query, tiepnhan_id).fetchall()
+        return q
+    except:
+        print("Lỗi khi query patient.cls_yeucau")
+        return 0
+        
+# kết quả CLS
+def cls_ketqua(cls_id, cursor):
+    query = """
+    SELECT 
+    MoTa_Text,
+    KetLuan
+    FROM [eHospital_NgheAn].[dbo].[CLSKetQua]
+    WHERE CLSYeuCau_Id=? AND MoTa_Text IS NOT NULL
+    """
+    try:
+        q = cursor.execute(query, cls_id).fetchall()
+        return q
+    except:
+        print("Lỗi khi query patient.cls_ketqua")
+        return None
         

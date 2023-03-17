@@ -1926,8 +1926,6 @@ def patient_api_detail(mayte):
     return info_json
 
 # API đơn thuốc của bệnh nhân
-
-
 @app.route('/prescription-api/<int:khambenh_id>')
 def prescription_api(khambenh_id):
     cnxn = get_db()
@@ -1940,6 +1938,46 @@ def prescription_api(khambenh_id):
         d['duongdung'] = i[0]
         d['thuoc'] = i[1]
         d['soluong'] = int(i[2])
+
+        info_list.append(d)
+
+    j = jsonify(info_list)
+    close_db()
+
+    return j
+
+# API chỉ định của bệnh nhân
+@app.route('/cls-api/<int:tiepnhan_id>')
+def cls_api(tiepnhan_id):
+    cnxn = get_db()
+    cursor = cnxn.cursor()
+
+    info = query_patient.cls_yeucau(tiepnhan_id, cursor)
+    info_list = []
+    for i in info:
+        d = collections.OrderedDict()
+        d['cls_yeucau_id'] = i[0]
+        d['chidinh'] = i[1]
+
+        info_list.append(d)
+
+    j = jsonify(info_list)
+    close_db()
+
+    return j
+
+# API kết quả của bệnh nhân
+@app.route('/ketqua-api/<int:cls_id>')
+def ketqua_api(cls_id):
+    cnxn = get_db()
+    cursor = cnxn.cursor()
+
+    info = query_patient.cls_ketqua(cls_id, cursor)
+    info_list = []
+    for i in info:
+        d = collections.OrderedDict()
+        d['mota'] = i[0]
+        d['ketluan'] = i[1]
 
         info_list.append(d)
 

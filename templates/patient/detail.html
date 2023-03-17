@@ -169,6 +169,12 @@
                                     <hr class="my-2">
                                     <p><span class="fw-bold">Đơn thuốc: </span><span id="donthuoc"
                                             class="d-flex flex-column"></span> </p>
+                                    <hr class="my-2">
+                                    <p><span class="fw-bold">Chỉ định: </span><span id="chidinh"
+                                        class="d-flex flex-column"></span> </p>
+                                    <hr class="my-2">
+                                    <p><span class="fw-bold">Kết quả cận lâm sàng: </span><span id="ketqua"
+                                        class="d-flex flex-column"></span> </p>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary"
@@ -244,12 +250,51 @@
             donthuocElement.textContent = "Không";
         }
 
-    }
+    };
+    function updatePatientModal2(data){
+        const chidinhElement = document.getElementById('chidinh');
+        let indexLoop = 0;
+
+        chidinhElement.textContent = "";
+
+        if (Object.keys(data).length) {
+            for (const key of data) {
+                const para = document.createElement("span");
+                indexLoop = indexLoop + 1;
+
+                para.innerHTML = `<div id="chidinh${indexLoop}"><span>${key['chidinh']}</span></div>`
+                chidinhElement.appendChild(para)
+
+                
+                const ketquaAPI = window.location.origin + '/ketqua-api/' + `${key['cls_yeucau_id']}`;
+                fetch(ketquaAPI)
+                    .then((response) => response.json())
+                    .then((data2) => {
+                        const ketquaElement = document.getElementById('ketqua');
+
+                        if (Object.keys(data2).length){
+                            for (const key of data2) {
+                                    const para = document.createElement("span");
+                                    para.innerHTML = `<span> <span class="fw-semibold"> Mô tả: </span> ${key['mota']}; <br><span class="fw-semibold"> Kết luận: </span>: ${key['ketluan']} <hr> </span>`
+                                    ketquaElement.appendChild(para)
+
+                            }
+
+
+                        }
+                    });
+
+            }
+        }
+        else {
+            chidinhElement.textContent = "Không";
+        }
+    };
 
     function getVisitedHistory(department, doctor, time, chandoantext, khambenh_id, ketquatext, tiepnhanid) {
 
         const departmentName = document.getElementById('departmentName');
-        departmentName.textContent = department;
+        departmentName.textContent = department + ' - Số tiếp nhận: '+tiepnhanid;
 
         const doctorNameModal = document.getElementById('doctorNameModal');
         doctorNameModal.textContent = 'BS.' + doctor;
@@ -277,13 +322,17 @@
             ketquasucess.textContent = ketquatext
         }
 
-        console.log(tiepnhanid)
-
-
-        const prescriptionAPI = window.location.origin + '/prescription-api/' + khambenh_id
+        const prescriptionAPI = window.location.origin + '/prescription-api/' + khambenh_id;
         fetch(prescriptionAPI)
             .then((response) => response.json())
             .then((data) => updatePatientModal(data));
+
+        const clsAPI = window.location.origin + '/cls-api/' + tiepnhanid;
+        fetch(clsAPI)
+            .then((response) => response.json())
+            .then((data) => updatePatientModal2(data));
+
+
     }
 </script>
 {% endblock %}
