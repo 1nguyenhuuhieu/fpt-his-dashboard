@@ -1978,6 +1978,7 @@ def ketqua_api(cls_id):
         d = collections.OrderedDict()
         d['mota'] = i[0]
         d['ketluan'] = i[1]
+        d['bacsi'] = i[2]
 
         info_list.append(d)
 

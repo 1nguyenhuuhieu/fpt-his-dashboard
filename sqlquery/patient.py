@@ -157,9 +157,13 @@ def cls_ketqua(cls_id, cursor):
     query = """
     SELECT 
     MoTa_Text,
-    KetLuan
+    KetLuan,
+    TenNhanVien
     FROM [eHospital_NgheAn].[dbo].[CLSKetQua]
+    INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[NhanVien] as nv
+    ON BacSiKetLuan_Id = nv.NhanVien_Id
     WHERE CLSYeuCau_Id=? AND MoTa_Text IS NOT NULL
+
     """
     try:
         q = cursor.execute(query, cls_id).fetchall()
