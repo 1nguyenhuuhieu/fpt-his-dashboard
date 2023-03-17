@@ -14,14 +14,14 @@
 
     <div class="col-12">
         <h5>Ngày báo cáo: {{ report.time_report }}</h5>
-        <p class="fw-semibold">Tổng: </p>
+        <p class="fw-semibold">Tổng: {{ "{:,}".format(report.total) }} </p>
     
 
     </div>
     {% for key, name in value.list_dict.values()|zip(value.list_dict.keys()) %}
     {% if report[key] %}
     <div class="col-lg-3 border-end">
-       <div class="d-flex justify-content-between">{{name}}: <span name="moneySpan" class="fw-semibold">{{ report[key] }}</span> </div>
+       <div class="d-flex justify-content-between">{{name}}: <span name="moneySpan" class="fw-semibold">{{ "{:,}".format(report[key]) }}</span> </div>
     </div>
     {% endif %}
 

@@ -1780,7 +1780,7 @@ def admin_money():
         for i in list_form_title_money:
             i.append(slugify(i[0]).replace('-', '_'))
         
-        place_holders = (len(list_form_title_money) + 2) * '?,'
+        place_holders = (len(list_form_title_money) + 3) * '?,'
         place_holders = place_holders + '?'
         if request.method == 'POST' and 'new_report' in request.form:
 
@@ -1792,10 +1792,17 @@ def admin_money():
                 values.append(request.form[i])
 
             values.pop(-1)
-    
+
+            total = 0
+            for index, number in enumerate(values):
+                if index >= 3:
+                    total += int(number)
+                
+
+            values.append(total)
 
             sql = f"""
-            INSERT INTO report_money(time_created,username,time_report,tien_kham_benh,vien_phi,xet_nghiem,dien_tim,test_nhanh_covid_19,luu_huyet_nao,sieu_am,xq,noi_soi_da_day_thuc_quan,noi_soi_tmh,noi_soi_ctc,kham_suc_khoe,bo_bot_gay_me,chup_ct,tiem_sat,tiem_phong_dai,tiem_vgb_1ml,tiem_vgb_0_5ml,vac_xin_rotamin,xong_hoi_thuoc_bac,vac_xin_cum,vac_xin_quimihib,thuoc,hiv,hbsag,sao_benh_an,test_hp)
+            INSERT INTO report_money(time_created,username,time_report,tien_kham_benh,vien_phi,xet_nghiem,dien_tim,test_nhanh_covid_19,luu_huyet_nao,sieu_am,xq,noi_soi_da_day_thuc_quan,noi_soi_tmh,noi_soi_ctc,kham_suc_khoe,bo_bot_gay_me,chup_ct,tiem_sat,tiem_phong_dai,tiem_vgb_1ml,tiem_vgb_0_5ml,vac_xin_rotamin,xong_hoi_thuoc_bac,vac_xin_cum,vac_xin_quimihib,thuoc,hiv,hbsag,sao_benh_an,test_hp, total)
             VALUES ({place_holders})
             """
             cursor.execute(sql, values)
