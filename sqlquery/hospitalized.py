@@ -15,6 +15,24 @@ def new_in(start, end, cursor):
         print("Lỗi query hospitalized.in_day")
         return None
 
+# Số lượng nhập viện trong khoảng thời gian group by ngay
+def new_in_between(start, end, cursor):
+    try:
+        q = cursor.execute("""SELECT
+        NgayVaoVien,
+        COALESCE(COUNT(BenhAn_Id),0)
+        FROM BenhAn
+        WHERE ThoiGianVaoVien BETWEEN ? AND ?
+        GROUP BY NgayVaoVien
+        """, start, end
+        ).fetchall()
+
+        return q
+    except:
+        print("Lỗi query hospitalized.new_in_between")
+        return None
+
+
 # AVG Số lượng nhập viện trong khoảng thời gian
 def avg_betweentime(start, end, cursor):
     query = """

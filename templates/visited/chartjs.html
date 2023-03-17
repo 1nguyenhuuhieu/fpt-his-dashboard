@@ -1,54 +1,22 @@
-<!-- chart bệnh nhân nội trú theo khoa -->
+<!-- PieChart 1 -->
 <script type="text/javascript">
-    google.charts.load('current', { 'packages': ['corechart'] });
-    google.charts.setOnLoadCallback(drawBenhNhanNoiTru);
-  
-    function drawBenhNhanNoiTru() {
-    const data_chart = {{ value.patient_in_department_chart| tojson }}
-  
-  
-      var data = google.visualization.arrayToDataTable(data_chart);
-  
-      var options = {
-        title: 'Số bệnh nhân ngoại trú trong 30 ngày gần nhất theo từng phòng',
-        legend: { position: 'right' }
-      };
-  
-      var chart = new google.visualization.PieChart(document.getElementById('chartHospitalizedDepartment'));
-  
-      chart.draw(data, options);
-    }
-  
-  
-    $(window).resize(function () {
-      drawBenhNhanNoiTru();
-    });
-  </script>
-  <!-- End chart bệnh nhân nội trú theo khoa -->
+  google.charts.load('current', {'packages':['corechart']});
+  google.charts.setOnLoadCallback(drawChart);
 
-  <!-- 30 ngày gần nhất -->
+  function drawChart() {
+    {% if value.pie_chart_1 %}
+    const data_chart = {{ value.pie_chart_1|tojson }}
+    {% endif %}
 
-  <script>
+    var data = google.visualization.arrayToDataTable(data_chart);
 
-    google.charts.load('current', {packages: ['corechart', 'line']});
-    google.charts.setOnLoadCallback(drawBackgroundColor);
-    
-    function drawBackgroundColor() {
-         const data_chart = {{ value.last_30_day_chart|tojson }}
-          var data = new google.visualization.DataTable();
-          data.addColumn('string', 'Ngày');
-          data.addColumn('number', 'Bệnh nhân ngoại trú');
-    
-          data.addRows(data_chart);
-    
-          var options = {
-            title: 'Số bệnh nhân ngoại trú 30 ngày gần nhất',
-    
-          };
-    
-          var chart = new google.visualization.LineChart(document.getElementById('last30daysChart'));
-          chart.draw(data, options);
-        }
-    
-          </script>
-    <!-- end 30 ngày gần nhất -->
+    var options = {
+      title: 'Lượt khám theo phòng',
+      legend: { position: 'bottom' }
+    };
+
+    var chart = new google.visualization.PieChart(document.getElementById('piechart1'));
+
+    chart.draw(data, options);
+  }
+</script>
