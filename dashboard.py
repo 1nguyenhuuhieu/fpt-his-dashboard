@@ -339,8 +339,6 @@ def revenue(day_query=None):
     departments_chart = convert_to_chart(departments_chart)
     departments_chart.insert(0, ['Khoa', 'Doanh thu'])
 
-  
-
     top10_doanhthu = query_revenue.top_service(today, cursor)
     top10_doanhthu_table = ([noidung, tenphongkham, count, int(
         tongdoanhthu)] for noidung, tenphongkham, count, tongdoanhthu in top10_doanhthu)
@@ -713,13 +711,8 @@ def out_patients(day_query=None):
     table_column_title = ['Thời gian', 'Mã y tế',  'Số bệnh án',
                           'Chẩn đoán ra viện', 'Lí do', 'Bác sĩ', 'Khoa']
 
-    list_patients = query_hospitalized.out_list(today, cursor)
+    list_patients = query_hospitalized.out_list(start, end, cursor)
 
-    chart = query_hospitalized.out_department_day(today, cursor)
-    chart = list([i, j] for i, j in chart)
-
-    chart.insert(0, ['Khoa', 'Số bệnh nhân ra viện'])
-    total = query_hospitalized.out_day(today, cursor)
 
     today = today.strftime("%Y-%m-%d")
 
@@ -727,8 +720,6 @@ def out_patients(day_query=None):
         'today': today,
         'list': list_patients,
         'table_column_title': table_column_title,
-        'chart': chart,
-        'total': total
 
 
     }
@@ -1392,11 +1383,11 @@ def visited_department(department_id, day_query=None):
 
 
 # Trang bệnh nhân nội trú theo từng khoa
-@app.route('/hospitalized/<string:department_name>/<string:day_query>')
-@app.route('/hospitalized/<string:department_name>')
+@app.route('/hospitalized/department/<string:department_name>/<string:day_query>')
+@app.route('/hospitalized/department/<string:department_name>')
 @register_breadcrumb(app, '..hospitalized.department', 'Danh sách')
 def hospitalized_department(department_name, day_query=None):
-
+ 
     cnxn = get_db()
     cursor = cnxn.cursor()
 
@@ -1437,7 +1428,7 @@ def hospitalized_department(department_name, day_query=None):
 # Trang bệnh nhân nội trú nhập mới theo từng khoa
 @app.route('/hospitalized/new/<string:department_name>/<string:day_query>')
 @app.route('/hospitalized/new/<string:department_name>')
-@register_breadcrumb(app, '..hospitalized.department', 'Nhập mới')
+@register_breadcrumb(app, '..hospitalized.department_new', 'Nhập mới')
 def hospitalized_department_new(department_name, day_query=None):
 
     cnxn = get_db()

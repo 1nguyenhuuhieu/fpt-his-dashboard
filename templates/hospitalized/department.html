@@ -7,8 +7,7 @@
 {% include 'include/table.html' %}
 
 <script>
-    const urlGenerator = '/hospitalized/' + {{value.department_name}} + '/';
-    // const todayURL = "{{ url_for('hospitalized_department', department_name=value.department_id) }}";
-
+    const urlGenerator = '/hospitalized/department/' + '{{value.department_name}}' + '/';
+    const todayURL = "{{ url_for('hospitalized_department', department_name=value.department_name) }}";
 </script>
 {% endblock %}

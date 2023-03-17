@@ -305,7 +305,7 @@ def new_list(start, end, cursor):
     
 
 # Chi tiết bệnh nhân ra viênj nội trú trong ngày
-def out_list(day, cursor):
+def out_list(start, end, cursor):
     query = """
             SELECT
             ThoiGianRaVien,MaYTe, SoBenhAn,  ChanDoanRaVien, Dictionary_Name ,TenNhanVien,TenPhongBan
@@ -318,11 +318,11 @@ def out_list(day, cursor):
             ON BenhAn.BacSiDieuTri_Id = [eHospital_NgheAn_Dictionary].[dbo].[NhanVien].NhanVien_Id
             INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[Lst_Dictionary]
             ON LyDoXuatVien_Id = [eHospital_NgheAn_Dictionary].[dbo].[Lst_Dictionary].Dictionary_Id
-            WHERE NgayRaVien = ?
+            WHERE ThoiGianRaVien BETWEEN ? AND ?
             GROUP BY ThoiGianRaVien, SoBenhAn, MaYTe,ChanDoanRaVien, TenPhongBan, TenNhanVien, Dictionary_Name
             """
     try:
-        q = cursor.execute(query, day).fetchall()
+        q = cursor.execute(query, start, end).fetchall()
 
         return q
     except:
