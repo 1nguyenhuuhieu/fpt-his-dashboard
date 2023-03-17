@@ -1764,8 +1764,10 @@ def detail_post(post_id):
 def admin_money():
 
     if session.get('username'):
-        con = get_db_dashboard()
+        con = sqlite3.connect("dashboard.db")
         cursor = con.cursor()
+        cursor.row_factory = sqlite3.Row
+
 
         sql_list_report = """
         SELECT *
@@ -1809,19 +1811,16 @@ def admin_money():
                 cursor.execute(sql, values)
                 con.commit()
             except:
-                close_db_dashboard()
+                con.close()
             return redirect(url_for('admin_money'))
 
         if request.method == 'POST' and 'delete_report' in request.form:
-            sql = """
-            DELETE FROM report_money WHERE id = ?
-            """
-            id = request.form['report_id']
-            try:
-                cursor.execute(sql, id)
-                con.commit()
-            except:
-                close_db_dashboard()
+            sql = "DELETE FROM report_money WHERE id=?"
+            report_id = int(request.form['report_id'])
+  
+            cursor.execute(sql, (report_id,))
+            con.commit()
+
             return redirect(url_for('admin_money'))
 
         today = datetime.today().strftime('%Y-%m-%d')
@@ -1832,7 +1831,7 @@ def admin_money():
             'list_reports': list_reports,
             'titles': titles
         }
-        close_db_dashboard()
+        con.close()
 
         return render_template('admin/report-money.html', value=context)
     else:
