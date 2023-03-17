@@ -6,8 +6,8 @@ import sqlite3
 # def get_db():
 #     server = '192.168.1.5'
 #     database = 'eHospital_NgheAn'
-#     username = 'sa'
-#     password = 'toanthang'
+#     username = 'dashboard'
+#     password = 'ttytanhson@2023'
 #     cnxn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER=' +
 #                           server+';DATABASE='+database+';UID='+username+';PWD=' + password)
 #     return cnxn
@@ -24,8 +24,8 @@ def get_db():
         if 'db' not in g:
             server = '192.168.123.254'
             database = 'eHospital_NgheAn'
-            username = 'sa'
-            password = 'toanthang'
+            username = 'dashboard'
+            password = 'ttytanhson@2023'
             g.db = pyodbc.connect('DRIVER={SQL Server Native Client 11.0};SERVER=' +
                                 server+';DATABASE='+database+';UID='+username+';PWD=' + password)
             return g.db
