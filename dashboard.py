@@ -1747,9 +1747,6 @@ def detail_post(post_id):
 
     post = query_user.post(post_id, cursor)
 
-    day_class = DayQuery(None)
-    today = day_class.today.strftime("%Y-%m-%d")
-
     context = {
         'post': post,
         'today': today
