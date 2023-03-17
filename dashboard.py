@@ -1979,6 +1979,7 @@ def ketqua_api(cls_id):
         d['mota'] = i[0]
         d['ketluan'] = i[1]
         d['bacsi'] = i[2]
+        d['chidinh'] = i[3]
 
         info_list.append(d)
 

@@ -155,10 +155,11 @@ def cls_yeucau(tiepnhan_id, cursor):
 # kết quả CLS
 def cls_ketqua(cls_id, cursor):
     query = """
-    SELECT 
+    SELECT
     MoTa_Text,
     KetLuan,
-    TenNhanVien
+    TenNhanVien,
+    VungKhaoSat
     FROM [eHospital_NgheAn].[dbo].[CLSKetQua]
     INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[NhanVien] as nv
     ON BacSiKetLuan_Id = nv.NhanVien_Id
