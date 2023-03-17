@@ -12,7 +12,7 @@ import sqlite3
 #                           server+';DATABASE='+database+';UID='+username+';PWD=' + password)
 #     return cnxn
 
-server_location = 'home'
+server_location = 'work'
 
 def get_db():
     if server_location == 'home':

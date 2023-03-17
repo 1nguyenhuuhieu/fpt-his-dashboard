@@ -1,31 +1,80 @@
 {% extends 'base.html' %}
 {% block header %}
-<i class="fa-solid fa-table me-2"></i>{% block title %}Bệnh nhân nội trú{% endblock %}
+<i class="fa-solid fa-table me-2"></i>{% block title %}Bệnh nhân nội trú mới{% endblock %}
 {% endblock %}
 {% block content %}
-<div class="row">
-    <div class="col-lg-12">
-        <div class="bg-white rounded border shadow-sm p-2">
-            <div id="chart_div"></div>
-        </div>
+<div class="row g-2 ">
+    <div class="col-lg-3">
+        {% if value.card %}
+        {% set card=value.card%}
+            {% include 'include/card_nomoney.html' %}
+            {% endif %}
+    </div>
+    <div class="col-lg-3 mt-0 mt-sm-2">
+        <div class="bg-white rounded border shadow-sm p-2 h-100">
+            <div id="pieChart1"></div>
+            </div>
+    </div>
+    <div class="col mt-0 mt-sm-2">
+        <div class="bg-white rounded border shadow-sm p-2 h-100">
+            <div id="lineChart1"></div>
+            </div>
     </div>
 </div>
-{% include 'include/table.html' %}
 
+{% include 'include/table.html' %}
 <script>
     const urlGenerator = '/hospitalized/new-patients/';
     const todayURL = "{{ url_for('new_patients') }}";
-    google.charts.load('current', { packages: ['corechart', 'bar'] });
-    google.charts.setOnLoadCallback(drawBasic);
+</script>
 
-    function drawBasic() {
-        const data_chart = {{ value.chart|tojson }}
-    var data = google.visualization.arrayToDataTable(data_chart);
-    var options = {
-        title: 'Số bệnh nhân nhập mới trong ngày: {{value.total}}',
-    };
-    var chart = new google.visualization.BarChart(document.getElementById('chart_div'));
-    chart.draw(data, options);
+<!-- pie chart 1 -->
+<script>
+      google.charts.load('current', {'packages':['corechart']});
+      google.charts.setOnLoadCallback(drawChart);
+
+      function drawChart() {
+        {% if value.department_chart %}
+        const data_chart = {{ value.department_chart|tojson }}
+        {% endif %}
+
+        var data = google.visualization.arrayToDataTable(data_chart);
+
+        var options = {
+          title: 'Lượt nhập viện mỗi khoa',
+            legend: { position: 'bottom' }
+
+        };
+
+        var chart = new google.visualization.PieChart(document.getElementById('pieChart1'));
+
+        chart.draw(data, options);
+      }
+</script>
+
+<!-- line chart 1 -->
+<script>
+    google.charts.load('current', {packages: ['corechart', 'line']});
+google.charts.setOnLoadCallback(drawBasic);
+
+function drawBasic() {
+
+      var data = new google.visualization.DataTable();
+      {% if value.new_in_chart %}
+      const data_chart = {{ value.new_in_chart|tojson }}
+      {% endif %}
+      data.addColumn('string', 'Ngày');
+      data.addColumn('number', 'Số lượt nhập viện');
+
+      data.addRows(data_chart);
+
+      var options = {
+        title: 'Lượt nhập viện 30 ngày gần nhất'
+      };
+
+      var chart = new google.visualization.LineChart(document.getElementById('lineChart1'));
+
+      chart.draw(data, options);
     }
 </script>
 {% endblock %}

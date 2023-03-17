@@ -67,12 +67,12 @@
     google.charts.setOnLoadCallback(drawlast30daysChartInHospital);
     
     function drawlast30daysChartInHospital() {
-      {% if last_30_day_in_hostpital_chart %}
-         const data_chart = {{ value.last_30_day_in_hostpital_chart|tojson }}
+      {% if value.new_in_chart %}
+         const data_chart = {{ value.new_in_chart|tojson }}
          {% endif %}
           var data = new google.visualization.DataTable();
           data.addColumn('string', 'Ngày');
-          data.addColumn('number', 'Bệnh nhân nội trú');
+          data.addColumn('number', 'Lượt nhập viện');
     
           data.addRows(data_chart);
     

@@ -20,3 +20,33 @@
     chart.draw(data, options);
   }
 </script>
+
+
+<!-- 30 ngày gần nhất vào viện -->
+
+<script>
+
+google.charts.load('current', {packages: ['corechart', 'line']});
+google.charts.setOnLoadCallback(drawlast30daysChartInHospital);
+
+function drawlast30daysChartInHospital() {
+  {% if value.last30days_visited %}
+
+      const data_chart = {{ value.last30days_visited|tojson }}
+      {% endif %}
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'Ngày');
+      data.addColumn('number', 'Lượt khám');
+
+      data.addRows(data_chart);
+
+      var options = {
+        title: 'Số lượt khám mỗi ngày trong 30 ngày gần nhất',
+
+      };
+
+      var chart = new google.visualization.LineChart(document.getElementById('last30daysChartInHospital'));
+      chart.draw(data, options);
+    }
+
+      </script>

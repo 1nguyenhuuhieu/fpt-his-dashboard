@@ -5,6 +5,8 @@
                 class="fa-solid fa-up-right-from-square ms-2"></i></a>
     </div>
     <hr class="mt-1 mb-0">
+    {% if value.last_5 %}
+    {% set table = value.last_5%}
     <table class="table table-borderless table-hover table-sm m-0 p-0">
         <thead class="">
             <tr>
@@ -14,7 +16,7 @@
             </tr>
         </thead>
         <tbody>
-            {% for row in value.last_patients %}
+            {% for row in table %}
             <tr>
                 {% for col in row %}
                 <td>{{ col }}</td>
@@ -23,4 +25,5 @@
             {% endfor %}
         </tbody>
     </table>
+    {% endif %}
 </div>

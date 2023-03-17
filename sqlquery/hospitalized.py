@@ -129,6 +129,32 @@ def total_department(day, cursor):
         print("Lỗi query hospitalized.total_department")
         return None
     
+# Số lượng bệnh nhân nội trú từng khoa sort by total
+def total_department_sort_total(day, cursor):
+    tomorrow = day + timedelta(days=1)
+
+    try:
+        q = cursor.execute(
+        """
+        SELECT
+        TenPhongBan,
+        COALESCE(COUNT(BenhAn_Id),0) as 'total'
+        FROM dbo.BenhAn
+        INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_PhongBan]
+        ON BenhAn.KhoaVao_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_PhongBan].PhongBan_Id
+        WHERE (NgayRaVien IS NULL
+        OR NgayRaVien > ?)
+        AND NgayVaoVien < ?
+        GROUP BY TenPhongBan
+        ORDER BY total DESC
+
+        """, day, tomorrow
+        ).fetchall()
+
+        return q
+    except:
+        print("Lỗi query hospitalized.total_department_sort_total")
+        return None
 # Số lượng bệnh nhân nội trú tại khoa
 def bed_department(day,department_id, cursor):
     tomorrow = day + timedelta(days=1)
@@ -229,10 +255,30 @@ def total_in_between(startday, endday, cursor):
         print("Lỗi query total_in_hospital_between")
         return None
     
-
+# SQL query thống kê số lượt nhập viện nội trú trong khoảng ngày group by department
+def total_in_department(start, end, cursor):
+    query = """
+            SELECT
+            TenPhongBan as name,
+            COALESCE(COUNT(BenhAn_Id),0) as total
+            FROM dbo.BenhAn
+            INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_PhongBan]
+            ON BenhAn.KhoaVao_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_PhongBan].PhongBan_Id
+            WHERE ThoiGianVaoVien BETWEEN ? AND ?
+            GROUP BY TenPhongBan
+            ORDER BY total DESC
+            """
+    try:
+        q = cursor.execute(query, start, end).fetchall()
+        return q
+    except:
+        print("Lỗi query hospitalized.total_in_department")
+        return None
+    
 
 # Chi tiết bệnh nhân nhập viện nội trú trong ngày
-def new_list(day, cursor):
+# used for: new_patients
+def new_list(start, end, cursor):
     query = """
             SELECT
             ThoiGianVaoKhoa,MaYTe, SoBenhAn, TenBenhNhan,ChanDoanVaoKhoa, TenPhongBan, TenNhanVien
@@ -243,12 +289,14 @@ def new_list(day, cursor):
             ON BenhAn.KhoaVao_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_PhongBan].PhongBan_Id
             LEFT JOIN [eHospital_NgheAn_Dictionary].[dbo].[NhanVien]
             ON BenhAn.NguoiLap_Id = [eHospital_NgheAn_Dictionary].[dbo].[NhanVien].NhanVien_Id
-            WHERE NgayVaoVien = ?
+            WHERE ThoiGianVaoVien BETWEEN ? AND ?
             GROUP BY ThoiGianVaoKhoa, SoBenhAn, MaYTe,ChanDoanVaoKhoa, TenPhongBan, TenNhanVien, TenBenhNhan
 
             """
     try:
-        q = cursor.execute(query, day).fetchall()
+        q = cursor.execute(query, start, end).fetchall()
+        for row in q:
+            row.ThoiGianVaoKhoa = row.ThoiGianVaoKhoa.strftime("%Y/%m/%d %H:%M")
 
         return q
     except:
@@ -381,7 +429,6 @@ def list_department(day, department_id, cursor):
 # Danh sách bệnh nhân nội trú theo khoa
 def patiens_department(day, department_name, cursor):
     tomorrow = day + timedelta(days=1)
-    print(department_name)
     query = """
         SELECT ThoiGianVaoVien, MaYTe, TenBenhNhan, ChanDoanVaoKhoa,TenNhanVien
         FROM BenhAn
@@ -399,6 +446,29 @@ def patiens_department(day, department_name, cursor):
         """
     try:
         q = cursor.execute(query, day,tomorrow, department_name).fetchall()
+        return q
+    except:
+        print("Lỗi query hospitalized.patiens_department")
+        return None
+    
+# Danh sách bệnh nhân nội trú nhập mới theo khoa
+def patiens_department_new(day, department_name, cursor):
+    query = """
+        SELECT ThoiGianVaoVien, MaYTe, TenBenhNhan, ChanDoanVaoKhoa,TenNhanVien
+        FROM BenhAn
+        INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan]
+        ON BenhAn.BenhNhan_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan].BenhNhan_Id
+        LEFT JOIN [eHospital_NgheAn_Dictionary].[dbo].[NhanVien]
+        ON BenhAn.BacSiDieuTri_Id = [eHospital_NgheAn_Dictionary].[dbo].[NhanVien].NhanVien_Id
+        INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_PhongBan] as dm_phongban
+        ON BenhAn.KhoaVao_Id = dm_phongban.PhongBan_Id
+        WHERE (BenhAn.NgayVaoVien = ?)
+                
+        AND dm_phongban.TenPhongBan= ?
+        GROUP BY ThoiGianVaoVien, MaYTe, TenBenhNhan, ChanDoanVaoKhoa,TenNhanVien
+        """
+    try:
+        q = cursor.execute(query, day, department_name).fetchall()
         return q
     except:
         print("Lỗi query hospitalized.patiens_department")

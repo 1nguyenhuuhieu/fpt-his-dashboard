@@ -235,7 +235,7 @@ def patients(day, cursor):
         return None
 
 # 5 lượt khám bệnh gần nhất trong ngày
-def last5(day, cursor):
+def last5(start, end, cursor):
     query = """
             SELECT TOP 5
             ThoiGianKham,TenBenhNhan,TenPhongBan
@@ -244,11 +244,13 @@ def last5(day, cursor):
             ON KhamBenh.BenhNhan_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan].BenhNhan_Id
             INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_PhongBan]
             ON KhamBenh.PhongBan_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_PhongBan].PhongBan_Id
-            WHERE NgayKham = ?
+            WHERE ThoiGianKham BETWEEN ? AND ?
             ORDER BY KhamBenh_ID DESC
             """
     try:
-        q = cursor.execute(query, day).fetchall()
+        q = cursor.execute(query, start, end).fetchall()
+        for row in q:
+            row.ThoiGianKham = row.ThoiGianKham.strftime('%H:%M %d/%m/%Y')
 
         return q
     
