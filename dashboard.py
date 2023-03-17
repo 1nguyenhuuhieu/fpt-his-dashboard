@@ -1357,7 +1357,7 @@ def visited_department(department_id, day_query=None):
 
     for d_id in department_id_list:
         list_patients.extend(
-            query_visited.list_department(today, d_id, cursor))
+            query_visited.list_department(start, end, d_id, cursor))
 
     department_name = ''
     for d_id in department_id_list:

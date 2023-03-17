@@ -297,7 +297,7 @@ def department_with_id(start, end, cursor):
         return None      
 
 # danh sách khám bệnh theo khoa phognf
-def list_department(day,department_id, cursor):
+def list_department(start, end,department_id, cursor):
     query = """
     SELECT ThoiGianKham, MaYTe, TenBenhNhan, ChanDoanKhoaKham,Dictionary_Name,TenNhanVien
     FROM KhamBenh
@@ -307,12 +307,12 @@ def list_department(day,department_id, cursor):
     ON KhamBenh.BacSiKham_Id = [eHospital_NgheAn_Dictionary].[dbo].[NhanVien].NhanVien_Id
     INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[Lst_Dictionary] as dict
     ON KhamBenh.HuongGiaiQuyet_Id = dict.Dictionary_Id
-    WHERE KhamBenh.NgayKham = ? AND KhamBenh.PhongBan_Id = ?
+    WHERE KhamBenh.ThoiGianKham BETWEEN ? AND ? AND KhamBenh.PhongBan_Id = ?
 
     GROUP BY ThoiGianKham, MaYTe, TenBenhNhan, ChanDoanKhoaKham,TenNhanVien,Dictionary_Name
     """
     try:
-        q = cursor.execute(query, day, department_id).fetchall()
+        q = cursor.execute(query, start, end, department_id).fetchall()
         for row in q:
             row.ThoiGianKham = row.ThoiGianKham.strftime("%Y-%m-%d %H:%M")
         return q
