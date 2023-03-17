@@ -1865,11 +1865,12 @@ def report_service_money(day_query=None):
     list_dict = dict(list_form_title_money)
 
     close_db_dashboard()
-
+    today = datetime.today().strftime('%Y-%m-%d')
     context = {
         'list_reports': list_reports,
          'titles': titles,
-         'list_dict': list_dict
+         'list_dict': list_dict,
+         'today': today
 
     }
 
