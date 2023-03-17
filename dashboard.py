@@ -1747,9 +1747,6 @@ def detail_post(post_id):
 
     post = query_user.post(post_id, cursor)
 
-    day_class = DayQuery(None)
-    today = day_class.today.strftime("%Y-%m-%d")
-
     context = {
         'post': post,
         'today': today
@@ -1758,16 +1755,16 @@ def detail_post(post_id):
 
     return render_template('news/post.html', value=context, active='news', hidden_top_filter=True)
 
-# trang báo cáo thu tiền dịch vụ
-
-
+# trang thu tiền dịch vụ
 @app.route('/admin/money', methods=['GET', 'POST'])
 @register_breadcrumb(app, '..admin.money', 'Tiền dịch vụ')
 def admin_money():
 
     if session.get('username'):
-        con = get_db_dashboard()
+        con = sqlite3.connect("dashboard.db")
         cursor = con.cursor()
+        cursor.row_factory = sqlite3.Row
+
 
         sql_list_report = """
         SELECT *
@@ -1787,31 +1784,40 @@ def admin_money():
         if request.method == 'POST' and 'new_report' in request.form:
 
             values = []
+            values.append(datetime.now())
+            values.append(session['username'])
 
             for i in (request.form):
                 values.append(request.form[i])
 
             values.pop(-1)
-            values.insert(0, datetime.now())
-            values.insert(2, session['username'])
-            print(len(values))
+
+            total = 0
+            for index, number in enumerate(values):
+                if index >= 3:
+                    total += int(number)
+                
+
+            values.append(total)
 
             sql = f"""
-            INSERT INTO report_money(time_created,time_report,username,time_created,time_updated,username,tien_kham_benh,vien_phi,xet_nghiem,dien_tim,test_nhanh_covid_19,luu_huyet_nao,sieu_am,xq,noi_soi_da_day_thuc_quan,noi_soi_tmh,noi_soi_ctc,kham_suc_khoe,bo_bot_gay_me,chup_ct,tiem_sat,tiem_phong_dai,tiem_vgb_1ml,tiem_vgb_0_5ml,vac_xin_rotamin,xong_hoi_thuoc_bac,vac_xin_cum,vac_xin_quimihib,thuoc,hiv,hbsag,sao_benh_an,test_hp)
+            INSERT INTO report_money(time_created,username,time_report,tien_kham_benh,vien_phi,xet_nghiem,dien_tim,test_nhanh_covid_19,luu_huyet_nao,sieu_am,xq,noi_soi_da_day_thuc_quan,noi_soi_tmh,noi_soi_ctc,kham_suc_khoe,bo_bot_gay_me,chup_ct,tiem_sat,tiem_phong_dai,tiem_vgb_1ml,tiem_vgb_0_5ml,vac_xin_rotamin,xong_hoi_thuoc_bac,vac_xin_cum,vac_xin_quimihib,thuoc,hiv,hbsag,sao_benh_an,test_hp, total)
             VALUES ({place_holders})
             """
-            cursor.execute(sql, values)
-            con.commit()
+            try:
+                cursor.execute(sql, values)
+                con.commit()
+            except:
+                con.close()
             return redirect(url_for('admin_money'))
 
         if request.method == 'POST' and 'delete_report' in request.form:
-            sql = """
-            DELETE FROM report_money WHERE id = ?
-            """
-            id = request.form['report_id']
-            print(id)
-            cursor.execute(sql, (request.form['report_id']))
+            sql = "DELETE FROM report_money WHERE id=?"
+            report_id = int(request.form['report_id'])
+  
+            cursor.execute(sql, (report_id,))
             con.commit()
+
             return redirect(url_for('admin_money'))
 
         today = datetime.today().strftime('%Y-%m-%d')
@@ -1822,11 +1828,61 @@ def admin_money():
             'list_reports': list_reports,
             'titles': titles
         }
-        close_db_dashboard()
+        con.close()
 
         return render_template('admin/report-money.html', value=context)
     else:
         return redirect(url_for('user_login'))
+    
+
+
+# trang báo cáo thu tiền dịch vụ
+@app.route('/report/service-money/<string:day_query>')
+@register_breadcrumb(app, '..report.service_money', 'Tiền dịch vụ')
+def report_service_money(day_query=None):
+    con = get_db_dashboard()
+    cursor = con.cursor()
+
+    # ngày bắt đầu và kết thúc truy vấn dữ liệu
+    time_filter = request.args.get('time')
+    start_get = request.args.get('start')
+    end_get = request.args.get('end')
+
+    # lấy ngày xem dashboard
+    day_class = DayQuery(day_query, time_filter, start_get, end_get)
+    today = day_class.today
+    start = day_class.start
+    end = day_class.end
+
+    previous_start = day_class.previous_start
+    previous_end = day_class.previous_end
+
+    diff = diff_days(start, end)
+
+    sql_list_report = """
+    SELECT *
+    FROM report_money
+    ORDER BY id DESC
+    """
+    list_reports = cursor.execute(sql_list_report).fetchall()
+    titles = cursor.execute(sql_list_report).description
+
+    list_form_title_money = [["Tiền khám bệnh"],["Viện phí"],["Xét nghiệm"],["Điện tim"],["Test nhanh covid 19"],["Lưu huyết não"],["Siêu âm"],["XQ"],["Nội soi dạ dày, thực quản"],["Nội soi TMH"],["Nội soi CTC"],["Khám sức khỏe"],["Bó bột gây mê"],["Chụp CT"],["Tiêm SAT"],["Tiêm phòng dại"],["Tiêm VGB 1ml"],["Tiêm VGB 0.5ml"],["Vắc xin Rotamin"],["Xông hơi thuốc bắc"],["Vắc xin Cúm"],["Vắc xin Quimihib"],["Thuốc"],["HIV"],["HBsAg"],["Sao bệnh án"],["Test HP"]]
+    for i in list_form_title_money:
+        i.append(slugify(i[0]).replace('-', '_'))
+    list_dict = dict(list_form_title_money)
+
+    close_db_dashboard()
+    today = datetime.today().strftime('%Y-%m-%d')
+    context = {
+        'list_reports': list_reports,
+         'titles': titles,
+         'list_dict': list_dict,
+         'today': today
+
+    }
+
+    return render_template('report/report-service-money.html', value=context)
 
 # Trang danh bạ
 @app.route('/addressbook')

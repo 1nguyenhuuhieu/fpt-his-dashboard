@@ -58,7 +58,7 @@
         <div class="list-group">
             {% for report in value.list_reports %}
 
-            <a href="#" class="list-group-item list-group-item-action" data-bs-toggle="modal" data-bs-target="#reportDetailModal{{loop.index}}">{{ report.ngay }}</a>
+            <a href="#" class="list-group-item list-group-item-action" data-bs-toggle="modal" data-bs-target="#reportDetailModal{{loop.index}}">{{ report.time_report }}</a>
 
             <!-- Modal -->
         <div class="modal fade" id="reportDetailModal{{loop.index}}" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -89,7 +89,7 @@
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
                 <form method="post">
                     <input type="hidden" name="report_id" value="{{ report.id }}">
-                <button type="submit" class="btn btn-primary" name="delete_report">Xóa</button>
+                <button type="submit" class="btn btn-danger" name="delete_report">Xóa</button>
             </form>
                 </div>
             </div>
