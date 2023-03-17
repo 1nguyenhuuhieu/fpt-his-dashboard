@@ -209,7 +209,7 @@ def departments(start,end, cursor):
         return None
 
 # Danh sách khám bệnh trong ngày
-def patients(day, cursor):
+def patients(start, end, cursor):
     query = """
     SELECT
     ThoiGianKham, MaYTe, TenBenhNhan, KhamBenh.TiepNhan_Id ,ChanDoanKhoaKham,Dictionary_Name,TenNhanVien, TenPhongBan
@@ -222,11 +222,11 @@ def patients(day, cursor):
     ON KhamBenh.BacSiKham_Id = [eHospital_NgheAn_Dictionary].[dbo].NhanVien.NhanVien_Id
     INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[Lst_Dictionary] as dict
     ON KhamBenh.HuongGiaiQuyet_Id = dict.Dictionary_Id
-    WHERE NgayKham = ?
+    WHERE ThoiGianKham BETWEEN ? AND ?
     GROUP BY ThoiGianKham, MaYTe, TenBenhNhan, TenNhanVien, ChanDoanKhoaKham, TenPhongBan, KhamBenh.TiepNhan_Id,Dictionary_Name
     """
     try:
-        q = cursor.execute(query, day).fetchall()
+        q = cursor.execute(query, start, end).fetchall()
         for row in q:
             row.ThoiGianKham = row.ThoiGianKham.strftime("%Y-%m-%d %H:%M ")
         return q

@@ -966,24 +966,17 @@ def visited_patients(day_query=None):
     table_column_title = ['Thời gian khám', 'Mã y tế', 'Tên bệnh nhân',
                           'Số tiếp nhận', 'Chẩn đoán trong khoa', 'Giải quyết', 'Bác sĩ', 'Khoa']
 
-    list_patients = query_visited.patients(today, cursor)
-
-    chart = query_visited.department_day(today, cursor)
-    chart = list([i, j] for i, j in chart)
-
-    chart.insert(0, ['Khoa', 'Số bệnh nhân'])
-    total = query_visited.total_day(today, cursor)
+    list_patients = query_visited.patients(start, end, cursor)
 
     today = today.strftime("%Y-%m-%d")
 
     context = {
         'today': today,
+        'start': start,
+        'end': end,
+        'diff': diff,
         'list': list_patients,
         'table_column_title': table_column_title,
-        'chart': chart,
-        'total': total
-
-
     }
     close_db()
     return render_template('visited/patients.html', value=context)
@@ -1071,21 +1064,15 @@ def surgery_list(day_query=None):
     table_column_title = ['Thời gian kết thúc', 'Mã y tế',
                           'Tên bệnh nhân', 'Can thiệp', 'Loại', 'Nơi thực hiện']
 
-    list_patients = query_surgery.list(today, cursor)
-    chart = query_visited.department_day(today, cursor)
-    chart = list([i, j] for i, j in chart)
+    list_patients = query_surgery.list(start, end, cursor)
 
-    chart.insert(0, ['Khoa', 'Số bệnh nhân'])
-    total = query_visited.total_day(today, cursor)
 
     today = today.strftime("%Y-%m-%d")
 
     context = {
         'today': today,
         'list': list_patients,
-        'table_column_title': table_column_title,
-        'chart': chart,
-        'total': total
+        'table_column_title': table_column_title
     }
     close_db()
     return render_template('surgery/list.html', value=context)
@@ -1120,25 +1107,14 @@ def born(day_query=None):
     table_column_title = ['Thời gian kết thúc', 'Mã Y tế',
                           'Tên bệnh nhân', 'Can thiệp phẫu thuật', 'Mô tả sau phẫu thuật']
 
-    if day_query == 'thisyear':
-        list_patients = query_born.list_between(first_year_day, today, cursor)
-    else:
-        list_patients = query_born.list(today, cursor)
-
-    chart = query_visited.department_day(today, cursor)
-    chart = list([i, j] for i, j in chart)
-
-    chart.insert(0, ['Khoa', 'Số bệnh nhân'])
-    total = query_visited.total_day(today, cursor)
-
+    list_patients = query_born.list_between(start, end, cursor)
+   
     today = today.strftime("%Y-%m-%d")
 
     context = {
         'today': today,
         'list': list_patients,
-        'table_column_title': table_column_title,
-        'chart': chart,
-        'total': total
+        'table_column_title': table_column_title
     }
     close_db()
     return render_template('born/index.html', value=context)
@@ -1503,26 +1479,14 @@ def all_patients():
     cnxn = get_db()
     cursor = cnxn.cursor()
 
-    # ngày bắt đầu và kết thúc truy vấn dữ liệu
-    time_filter = request.args.get('time')
-    start_get = request.args.get('start')
-    end_get = request.args.get('end')
-
     # lấy ngày xem dashboard
-    day_class = DayQuery(day_query, time_filter, start_get, end_get)
-    today = day_class.today
-    start = day_class.start
-    end = day_class.end
-
-    previous_start = day_class.previous_start
-    previous_end = day_class.previous_end
-
-    diff = diff_days(start, end)
 
     list_patients = query_patient.patients(cursor)
     table_column_title = ['Ngày tạo', 'Mã Y tế',
                           'Tên bệnh nhân', 'Ngày sinh', 'Số điện thoại', 'Địa chỉ']
-    today = today.strftime("%Y-%m-%d")
+    
+    today = datetime.today().strftime('%Y-%m-%d')
+
 
     context = {
         'today': today,
@@ -1542,10 +1506,6 @@ def patient_detail(mayte):
     cnxn = get_db()
     cursor = cnxn.cursor()
 
-    # lấy ngày xem dashboard
-    day_class = DayQuery(None, time_filter, start_get, end_get)
-    today = day_class.today
-
     detail = query_patient.detail(mayte, cursor)
 
     history_visited = query_patient.visited_history(mayte, cursor)
@@ -1553,7 +1513,7 @@ def patient_detail(mayte):
     doanhthu = query_patient.doanhthu(mayte, cursor)
     thanhtoan = query_patient.thanhtoan(mayte, cursor)
 
-    today = today.strftime("%Y-%m-%d")
+    today = datetime.today().strftime('%Y-%m-%d')
 
     context = {
         'today': today,
@@ -1576,21 +1536,20 @@ def report(day_query=None):
 
     cnxn = get_db()
     cursor = cnxn.cursor()
-    day_dict = get_day(day_query)
-    today = day_dict['today']
     card = []
     card1 = ['Doanh thu theo từng mục', 'Mẫu báo cáo 79 của BHYT',
              'Chi tiết doanh thu từng mục: Tiền CĐHA, Tiền Xét nghiệm, Tiền Thuốc, Tiền Phẫu thuật, Tiền Khám, Tiền Giường', 'report_79']
 
     card.append(card1)
 
-    today = today.strftime("%Y-%m-%d")
+    today = datetime.today().strftime('%Y-%m-%d')
+
     context = {
         'today': today,
         'card': card
 
     }
-    cnxn.close()
+    close_db()
     return render_template('report/index.html', value=context, active='report')
 
 # Báo cáo 79
@@ -1600,23 +1559,25 @@ def report(day_query=None):
 @app.route('/report/79', methods=['GET', 'POST'])
 @register_breadcrumb(app, '..report.report-79', 'Chi tiết doanh thu xác nhận')
 def report_79(day_query=None):
+    # kết nối database sql server
     cnxn = get_db()
     cursor = cnxn.cursor()
-    day_dict = get_day(day_query)
-    day_dict = get_day(day_query)
-    today = day_dict['today']
-    yesterday = day_dict['yesterday']
-    mon_day = day_dict['mon_day']
-    last_week_monday = day_dict['last_week_monday']
-    last_week_sun_day = day_dict['last_week_sun_day']
-    twolast_week_monday = day_dict['twolast_week_monday']
-    twolast_week_sun_day = day_dict['twolast_week_sun_day']
-    first_month_day = day_dict['first_month_day']
-    last_first_month_day = day_dict['last_first_month_day']
-    last_end_month_day = day_dict['last_end_month_day']
-    first_year_day = day_dict['first_year_day']
-    last_first_year_day = day_dict['last_first_year_day']
-    end_last_year_day = day_dict['end_last_year_day']
+
+    # ngày bắt đầu và kết thúc truy vấn dữ liệu
+    time_filter = request.args.get('time')
+    start_get = request.args.get('start')
+    end_get = request.args.get('end')
+
+    # lấy ngày xem dashboard
+    day_class = DayQuery(day_query, time_filter, start_get, end_get)
+    today = day_class.today
+    start = day_class.start
+    end = day_class.end
+
+    previous_start = day_class.previous_start
+    previous_end = day_class.previous_end
+
+    diff = diff_days(start, end)
 
     if request.method == 'POST':
         list_id = []
@@ -1670,7 +1631,7 @@ def report_79(day_query=None):
                           'Tiền xét nghiệm']
 
     total_service = query_report.total_service_money(
-        first_year_day, today, cursor)
+        day_class.first_day_year(), today, cursor)
     total_service = convert_to_chart(total_service)
     total_service_chart = total_service.copy()
     total_service.insert(0, ['Mục', 'Doanh thu'])
@@ -1687,68 +1648,6 @@ def report_79(day_query=None):
     }
 
     return render_template('report/79.html', value=context, active='report')
-
-
-# Báo cáo tổng hợp
-@app.route('/report/general/<string:day_query>', methods=['GET', 'POST'])
-@app.route('/report/general', methods=['GET', 'POST'])
-@register_breadcrumb(app, '..report.general', 'Tổng hợp')
-def report_general(day_query=None):
-    cnxn = get_db()
-    cursor = cnxn.cursor()
-    day_class = DayQuery(day_query)
-
-    if request.method == 'POST' and 'filter_btn' in request.form:
-        list_id = []
-        start_day = request.form['start_date']
-        start = datetime.strptime(start_day, '%Y-%m-%dT%H:%M')
-        end_day = request.form['end_date']
-        end = datetime.strptime(end_day, '%Y-%m-%dT%H:%M')
-        count_day = int((end - start).days) + 1
-    else:
-        start = day_class.today
-        end = start + timedelta(days=1)
-        count_day = 1
-
-    money = query_revenue.total_money_betweentime(start, end, cursor)
-    revenue_table_data = ['Doanh thu', money]
-
-    money_bhtt = query_revenue.bhtt_betweentime(start, end, cursor)
-    revenue_bhtt_table_data = ['Bảo hiểm thanh toán', money_bhtt]
-
-    money_bntt = query_revenue.bntt_betweentime(start, end, cursor)
-    revenue_bntt_table_data = ['Bệnh nhân thanh toán', money_bntt]
-
-    total_visited = query_visited.total_betweentime(start, end, cursor)
-    visited_table_data = ['Lượt khám bệnh', total_visited]
-
-    total_hospitalized = query_hospitalized.in_betweentime(start, end, cursor)
-    hospital_table_data = ['Lượt nhập viện', total_hospitalized]
-
-    total_transfer = query_transfer.total_betweentime(
-        start, end, cursor) + query_transfer.total_department_betweentime(start, end, cursor)
-    transfer_table_data1 = ['Lượt chuyển tuyến', total_transfer]
-    transfer_table_data2 = ['Lượt chuyển tuyến ngoại trú',
-                            query_transfer.total_betweentime(start, end, cursor)]
-    transfer_table_data3 = ['Lượt chuyển tuyến nội trú',
-                            query_transfer.total_department_betweentime(start, end, cursor)]
-
-    table_data = [revenue_table_data, revenue_bhtt_table_data, revenue_bntt_table_data, visited_table_data,
-                  hospital_table_data, transfer_table_data1, transfer_table_data2, transfer_table_data3]
-    today = day_class.today.strftime("%Y-%m-%d")
-    cnxn.close()
-    context = {
-        'today': today,
-        'table_data': table_data,
-        'start': start,
-        'end': end,
-        'count_day': count_day
-
-
-    }
-
-    return render_template('report/general.html', value=context, active='report')
-
 
 # USER
 # trang đăng nhập
@@ -1786,9 +1685,9 @@ def user_logout():
 @app.route('/admin', methods=['GET', 'POST'])
 @register_breadcrumb(app, '..admin', 'Quản trị')
 def admin():
-    day_dict = get_day(None)
-    today = day_dict['today']
-
+    
+    con = get_db_dashboard()
+    cursor = con.cursor()
     if session.get('username'):
         con = sqlite3.connect("dashboard.db")
         con.row_factory = sqlite3.Row
@@ -1815,12 +1714,13 @@ def admin():
                 con.commit()
                 return redirect(url_for('admin'))
 
-        today = today.strftime("%Y-%m-%d")
+        today = datetime.today().strftime('%Y-%m-%d')
+
         context = {
             'today': today,
             'list_post': list_post
         }
-        con.close()
+        close_db_dashboard()
 
         return render_template('admin/index.html', value=context)
     else:
@@ -1873,12 +1773,9 @@ def detail_post(post_id):
 @app.route('/admin/money', methods=['GET', 'POST'])
 @register_breadcrumb(app, '..admin.money', 'Tiền dịch vụ')
 def admin_money():
-    day_dict = get_day(None)
-    today = day_dict['today']
 
     if session.get('username'):
-        con = sqlite3.connect("dashboard.db")
-        con.row_factory = sqlite3.Row
+        con = get_db_dashboard()
         cursor = con.cursor()
 
         sql_list_report = """
@@ -1922,14 +1819,15 @@ def admin_money():
             con.commit()
             return redirect(url_for('admin_money'))
 
-        today = today.strftime("%Y-%m-%d")
+        today = datetime.today().strftime('%Y-%m-%d')
+
         context = {
             'today': today,
             'list_form_title_money': list_form_title_money,
             'list_reports': list_reports,
             'titles': titles
         }
-        con.close()
+        close_db_dashboard()
 
         return render_template('admin/report-money.html', value=context)
     else:
@@ -1972,7 +1870,7 @@ def patient_api_detail(mayte):
         update_date=info[8]
     )
 
-    cnxn.close()
+    close_db()
 
     return info_json
 
@@ -1995,6 +1893,6 @@ def prescription_api(khambenh_id):
         info_list.append(d)
 
     j = jsonify(info_list)
-    cnxn.close()
+    close_db()
 
     return j

@@ -14,7 +14,7 @@ def total(start, end, cursor):
         return None
 
 # danh sách chi tiết ca phẫu thuật
-def list(day, cursor):
+def list(start, end, cursor):
     query = """
             SELECT BenhAnPhauThuat.ThoiGianKetThuc as time,MaYTe,TenBenhNhan,CanThiepPhauThuat, TenLoaiPhauThuat, TenPhongBan
             FROM BenhAnPhauThuat
@@ -26,7 +26,7 @@ def list(day, cursor):
             ON BenhAnPhauThuat.BenhAn_Id = BenhAn.BenhAn_Id
             INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan]
             ON BenhAn.BenhNhan_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan].BenhNhan_Id
-            WHERE BenhAnPhauThuat.NgayThucHien = ?
+            WHERE BenhAnPhauThuat.ThoiGianKetThuc BETWEEN ? AND ?
             GROUP BY BenhAnPhauThuat.ThoiGianKetThuc, CanThiepPhauThuat, TenPhongBan, TenLoaiPhauThuat, MaYTe, TenBenhNhan
 
             UNION
@@ -41,11 +41,11 @@ def list(day, cursor):
             ON BenhAnPhauThuat.TiepNhan_Id = TiepNhan.TiepNhan_Id
             INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan]
             ON TiepNhan.BenhNhan_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan].BenhNhan_Id
-            WHERE BenhAnPhauThuat.NgayThucHien = ?
+            WHERE BenhAnPhauThuat.ThoiGianKetThuc BETWEEN ? AND ?
             GROUP BY BenhAnPhauThuat.ThoiGianKetThuc, CanThiepPhauThuat, TenPhongBan, TenLoaiPhauThuat, MaYTe, TenBenhNhan
             """
     try:
-        q = cursor.execute(query, day, day).fetchall()
+        q = cursor.execute(query, start, end, start, end).fetchall()
         for row in q:
             row.time = row.time.strftime("%Y-%m-%d %H:%M")
         return q
