@@ -271,6 +271,7 @@
                     .then((response) => response.json())
                     .then((data2) => {
                         const ketquaElement = document.getElementById('ketqua');
+                        ketquaElement.textContent = "";
 
                         if (Object.keys(data2).length){
                             for (const key of data2) {
@@ -282,6 +283,9 @@
 
 
                         }
+                        else {
+                            ketquaElement.textContent = "Không";
+        }
                     });
 
             }
