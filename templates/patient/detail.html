@@ -275,7 +275,7 @@
                         if (Object.keys(data2).length){
                             for (const key of data2) {
                                     const para = document.createElement("span");
-                                    para.innerHTML = `<span> <span class="fw-semibold">BS CLS: ${key['bacsi']} Mô tả: </span> ${key['mota']}; <br><span class="fw-semibold"> Kết luận: </span>: ${key['ketluan']} <hr> </span>`
+                                    para.innerHTML = `<span> <span class="badge text-bg-primary me-2">BS.${key['bacsi']}</span>  <span class="fw-semibold">Mô tả: </span> ${key['mota']}; <br><span class="fw-semibold"> Kết luận: </span>: ${key['ketluan']} <hr> </span>`
                                     ketquaElement.appendChild(para)
 
                             }
