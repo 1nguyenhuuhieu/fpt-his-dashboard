@@ -1777,24 +1777,28 @@ def admin_money():
         list_reports = cursor.execute(sql_list_report).fetchall()
         titles = cursor.execute(sql_list_report).description
 
-        list_form_title_money = [["Tiền khám bệnh"], ["Viện phí"], ["Xét nghiệm"], ["Điện tim"], ["Test covid 19"], ["Lưu huyết não"], ["Siêu âm"], ["XQ"], ["Nội soi dạ dày, thực quản"], ["Nội soi TMH"], ["Nội soi CTC"], [
-            "Khám sức khỏe"], ["Bó bột gây mê"], ["Chụp CT"], ["Tiêm SAT"], ["Tiêm phòng dại"], ["Tiêm VGB 1ml"], ["Tiêm VGB 0.5ml"], ["Vắc xin Rotamin"], ["Vắc xin Sởi - Quai bị - Rubella"], ["Vắc xin Cúm"], ["Vắc xin Quimihib"], ["Thuốc"]]
+        list_form_title_money = [["Tiền khám bệnh"],["Viện phí"],["Xét nghiệm"],["Điện tim"],["Test nhanh covid 19"],["Lưu huyết não"],["Siêu âm"],["XQ"],["Nội soi dạ dày, thực quản"],["Nội soi TMH"],["Nội soi CTC"],["Khám sức khỏe"],["Bó bột gây mê"],["Chụp CT"],["Tiêm SAT"],["Tiêm phòng dại"],["Tiêm VGB 1ml"],["Tiêm VGB 0.5ml"],["Vắc xin Rotamin"],["Xông hơi thuốc bắc"],["Vắc xin Cúm"],["Vắc xin Quimihib"],["Thuốc"],["HIV"],["HBsAg"],["Sao bệnh án"],["Test HP"]]
+        j = []
         for i in list_form_title_money:
             i.append(slugify(i[0]).replace('-', '_'))
-
+        
+        place_holders = (len(list_form_title_money) + 3) * '?,'
+        place_holders = place_holders + '?'
         if request.method == 'POST' and 'new_report' in request.form:
 
             values = []
 
             for i in (request.form):
-
                 values.append(request.form[i])
 
             values.pop(-1)
+            values.insert(0, datetime.now())
+            values.insert(2, session['username'])
+            print(len(values))
 
-            sql = """
-            INSERT INTO report_money(ngay,tien_kham_benh,vien_phi,xet_nghiem,dien_tim,test_covid_19,luu_huyet_nao,sieu_am,xq,noi_soi_da_day_thuc_quan,noi_soi_tmh,noi_soi_ctc,kham_suc_khoe,bo_bot_gay_me,chup_ct,tiem_sat,tiem_phong_dai,tiem_vgb_1ml,tiem_vgb_0_5ml,vac_xin_rotamin,vac_xin_soi_quai_bi_rubella,vac_xin_cum,vac_xin_quimihib,thuoc)
-            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+            sql = f"""
+            INSERT INTO report_money(time_created,time_report,username,time_created,time_updated,username,tien_kham_benh,vien_phi,xet_nghiem,dien_tim,test_nhanh_covid_19,luu_huyet_nao,sieu_am,xq,noi_soi_da_day_thuc_quan,noi_soi_tmh,noi_soi_ctc,kham_suc_khoe,bo_bot_gay_me,chup_ct,tiem_sat,tiem_phong_dai,tiem_vgb_1ml,tiem_vgb_0_5ml,vac_xin_rotamin,xong_hoi_thuoc_bac,vac_xin_cum,vac_xin_quimihib,thuoc,hiv,hbsag,sao_benh_an,test_hp)
+            VALUES ({place_holders})
             """
             cursor.execute(sql, values)
             con.commit()
