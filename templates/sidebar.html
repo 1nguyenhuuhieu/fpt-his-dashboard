@@ -60,6 +60,13 @@
           </a>
         </li>
 
+        <li class="nav-item">
+          <a class="nav-link  {{ 'active' if active=='report'}}" href="{{ url_for('report_service_money', day_query=value.today)}}">
+            <span data-feather="file-text" class="align-text-bottom"></span>
+            Doanh thu dịch vụ ngoài bảo hiểm
+          </a>
+        </li>
+
         
 
       </ul>

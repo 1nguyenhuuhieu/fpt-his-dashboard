@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block header %}
+<i class="fa-solid fa-user me-2"></i>{% block title %}Quản trị{% endblock %}
+{% endblock %}
+{% block content %}
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/6.3.2/tinymce.min.js" integrity="sha512-0hADhKU8eEFSmp3+f9Yh8QmWpr6nTYLpN9Br7k2GTUQOT6reI2kdEOwkOORcaRZ+xW5ZL8W24OpBlsCOCqNaNQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    let allMoney = 0;
+</script>
+
+    {% for report in value.list_reports %}
+<div class="row">
+
+    <div class="col-12">
+        <h5>Ngày báo cáo: {{ report.time_report }}</h5>
+        <p class="fw-semibold">Tổng: </p>
+    
+
+    </div>
+    {% for key, name in value.list_dict.values()|zip(value.list_dict.keys()) %}
+    {% if report[key] %}
+    <div class="col-lg-3 border-end">
+       <div class="d-flex justify-content-between">{{name}}: <span name="moneySpan" class="fw-semibold">{{ report[key] }}</span> </div>
+    </div>
+    {% endif %}
+
+
+
+    {% endfor %}
+    <div class="col-12">
+        <hr>
+    </div>
+
+
+</div>
+
+    {% endfor %}
+
+
+{% endblock %}
+
+
