@@ -482,8 +482,7 @@ def medical_record_notin(department_id,archived_list,cursor):
         FROM BenhAn
         INNER JOIN  [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan] as benhnhan
         ON BenhAn.BenhNhan_Id = benhnhan.BenhNhan_Id
-        WHERE BenhAn.KhoaVao_Id = ? AND ThoiGianVaoKhoa > '2023-03-01'
-        AND ThoiGianRaVien IS NOT NULL
+        WHERE BenhAn.KhoaVao_Id = ? AND ThoiGianRaVien > '2023-03-01'
         AND SoLuuTru NOT IN{archived}"""
         try:
             q = cursor.execute(sql,department_id).fetchall()
@@ -497,8 +496,7 @@ def medical_record_notin(department_id,archived_list,cursor):
         FROM BenhAn
         INNER JOIN  [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan] as benhnhan
         ON BenhAn.BenhNhan_Id = benhnhan.BenhNhan_Id
-        WHERE BenhAn.KhoaVao_Id = ? AND ThoiGianVaoKhoa > '2023-03-01'
-        AND ThoiGianRaVien IS NOT NULL
+        WHERE BenhAn.KhoaVao_Id = ? AND ThoiGianRaVien > '2023-03-01'
         AND SoLuuTru <> '{archived}'"""
         try:
             q = cursor.execute(sql,department_id).fetchall()
