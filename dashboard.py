@@ -1923,7 +1923,6 @@ def medical_record(department_id=None):
                 medical_records = query_hospitalized.medical_record_notin(department_id,archived_list,cursor_sqlserver)
             else:
                 medical_records = query_hospitalized.medical_record(department_id,cursor_sqlserver)
-              
         if request.method == 'POST' and 'update' in request.form:
             if request.form['soluutru']:
                 str_soluutru = request.form['soluutru']
