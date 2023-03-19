@@ -514,8 +514,7 @@ def medical_record(department_id,cursor):
     FROM BenhAn
     INNER JOIN  [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan] as benhnhan
     ON BenhAn.BenhNhan_Id = benhnhan.BenhNhan_Id
-    WHERE BenhAn.KhoaVao_Id = ? AND ThoiGianVaoKhoa > '2023-03-01'
-    AND ThoiGianRaVien IS NOT NULL
+    WHERE BenhAn.KhoaVao_Id = ? AND ThoiGianRaVien > '2023-03-01'
     """
     try:
         q = cursor.execute(sql,department_id).fetchall()
