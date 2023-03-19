@@ -45,3 +45,14 @@ CREATE TABLE report_money
     vac_xin_quimihib	INT,
     thuoc	INT
 );
+
+
+-- SQLite
+CREATE TABLE tableName 
+(
+    id	VARCHAR(512),
+    time_created	VARCHAR(512),
+    soluutru	VARCHAR(512),
+    nguoinap	VARCHAR(512),
+    department_id	INT
+);

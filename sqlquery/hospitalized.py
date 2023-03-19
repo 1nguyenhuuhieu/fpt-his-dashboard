@@ -430,7 +430,7 @@ def list_department(day, department_id, cursor):
 def patiens_department(day, department_name, cursor):
     tomorrow = day + timedelta(days=1)
     query = """
-        SELECT ThoiGianVaoVien, MaYTe, TenBenhNhan, ChanDoanVaoKhoa,TenNhanVien
+        SELECT ThoiGianVaoVien, MaYTe, TenBenhNhan,MaGiuong, ChanDoanVaoKhoa,TenNhanVien
         FROM BenhAn
         INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan]
         ON BenhAn.BenhNhan_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan].BenhNhan_Id
@@ -442,7 +442,7 @@ def patiens_department(day, department_name, cursor):
                 AND BenhAn.NgayVaoVien < ?
                 
         AND dm_phongban.TenPhongBan= ?
-        GROUP BY ThoiGianVaoVien, MaYTe, TenBenhNhan, ChanDoanVaoKhoa,TenNhanVien
+        GROUP BY ThoiGianVaoVien, MaYTe, TenBenhNhan, ChanDoanVaoKhoa,TenNhanVien, MaGiuong
         """
     try:
         q = cursor.execute(query, day,tomorrow, department_name).fetchall()
@@ -474,3 +474,67 @@ def patiens_department_new(day, department_name, cursor):
         print("Lỗi query hospitalized.patiens_department")
         return None
     
+# danh sách bệnh án
+def medical_record_notin(department_id,archived_list,cursor):
+    if len(archived_list) > 1:
+        archived = tuple(archived_list)
+        sql = f"""SELECT NgayRaVien, benhnhan.MaYTe,SoBenhAn, SoLuuTru, benhnhan.TenBenhNhan
+        FROM BenhAn
+        INNER JOIN  [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan] as benhnhan
+        ON BenhAn.BenhNhan_Id = benhnhan.BenhNhan_Id
+        WHERE BenhAn.KhoaVao_Id = ? AND ThoiGianVaoKhoa > '2023-01-01'
+        AND ThoiGianRaVien IS NOT NULL
+        AND SoLuuTru NOT IN{archived}"""
+        try:
+            q = cursor.execute(sql,department_id).fetchall()
+            return q
+        except:
+            print("Lỗi query hospitalized.medical_record_notin")
+            return None
+    else:
+        archived = archived_list[0]
+        sql = f"""SELECT NgayRaVien, benhnhan.MaYTe,SoBenhAn, SoLuuTru, benhnhan.TenBenhNhan
+        FROM BenhAn
+        INNER JOIN  [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan] as benhnhan
+        ON BenhAn.BenhNhan_Id = benhnhan.BenhNhan_Id
+        WHERE BenhAn.KhoaVao_Id = ? AND ThoiGianVaoKhoa > '2023-01-01'
+        AND ThoiGianRaVien IS NOT NULL
+        AND SoLuuTru <> '{archived}'"""
+        try:
+            q = cursor.execute(sql,department_id).fetchall()
+            return q
+        except:
+            print("Lỗi query hospitalized.medical_record_notin")
+            return None
+        
+# danh sách bệnh án
+def medical_record(department_id,cursor):
+   
+    sql = f"""SELECT NgayRaVien, benhnhan.MaYTe,SoBenhAn, SoLuuTru, benhnhan.TenBenhNhan
+    FROM BenhAn
+    INNER JOIN  [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan] as benhnhan
+    ON BenhAn.BenhNhan_Id = benhnhan.BenhNhan_Id
+    WHERE BenhAn.KhoaVao_Id = ? AND ThoiGianVaoKhoa > '2023-01-01'
+    AND ThoiGianRaVien IS NOT NULL
+    """
+    try:
+        q = cursor.execute(sql,department_id).fetchall()
+        return q
+    except:
+        print("Lỗi query hospitalized.medical_record")
+        return None
+    
+# danh sách bệnh án với số lưu trữ đã nạp ở phòng kế hoạch
+def medical_record_archived(department_id, cursor):
+    sql = """
+    SELECT soluutru
+    FROM archived
+    WHERE department_id = ?
+    """
+    try:
+        q = cursor.execute(sql,(department_id,)).fetchall()
+        return q
+    except:
+        print("Lỗi query hospitalized.medical_record_archived")
+        return None
+        

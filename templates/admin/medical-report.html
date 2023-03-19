@@ -8,29 +8,46 @@
     <div class="col-lg-4">
         <div class="bg-white rounded border shadow-sm p-4 d-flex flex-column">
 
-          <div class="input-group">
-            <label class="input-group-text" for="inputGroupSelect01">Khoa</label>
-            <select class="form-select" id="inputGroupSelect01">
-              <option selected>Chọn khoa</option>
-              <option value="1">Khoa Hồi sức cấp cứu</option>
-              <option value="2">Khoa Ngoại tổng hợp</option>
-              <option value="3">Khoa Nội tổng hơp</option>
-              <option value="4">Khoa Phụ Sản</option>
-              <option value="5">Khoa Y học cổ truyền</option>
-              <option value="6">Liên chuyên khoa TMH-RHM-Mắt</option>
+          <div class="dropdown">
+            <a class="btn btn-outline-primary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              {{ 'Toàn cơ quan' if not value.department_name else value.department_name }}
+              
+            </a>
+ 
+          {% if value.list_department %}
+            <ul class="dropdown-menu">
+              {% for department in value.list_department %}
+              <li><a class="dropdown-item" href="{{ url_for('medical_record', department_id=department.1)}}">{{department.0}}</a></li>
+              {% endfor %}
+            </ul>
+            {% endif %}
           </div>
 
-          <div>
-            <p>sdf</p>
-          </div>
-          <h1> hieu</h1>
+          <a class="btn btn-outline-primary mt-3 " href="{{ url_for('medical_record')}}">
+            Toàn cơ quan
+         </a>
 
 
     </div>
   </div>
 
+  <div class="col-lg-8">
+
+    {% include 'include/table_medical_record.html' %}
+
+  </div>
+
 
 </div>
+
+<script>
+  function getStaff(){
+    console.log('You selected: ', this.value);
+    console.log('You name: ', this.options[this.selectedIndex].text);
+  }
+  const departmentSelect = document.getElementById("departmentSelect");
+  departmentSelect.addEventListener('change', getStaff)
+</script>
 
 {% endblock %}
 

@@ -75,3 +75,16 @@ def users(cursor):
     except:
         print("Lỗi sql users")
         return None  
+def staff_department(department_id, cursor):
+    sql = """
+    SELECT TenNhanVien, NgaySinh
+    FROM [eHospital_NgheAn_Dictionary].[dbo].[NhanVien] as nhanvien
+    WHERE nhanvien.PhongBan_Id = ?
+    """
+    try:
+        q = cursor.execute(sql, department_id).fetchall()
+        return q
+    except:
+        print("Lỗi sql staff_department")
+        return None  
+

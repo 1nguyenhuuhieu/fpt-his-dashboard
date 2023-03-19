@@ -2,7 +2,28 @@
 {% block content %}
 <div class="p-3 border rounded bg-white shadow-sm table-responsive  ">
 
-    <table id="myTable" class="table table-striped bg-white " style="width:100%">
+    <form action="" method="post">
+  <div class="d-flex">
+
+    <div class="input-group mb-3">
+      <label class="input-group-text" for="inputGroupSelect01">Người nạp</label>
+      <select class="form-select" id="inputGroupSelect01" required name="staff_name">
+        {% if value.staffs %}
+        {% for staff in value.staffs %}
+        <option value="{{ staff.TenNhanVien }}">{{ staff.TenNhanVien }}</option>
+        {% endfor %}
+        {% endif %}
+      </select>
+      <input type="hidden" id="benhan_soluutru" name="soluutru">
+      <input type="hidden" name="department_id" value="{{ value.department_id }}">
+    <button id="button" type="submit"  class="btn btn-primary">Xác nhận</button>
+    
+    </div>
+  </div>
+  </form>
+{% if value.list %}
+
+    <table id="myTable" class="table table-striped bg-white table-sm " style="width:100%">
         <thead>
             <tr>
                 {% for title in value.table_column_title %}
@@ -25,6 +46,7 @@
             {% endfor %}
         </tbody>
     </table>
+    {% endif %}
 </div>
 
 <!-- patient Modal -->
@@ -136,12 +158,37 @@
         dom: 'Bfrtip',
         order: [[orderColumn, 'desc']],
         pagingType: 'full_numbers',
-        
+        lengthMenu: [
+            [50, -1],
+            [50, 'All'],
+        ],
         buttons: [
-        'searchPanes','copy', 'csv', 'excel', 'pdf', 'print'
+        'searchPanes','copy', 'csv', 'excel', 'pdf', 'print', 
         ],
 
     });
+
+    $('#myTable tbody').on('click', 'tr', function () {
+        $(this).toggleClass('selected');
+        const soluutruE = document.getElementById('benhan_soluutru')
+        let text = ""
+        const data =  table.rows('.selected').data()
+        for(let i=0; i < data.length; i++){
+        text += data[i][3] + ';'
+       };
+       soluutruE.value = text;
+    });
+
+
+    // $('#button').click(function () {
+    //   const soluutruE = document.getElementById('benhan_soluutru')
+    //   let text = ""
+    //   const data =  table.rows('.selected').data()
+    //    for(let i=0; i < data.length; i++){
+    //     text += data[i][3] + ';'
+    //    };
+    //    soluutruE.textContent = text;
+    // });
     
 
     });

@@ -1408,7 +1408,7 @@ def hospitalized_department(department_name, day_query=None):
     diff = diff_days(start, end)
 
     table_column_title = ['Thời gian', 'Mã Y tế',
-                          'Tên bệnh nhân', 'Chẩn đoán', 'Bác sĩ']
+                          'Tên bệnh nhân','Mã giường', 'Chẩn đoán', 'Bác sĩ']
 
     list_patients = query_hospitalized.patiens_department(
         today, department_name, cursor)
@@ -1885,22 +1885,80 @@ def report_service_money(day_query=None):
     return render_template('report/report-service-money.html', value=context)
 
 # chi tiết bài viết
-@app.route('/admin/medical-record-traking')
+@app.route('/admin/medical-record-traking/<int:department_id>', methods=['GET', 'POST'])
+@app.route('/admin/medical-record-traking', methods=['GET', 'POST'])
 @register_breadcrumb(app, '..admin.medical_record', 'Theo dõi bệnh án')
-def medical_record():
+def medical_record(department_id=None):
     # kết nối database sql server
     cnxn = get_db()
     cursor_sqlserver = cnxn.cursor()
-    con = get_db_dashboard()
+    con = sqlite3.connect("medical_record.db")
     cursor = con.cursor()
+    # cursor.row_factory = sqlite3.Row
+    medical_records = None
+    staffs = None
+    archived_list = None
+    department_name = None
+
+    dict_department = {
+        'Khoa Hồi sức cấp cứu': 1228,
+        'Khoa Ngoại tổng hợp': 1219,
+        'Khoa Nội tổng hơp': 1215,
+        'Khoa Phụ Sản': 1218,
+        'Khoa Y học cổ truyền': 1227,
+        'Liên chuyên khoa TMH-RHM-Mắt': 2385
+    }
+    
+    list_department = [(k, v) for k, v in dict_department.items()]
+    if department_id:
+        department_name = list(dict_department.keys())[list(dict_department.values()).index(department_id)]
+        staffs = query_user.staff_department(department_id, cursor_sqlserver)
+        archived_list = query_hospitalized.medical_record_archived(department_id, cursor)
+        if archived_list:
+            archived_list = list(archived_list)
+            archived_list = list(i[0] for i in archived_list)
+            medical_records = query_hospitalized.medical_record_notin(department_id,archived_list,cursor_sqlserver)
+        else:
+            medical_records = query_hospitalized.medical_record(department_id,cursor_sqlserver)
+            
+
+
+    if request.method == 'POST':
+        if request.form['soluutru']:
+            str_soluutru = request.form['soluutru']
+            list_soluutru = str_soluutru.split(";")
+            for soluutru in list_soluutru:
+                if soluutru:
+                    print(soluutru)
+                    time_created = datetime.now()
+                    nguoinap = request.form['staff_name']
+                    department_id = request.form['department_id']
+                    sql = """
+                    INSERT INTO archived(time_created, soluutru, nguoinap, department_id)
+                    VALUES(?,?,?,?)
+                    """
+                    cursor.execute(sql, (time_created, soluutru, nguoinap, department_id))
+                    con.commit()
+            con.close()        
+            return redirect(url_for('medical_record', department_id=department_id))
+            
+    
+    table_column_title = ['Ngày ra',  'Mã y tế', 'Số BA','Số lưu trữ','Tên bệnh nhân', ]
+
 
     today = datetime.today().strftime('%Y-%m-%d')
-
-
-
+    
     context = {
+        'today': today,
+        'list': medical_records,
+        'table_column_title': table_column_title,
+        'staffs': staffs,
+        'department_id': department_id,
+        'list_department': list(list_department),
+        'department_name': department_name
     }
     close_db_dashboard()
+    con.close()
 
     return render_template('admin/medical-report.html', value=context, active='news', hidden_top_filter=True)
 # Trang danh bạ
@@ -1999,6 +2057,27 @@ def ketqua_api(cls_id):
         d['ketluan'] = i[1]
         d['bacsi'] = i[2]
         d['chidinh'] = i[3]
+
+        info_list.append(d)
+
+    j = jsonify(info_list)
+    close_db()
+
+    return j
+
+# API nhân viên trong khoa
+@app.route('/staff-department-api/<int:department_id>')
+def staff_department_api(department_id):
+    cnxn = get_db()
+    cursor = cnxn.cursor()
+
+    info = query_user.staff_department(department_id, cursor)
+    info_list = []
+    for i in info:
+        d = collections.OrderedDict()
+        d['name'] = i[0]
+        d['id'] = i[1]
+        d['bod'] = i[2]
 
         info_list.append(d)
 
