@@ -1884,6 +1884,22 @@ def report_service_money(day_query=None):
 
     return render_template('report/report-service-money.html', value=context)
 
+# chi tiết bài viết
+@app.route('/admin/medical-record-traking')
+@register_breadcrumb(app, '..admin.medical_record', 'Theo dõi bệnh án')
+def medical_record():
+    con = get_db_dashboard()
+    cursor = con.cursor()
+
+    today = datetime.today().strftime('%Y-%m-%d')
+
+
+
+    context = {
+    }
+    close_db_dashboard()
+
+    return render_template('admin/medical-report.html', value=context, active='news', hidden_top_filter=True)
 # Trang danh bạ
 @app.route('/addressbook')
 @register_breadcrumb(app, '..addressbook', 'Danh bạ nhân viên')
