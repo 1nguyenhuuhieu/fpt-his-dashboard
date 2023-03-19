@@ -257,6 +257,13 @@ class TopHospitalCard(CardWithPercent):
         super().__init__(icon, title, current, previous)
         self.new_in = new_in
         self.old_out = old_out
+
+    def visited_in_percent(self):
+        return get_percent(self.new_in, self.current)[1]
+
+    def visited_out_percent(self):
+        return get_percent(self.old_out, self.current)[1]
+    
 class BellowHospitalCard():
     def __init__(self, current, previous, current_title, previous_title):
         self.current = current

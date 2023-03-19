@@ -82,7 +82,8 @@
                       {{ url_for('new_patients', day_query=value.today) }}
                       " class="text-decoration-none">Nhập viện<i
                         class="fa-solid fa-caret-right"></i></a></span>
-                  <span class="fw-bold">{{ card.new_in }}</span>
+                        <div><span class="fw-bold">{{ card.new_in }}</span> <span class="text-muted">{{ card.visited_in_percent()}}%</span></div>
+                  
                 </div>
   
                 <div class="card-text d-flex justify-content-between">
@@ -90,7 +91,7 @@
                       {{ url_for('out_patients', day_query=value.today) }}
                       " class="text-decoration-none">Chuyển viện<i
                         class="fa-solid fa-caret-right"></i></a></span>
-                  <span class="fw-bold">{{ card.old_out }}</span>
+                        <div><span class="fw-bold">{{ card.old_out }}</span> <span class="text-muted">{{ card.visited_out_percent()}}%</span></div>
                 </div>
               </div>
             </div>

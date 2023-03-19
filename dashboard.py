@@ -1888,6 +1888,9 @@ def report_service_money(day_query=None):
 @app.route('/admin/medical-record-traking')
 @register_breadcrumb(app, '..admin.medical_record', 'Theo dõi bệnh án')
 def medical_record():
+    # kết nối database sql server
+    cnxn = get_db()
+    cursor_sqlserver = cnxn.cursor()
     con = get_db_dashboard()
     cursor = con.cursor()
 
