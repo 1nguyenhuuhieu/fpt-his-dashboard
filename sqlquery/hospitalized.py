@@ -514,7 +514,7 @@ def medical_record(department_id,cursor):
     FROM BenhAn
     INNER JOIN  [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan] as benhnhan
     ON BenhAn.BenhNhan_Id = benhnhan.BenhNhan_Id
-    WHERE BenhAn.KhoaVao_Id = ? AND ThoiGianVaoKhoa > '2023-01-01'
+    WHERE BenhAn.KhoaVao_Id = ? AND ThoiGianVaoKhoa > '2023-03-01'
     AND ThoiGianRaVien IS NOT NULL
     """
     try:
@@ -536,5 +536,18 @@ def medical_record_archived(department_id, cursor):
         return q
     except:
         print("Lỗi query hospitalized.medical_record_archived")
+        return None
+        
+# danh sách bệnh án với số lưu trữ đã nạp ở phòng kế hoạch
+def medical_record_archived_all(cursor):
+    sql = """
+    SELECT *
+    FROM archived
+    """
+    try:
+        q = cursor.execute(sql).fetchall()
+        return q
+    except:
+        print("Lỗi query hospitalized.medical_record_archived_all")
         return None
         

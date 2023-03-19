@@ -1885,82 +1885,88 @@ def report_service_money(day_query=None):
     return render_template('report/report-service-money.html', value=context)
 
 # chi tiết bài viết
-@app.route('/admin/medical-record-traking/<int:department_id>', methods=['GET', 'POST'])
-@app.route('/admin/medical-record-traking', methods=['GET', 'POST'])
+@app.route('/admin/medical-record-tracking/<int:department_id>', methods=['GET', 'POST'])
+@app.route('/admin/medical-record-tracking', methods=['GET', 'POST'])
 @register_breadcrumb(app, '..admin.medical_record', 'Theo dõi bệnh án')
 def medical_record(department_id=None):
-    # kết nối database sql server
-    cnxn = get_db()
-    cursor_sqlserver = cnxn.cursor()
-    con = sqlite3.connect("medical_record.db")
-    cursor = con.cursor()
-    # cursor.row_factory = sqlite3.Row
-    medical_records = None
-    staffs = None
-    archived_list = None
-    department_name = None
+    if session.get('username'):
+        # kết nối database sql server
+        cnxn = get_db()
+        cursor_sqlserver = cnxn.cursor()
+        con = sqlite3.connect("medical_record.db")
+        cursor = con.cursor()
+        # cursor.row_factory = sqlite3.Row
+        medical_records = None
+        staffs = None
+        archived_list = None
+        department_name = None
 
-    dict_department = {
-        'Khoa Hồi sức cấp cứu': 1228,
-        'Khoa Ngoại tổng hợp': 1219,
-        'Khoa Nội tổng hơp': 1215,
-        'Khoa Phụ Sản': 1218,
-        'Khoa Y học cổ truyền': 1227,
-        'Liên chuyên khoa TMH-RHM-Mắt': 2385
-    }
+        dict_department = {
+            'Khoa Hồi sức cấp cứu': 1228,
+            'Khoa Ngoại tổng hợp': 1219,
+            'Khoa Nội tổng hơp': 1215,
+            'Khoa Phụ Sản': 1218,
+            'Khoa Y học cổ truyền': 1227,
+            'Liên chuyên khoa TMH-RHM-Mắt': 2385
+        }
+        medical_records = query_hospitalized.medical_record_archived_all(cursor)
+        table_column_title = ['ID',  'Thời gian', 'Số lưu trữ','Người nạp','Khoa', ]
+        list_department = [(k, v) for k, v in dict_department.items()]
+        if department_id:
+            table_column_title = ['Ngày ra',  'Mã y tế', 'Số BA','Số lưu trữ','Tên bệnh nhân', ]
+            department_name = list(dict_department.keys())[list(dict_department.values()).index(department_id)]
+            staffs = query_user.staff_department(department_id, cursor_sqlserver)
+            archived_list = query_hospitalized.medical_record_archived(department_id, cursor)
+            if archived_list:
+                archived_list = list(archived_list)
+                archived_list = list(i[0] for i in archived_list)
+                medical_records = query_hospitalized.medical_record_notin(department_id,archived_list,cursor_sqlserver)
+            else:
+                medical_records = query_hospitalized.medical_record(department_id,cursor_sqlserver)
+                
+
+
+        if request.method == 'POST':
+            if request.form['soluutru']:
+                str_soluutru = request.form['soluutru']
+                list_soluutru = str_soluutru.split(";")
+                for soluutru in list_soluutru:
+                    if soluutru:
+                        print(soluutru)
+                        time_created = datetime.now()
+                        nguoinap = request.form['staff_name']
+                        department_name = request.form['department_name']
+                        sql = """
+                        INSERT INTO archived(time_created, soluutru, nguoinap, department_name)
+                        VALUES(?,?,?,?)
+                        """
+                        cursor.execute(sql, (time_created, soluutru, nguoinap, department_name))
+                        con.commit()
+                con.close()        
+                return redirect(url_for('medical_record', department_id=department_id))
+                
+        
+        
+
+
+        today = datetime.today().strftime('%Y-%m-%d')
+        
+        context = {
+            'today': today,
+            'list': medical_records,
+            'table_column_title': table_column_title,
+            'staffs': staffs,
+            'department_id': department_id,
+            'list_department': list(list_department),
+            'department_name': department_name
+        }
+        close_db_dashboard()
+        con.close()
+
+        return render_template('admin/medical-report.html', value=context, active='news', hidden_top_filter=True)
+    else:
+        return redirect(url_for('user_login'))
     
-    list_department = [(k, v) for k, v in dict_department.items()]
-    if department_id:
-        department_name = list(dict_department.keys())[list(dict_department.values()).index(department_id)]
-        staffs = query_user.staff_department(department_id, cursor_sqlserver)
-        archived_list = query_hospitalized.medical_record_archived(department_id, cursor)
-        if archived_list:
-            archived_list = list(archived_list)
-            archived_list = list(i[0] for i in archived_list)
-            medical_records = query_hospitalized.medical_record_notin(department_id,archived_list,cursor_sqlserver)
-        else:
-            medical_records = query_hospitalized.medical_record(department_id,cursor_sqlserver)
-            
-
-
-    if request.method == 'POST':
-        if request.form['soluutru']:
-            str_soluutru = request.form['soluutru']
-            list_soluutru = str_soluutru.split(";")
-            for soluutru in list_soluutru:
-                if soluutru:
-                    print(soluutru)
-                    time_created = datetime.now()
-                    nguoinap = request.form['staff_name']
-                    department_id = request.form['department_id']
-                    sql = """
-                    INSERT INTO archived(time_created, soluutru, nguoinap, department_id)
-                    VALUES(?,?,?,?)
-                    """
-                    cursor.execute(sql, (time_created, soluutru, nguoinap, department_id))
-                    con.commit()
-            con.close()        
-            return redirect(url_for('medical_record', department_id=department_id))
-            
-    
-    table_column_title = ['Ngày ra',  'Mã y tế', 'Số BA','Số lưu trữ','Tên bệnh nhân', ]
-
-
-    today = datetime.today().strftime('%Y-%m-%d')
-    
-    context = {
-        'today': today,
-        'list': medical_records,
-        'table_column_title': table_column_title,
-        'staffs': staffs,
-        'department_id': department_id,
-        'list_department': list(list_department),
-        'department_name': department_name
-    }
-    close_db_dashboard()
-    con.close()
-
-    return render_template('admin/medical-report.html', value=context, active='news', hidden_top_filter=True)
 # Trang danh bạ
 @app.route('/addressbook')
 @register_breadcrumb(app, '..addressbook', 'Danh bạ nhân viên')
