@@ -1,6 +1,8 @@
 
 {% block content %}
 <div class="p-3 border rounded bg-white shadow-sm table-responsive  ">
+  {% if value.department_id %}
+
 
     <form action="" method="post">
   <div class="d-flex">
@@ -16,11 +18,19 @@
       </select>
       <input type="hidden" id="benhan_soluutru" name="soluutru">
       <input type="hidden" name="department_name" value="{{ value.department_name }}">
-    <button id="button" type="submit"  class="btn btn-primary">Xác nhận</button>
+    <button id="button" type="submit"  class="btn btn-primary" name="update">Xác nhận</button>
     
     </div>
   </div>
   </form>
+  {% else %}
+  <form action="" method="post">
+    <input type="hidden" id="benhan_soluutru" name="soluutru">
+
+    <button id="button" type="submit"  class="btn btn-danger mb-3" name="delete">Xóa</button>
+
+  </form>
+  {% endif %}
 {% if value.list %}
 
     <table id="myTable" class="table table-striped bg-white table-sm " style="width:100%">

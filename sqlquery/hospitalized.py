@@ -525,14 +525,14 @@ def medical_record(department_id,cursor):
         return None
     
 # danh sách bệnh án với số lưu trữ đã nạp ở phòng kế hoạch
-def medical_record_archived(department_id, cursor):
+def medical_record_archived(department_name, cursor):
     sql = """
     SELECT soluutru
     FROM archived
-    WHERE department_id = ?
+    WHERE department_name = ?
     """
     try:
-        q = cursor.execute(sql,(department_id,)).fetchall()
+        q = cursor.execute(sql,(department_name,)).fetchall()
         return q
     except:
         print("Lỗi query hospitalized.medical_record_archived")
@@ -541,7 +541,7 @@ def medical_record_archived(department_id, cursor):
 # danh sách bệnh án với số lưu trữ đã nạp ở phòng kế hoạch
 def medical_record_archived_all(cursor):
     sql = """
-    SELECT *
+    SELECT id, time_created, nguoinap, soluutru, department_name
     FROM archived
     """
     try:

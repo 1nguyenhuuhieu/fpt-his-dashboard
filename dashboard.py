@@ -1910,23 +1910,21 @@ def medical_record(department_id=None):
             'Liên chuyên khoa TMH-RHM-Mắt': 2385
         }
         medical_records = query_hospitalized.medical_record_archived_all(cursor)
-        table_column_title = ['ID',  'Thời gian', 'Số lưu trữ','Người nạp','Khoa', ]
+        table_column_title = ['ID',  'Thời gian', 'Người nạp','Số lưu trữ','Khoa', ]
         list_department = [(k, v) for k, v in dict_department.items()]
         if department_id:
             table_column_title = ['Ngày ra',  'Mã y tế', 'Số BA','Số lưu trữ','Tên bệnh nhân', ]
             department_name = list(dict_department.keys())[list(dict_department.values()).index(department_id)]
             staffs = query_user.staff_department(department_id, cursor_sqlserver)
-            archived_list = query_hospitalized.medical_record_archived(department_id, cursor)
+            archived_list = query_hospitalized.medical_record_archived(department_name, cursor)
             if archived_list:
                 archived_list = list(archived_list)
                 archived_list = list(i[0] for i in archived_list)
                 medical_records = query_hospitalized.medical_record_notin(department_id,archived_list,cursor_sqlserver)
             else:
                 medical_records = query_hospitalized.medical_record(department_id,cursor_sqlserver)
-                
-
-
-        if request.method == 'POST':
+              
+        if request.method == 'POST' and 'update' in request.form:
             if request.form['soluutru']:
                 str_soluutru = request.form['soluutru']
                 list_soluutru = str_soluutru.split(";")
@@ -1941,6 +1939,22 @@ def medical_record(department_id=None):
                         VALUES(?,?,?,?)
                         """
                         cursor.execute(sql, (time_created, soluutru, nguoinap, department_name))
+                        con.commit()
+                con.close()        
+                return redirect(url_for('medical_record', department_id=department_id))
+                
+        
+        if request.method == 'POST' and 'delete' in request.form:
+            if request.form['soluutru']:
+                str_soluutru = request.form['soluutru']
+                list_soluutru = str_soluutru.split(";")
+                for soluutru in list_soluutru:
+                    if soluutru:
+                        sql = """
+                        DELETE FROM archived
+                        WHERE soluutru = ?
+                        """
+                        cursor.execute(sql, (soluutru,))
                         con.commit()
                 con.close()        
                 return redirect(url_for('medical_record', department_id=department_id))
