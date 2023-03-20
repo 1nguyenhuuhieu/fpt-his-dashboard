@@ -1885,14 +1885,15 @@ def report_service_money(day_query=None):
     return render_template('report/report-service-money.html', value=context)
 
 # chi tiết bài viết
-@app.route('/admin/medical-record-tracking/<int:department_id>', methods=['GET', 'POST'])
 @app.route('/admin/medical-record-tracking', methods=['GET', 'POST'])
 @register_breadcrumb(app, '..admin.medical_record', 'Theo dõi bệnh án')
 def medical_record(department_id=None):
+
     if session.get('username'):
         # kết nối database sql server
         cnxn = get_db()
         cursor_sqlserver = cnxn.cursor()
+    
         con = sqlite3.connect("medical_record.db")
         cursor = con.cursor()
         # cursor.row_factory = sqlite3.Row
@@ -1906,91 +1907,111 @@ def medical_record(department_id=None):
         # lấy ngày xem dashboard
         day_class = DayQuery(day_query, time_filter, start_get, end_get)
         today = day_class.today
-        first_month = day_class.first_day_2month()
+        first_month = day_class.first_day_month()
 
         start_day = request.args.get('start_day')
+        end_day = request.args.get('end_day')
         if not start_day:
             start_day = first_month.strftime('%Y-%m-%d')
+            end_day = today.strftime('%Y-%m-%d')
+        
+        end_day_sqlite = datetime.strptime(end_day,'%Y-%m-%d')
 
-        #df
         medical_records = None
         staffs = None
         archived_list = None
         department_name = None
 
-        dict_department = {
-            'Khoa Hồi sức cấp cứu': 1228,
-            'Khoa Ngoại tổng hợp': 1219,
-            'Khoa Nội tổng hơp': 1215,
-            'Khoa Phụ Sản': 1218,
-            'Khoa Y học cổ truyền': 1227,
-            'Liên chuyên khoa TMH-RHM-Mắt': 2385
-        }
-        medical_records = query_hospitalized.medical_record_archived_all(cursor)
 
-        table_column_title = ['ID','Thời gian', 'Người nạp','Số lưu trữ','Khoa', ]
-        list_department = [(k, v) for k, v in dict_department.items()]
-        if department_id:
-            table_column_title = ['Ngày ra',  'Mã y tế', 'Số BA','Số lưu trữ','Tên bệnh nhân', ]
-            department_name = list(dict_department.keys())[list(dict_department.values()).index(department_id)]
-            staffs = query_user.staff_department(department_id, cursor_sqlserver)
-            archived_list = query_hospitalized.medical_record_archived(department_name, cursor)
-            if archived_list:
-                archived_list = list(archived_list)
-                archived_list = list(i[0] for i in archived_list)
-                medical_records = query_hospitalized.medical_record_notin(department_id,start_day,archived_list,cursor_sqlserver)
-            else:
-                medical_records = query_hospitalized.medical_record(department_id,start_day,cursor_sqlserver)
-        if request.method == 'POST' and 'update' in request.form:
-            if request.form['soluutru']:
-                str_soluutru = request.form['soluutru']
-                list_soluutru = str_soluutru.split(";")
-                for soluutru in list_soluutru:
-                    if soluutru:
-                        print(soluutru)
-                        time_created = datetime.now()
-                        nguoinap = request.form['staff_name']
-                        department_name = request.form['department_name']
-                        sql = """
-                        INSERT INTO archived(time_created, soluutru, nguoinap, department_name)
-                        VALUES(?,?,?,?)
-                        """
-                        cursor.execute(sql, (time_created, soluutru, nguoinap, department_name))
-                        con.commit()
-                con.close()        
-                return redirect(url_for('medical_record', department_id=department_id))
-                
+        archived_list = query_hospitalized.medical_record_archived_all(start_day, end_day_sqlite,cursor)
+        archived_list_nogiveback = query_hospitalized.medical_record_archived_no_giveback(start_day, end_day_sqlite,cursor)
         
-        if request.method == 'POST' and 'delete' in request.form:
+        if archived_list:
+            # Lấy danh sách số lưu trữ
+            soluutru_archived_list = tuple(i[2] for i in archived_list )
+            medical_records_not_archived = query_hospitalized.medical_records_not_archived(start_day, end_day,soluutru_archived_list, cursor_sqlserver)
+            list_no_archived = medical_records_not_archived
+        else:
+            # Nếu archived table trống
+            medical_records_not_archived = query_hospitalized.medical_records(start_day, end_day, cursor_sqlserver)
+            list_no_archived = medical_records_not_archived
+
+        table_column_title1 = ['Thời gian ra viện', 'Số bệnh an','Số lưu trữ','Tên bệnh nhân','Khoa']
+        table_column_title2 = ['Ngày ra viện','Số bệnh án','Số lưu trữ','Tên bệnh nhân', 'Khoa', 'Thời gian nạp', 'Action']
+        
+        # Nạp bệnh án
+        if request.method == 'POST' and 'insert' in request.form:
             if request.form['soluutru']:
                 str_soluutru = request.form['soluutru']
                 list_soluutru = str_soluutru.split(";")
                 for soluutru in list_soluutru:
                     if soluutru:
+                        patient_info = query_hospitalized.medical_record_info(soluutru,cursor_sqlserver)
+                        time_created = datetime.now()
+                        tenbenhnhan = patient_info.TenBenhNhan
+                        department_name = patient_info.TenPhongBan
+                        sobenhan = patient_info.SoBenhAn
+                        ngayravien = patient_info.NgayRaVien
+                        is_giveback= False
                         sql = """
-                        DELETE FROM archived
-                        WHERE soluutru = ?
+                        INSERT INTO archived(time_created, soluutru, sobenhan,benhnhan,khoa,ngayravien,is_giveback)
+                        VALUES(?,?,?,?,?,?,?)
                         """
-                        cursor.execute(sql, (soluutru,))
+                        cursor.execute(sql, (time_created, soluutru, sobenhan, tenbenhnhan,department_name,ngayravien,is_giveback ))
                         con.commit()
                 con.close()        
-                return redirect(url_for('medical_record', department_id=department_id))
+                return redirect(url_for('medical_record'))
+            
+        # Xóa bệnh án đã nạp
+        if request.method == 'POST' and 'delete' in request.form:
+            if request.form['soluutru_delete']:
+                soluutru = request.form['soluutru_delete']
+  
+                sql = """
+                DELETE FROM archived
+                WHERE soluutru = ?
+                """
+                cursor.execute(sql, (soluutru,))
+                con.commit()
+                con.close()        
+                return redirect(url_for('medical_record'))
+            
+        # trả bệnh án đã nạp
+        if request.method == 'POST' and 'update' in request.form:
+            if request.form['soluutru_update']:
+                note = request.form['note']
+                soluutru = request.form['soluutru_update']
+  
+                sql = """
+                UPDATE archived
+                SET is_giveback = True, note = ?
+                WHERE soluutru = ?
+                """
+                cursor.execute(sql, (note, soluutru))
+                con.commit()
+                con.close()        
+                return redirect(url_for('medical_record'))
             
         
         context = {
             'today': today,
             'list': medical_records,
-            'table_column_title': table_column_title,
+            'table_column_title1': table_column_title1,
+            'table_column_title2': table_column_title2,
             'staffs': staffs,
             'department_id': department_id,
-            'list_department': list(list_department),
             'department_name': department_name,
-            'start_day': start_day
+            'start_day': start_day,
+            'end_day': end_day,
+
+            'list_no_archived': list_no_archived,
+            'list_archived': archived_list,
+            'list_archived_nogiveback' :archived_list_nogiveback
         }
-        close_db_dashboard()
+        close_db()
         con.close()
 
-        return render_template('admin/medical-report.html', value=context, not_patient_btn = True, hidden_top_filter=True)
+        return render_template('admin/medical-report.html', value=context,  hidden_top_filter=True)
     else:
         return redirect(url_for('user_login'))
     

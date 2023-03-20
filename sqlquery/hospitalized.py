@@ -505,20 +505,66 @@ def medical_record_notin(department_id,start_day,archived_list,cursor):
             print("Lỗi query hospitalized.medical_record_notin")
             return None
         
+
 # danh sách bệnh án
-def medical_record(department_id,start_day,cursor):
+def medical_records_not_archived(start_day,end_day,archived,cursor):
+    if len(archived) > 1:
+        sql = f"""
+        SELECT NgayRaVien,SoBenhAn, SoLuuTru, benhnhan.TenBenhNhan, TenPhongBan
+        FROM BenhAn
+        INNER JOIN  [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan] as benhnhan
+        ON BenhAn.BenhNhan_Id = benhnhan.BenhNhan_Id
+        INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_PhongBan] as phongban
+        ON BenhAn.KhoaRa_Id = phongban.PhongBan_Id
+        WHERE NgayRaVien BETWEEN ? AND ? AND SoLuuTru NOT IN {archived}
+        """
+        try:
+            q = cursor.execute(sql, start_day, end_day).fetchall()
+            for row in q:
+                row.NgayRaVien = row.NgayRaVien.strftime("%Y-%m-%d")
+            return q
+        except:
+            print("Lỗi query hospitalized.medical_records_not_archived")
+            return None
+    else:
+        archived = archived[0]
+        print(archived)
+        sql = f""" SELECT NgayRaVien,SoBenhAn, SoLuuTru, benhnhan.TenBenhNhan, TenPhongBan
+        FROM BenhAn
+        INNER JOIN  [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan] as benhnhan
+        ON BenhAn.BenhNhan_Id = benhnhan.BenhNhan_Id
+        INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_PhongBan] as phongban
+        ON BenhAn.KhoaRa_Id = phongban.PhongBan_Id
+        WHERE NgayRaVien BETWEEN ? AND ?
+        AND SoLuuTru <> '{archived}'"""
+        try:
+            q = cursor.execute(sql,start_day, end_day).fetchall()
+            for row in q:
+                row.NgayRaVien = row.NgayRaVien.strftime("%Y-%m-%d")
+            return q
+        except:
+            print("Lỗi query hospitalized.medical_records_not_archived")
+            return None
+        
+        
+# danh sách toàn bộ bệnh án trong khoảng thời gian
+def medical_records(start_day,end_day,cursor):
    
-    sql = f"""SELECT NgayRaVien, benhnhan.MaYTe,SoBenhAn, SoLuuTru, benhnhan.TenBenhNhan
-    FROM BenhAn
-    INNER JOIN  [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan] as benhnhan
-    ON BenhAn.BenhNhan_Id = benhnhan.BenhNhan_Id
-    WHERE BenhAn.KhoaVao_Id = ? AND ThoiGianRaVien > ?
+    sql = f"""SELECT NgayRaVien,SoBenhAn, SoLuuTru, benhnhan.TenBenhNhan, TenPhongBan
+        FROM BenhAn
+        INNER JOIN  [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan] as benhnhan
+        ON BenhAn.BenhNhan_Id = benhnhan.BenhNhan_Id
+        INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_PhongBan] as phongban
+        ON BenhAn.KhoaRa_Id = phongban.PhongBan_Id
+        WHERE NgayRaVien BETWEEN ? AND ?
     """
     try:
-        q = cursor.execute(sql,department_id,start_day).fetchall()
+        q = cursor.execute(sql,start_day, end_day).fetchall()
+        for row in q:
+            row.NgayRaVien = row.NgayRaVien.strftime("%Y-%m-%d")
         return q
     except:
-        print("Lỗi query hospitalized.medical_record")
+        print("Lỗi query hospitalized.medical_records")
         return None
     
 # danh sách bệnh án với số lưu trữ đã nạp ở phòng kế hoạch
@@ -534,17 +580,55 @@ def medical_record_archived(department_name, cursor):
     except:
         print("Lỗi query hospitalized.medical_record_archived")
         return None
+    
+
         
-# danh sách bệnh án với số lưu trữ đã nạp ở phòng kế hoạch
-def medical_record_archived_all(cursor):
+# danh sách bệnh án với số lưu trữ đã nạp ở phòng kế hoạch 
+def medical_record_archived_no_giveback(start_day, end_day, cursor):
     sql = """
-    SELECT id, time_created, nguoinap, soluutru, department_name
+    SELECT ngayravien,sobenhan,soluutru,benhnhan,khoa,time_created
     FROM archived
+    WHERE is_giveback = False
+    AND ngayravien BETWEEN ? AND ?
     """
     try:
-        q = cursor.execute(sql).fetchall()
+        q = cursor.execute(sql, (start_day, end_day)).fetchall()
+
+        return q
+    except:
+        print("Lỗi query hospitalized.medical_record_archived_no_giveback")
+        return None
+        
+# danh sách bệnh án với số lưu trữ đã nạp ở phòng kế hoạch 
+def medical_record_archived_all(start_day, end_day, cursor):
+    sql = """
+    SELECT ngayravien,sobenhan,soluutru,benhnhan,khoa,time_created
+    FROM archived
+    WHERE ngayravien BETWEEN ? AND ?
+    """
+    try:
+        q = cursor.execute(sql, (start_day, end_day)).fetchall()
+
         return q
     except:
         print("Lỗi query hospitalized.medical_record_archived_all")
+        return None
+        
+
+# thông tin để lưu vào sqlite database
+def medical_record_info(soluutru,cursor):
+    sql = """SELECT NgayRaVien,SoBenhAn, TenBenhNhan, TenPhongBan
+        FROM BenhAn
+        INNER JOIN  [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan]
+        ON BenhAn.BenhNhan_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan].BenhNhan_Id
+        INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_PhongBan]
+        ON BenhAn.KhoaRa_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_PhongBan].PhongBan_Id
+        WHERE SoLuuTru = ?
+        """
+    try:
+        q = cursor.execute(sql,soluutru).fetchone()
+        return q
+    except:
+        print("Lỗi query hospitalized.medical_record_info")
         return None
         

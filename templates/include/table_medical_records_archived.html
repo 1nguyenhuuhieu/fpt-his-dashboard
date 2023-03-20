@@ -1,0 +1,100 @@
+{% block content %}
+<div class="p-3 border rounded bg-white shadow-sm table-responsive">
+
+  {% if value.list_archived_nogiveback %}
+  {% set list=value.list_archived_nogiveback%}
+
+  <table id="myTable2" class="table table-striped bg-white table-sm " style="width:100%">
+    <thead>
+      <tr>
+        {% for title in value.table_column_title2 %}
+        <th>{{ title }}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in list %}
+      <tr>
+        {% for col in row %}
+        <td>
+          {{ col[:10] if loop.first or loop.last else col }}
+
+        </td>
+        {% endfor %}
+        <td>
+          <div class="d-flex">
+            <form action="" method="post">
+
+              <input type="hidden" name="soluutru_delete" value="{{row.2}}">
+              <button class="btn btn-sm btn-danger" name="delete">Xóa</button>
+            </form>
+            <button class="btn btn-sm btn-warning ms-2" data-bs-toggle="modal"
+              data-bs-target="#updateBenhAn{{loop.index}}">Trả</button>
+
+
+
+
+          </div>
+
+
+          <!-- Modal -->
+          <div class="modal fade" id="updateBenhAn{{loop.index}}" tabindex="-1" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h1 class="modal-title fs-5" id="exampleModalLabel">{{ row.3 }}</h1>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form action="" method="post">
+                <div class="modal-body">
+                  <p>Trả bệnh án số <span class="fw-semibold">{{ row.1 }}</span> -  Mã lưu trữ <span class="fw-semibold">{{ row.2 }}</span>, {{ row.3 }} về {{ row.4 }}</p>
+                  <div class="mb-3">
+                    <input type="hidden" name="soluutru_update" value="{{ row.2 }}">
+                    <label for="exampleFormControlTextarea1" class="form-label">Ghi chú</label>
+                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3" name="note" required></textarea>
+                  </div>
+                 
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                  <button type="submit" class="btn btn-primary" name="update">Lưu</button>
+                </div>
+              </form>
+              </div>
+            </div>
+          </div>
+
+
+
+
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
+</div>
+
+<script>
+
+  $(document).ready(function () {
+    // Create DataTable
+    var table2 = $('#myTable2').DataTable({
+      dom: 'Bfrtip',
+      order: [[1, 'desc']],
+      pagingType: 'full_numbers',
+      lengthMenu: [
+        [50, -1],
+        [50, 'All'],
+      ],
+      buttons: [
+        'searchPanes', 'copy', 'csv', 'excel', 'pdf', 'print',
+      ],
+
+    });
+  });
+</script>
+
+
+{% endblock %}

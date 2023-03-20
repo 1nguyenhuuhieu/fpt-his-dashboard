@@ -3,43 +3,52 @@
 <i class="fa-solid fa-user me-2"></i>{% block title %}Quản trị{% endblock %}
 {% endblock %}
 {% block content %}
+<h5 class="mb-3">Ngày ra viện từ {{ value.start_day }} đến {{ value.end_day }} </h5>
 
-<div class="row">
-
+<div class="row g-2">
     <div class="col-lg-4">
         <div class="bg-white rounded border shadow-sm p-4 d-flex flex-column">
-          <p>Ngày ra viện từ: {{ value.start_day }}</p>
           <form action="" method="get">
-            <input type="date" name="start_day" class="form-control mb-3">
-            <button class="btn btn-primary mb-3">Chọn ngày</button>
+            <div class="d-flex flex-column align-items-end">
+              <div class="input-group mb-3">
+                <span class="input-group-text" id="basic-addon1">Từ ngày</span>
+                <input type="date" class="form-control " name="start_day">
+              </div>
+              <div class="input-group mb-2">
+                <span class="input-group-text" id="basic-addon1">Đến ngày</span>
+                <input type="date" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" name="end_day"> 
+              </div>
+            </div>
+            <div class="d-flex flex-column justify-content-end align-items-end mt-3">
+   
+              <div>
+            <button class="btn btn-warning">Lọc<i class="fa-solid fa-magnifying-glass ms-2"></i></button>
+              </div>
+            </div>
           </form>
-
-          <div class="dropdown">
-            <a class="btn btn-outline-primary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-              {{ 'Toàn cơ quan' if not value.department_name else value.department_name }}
-              
-            </a>
- 
-          {% if value.list_department %}
-            <ul class="dropdown-menu">
-              {% for department in value.list_department %}
-              <li><a class="dropdown-item" href="{{ url_for('medical_record', department_id=department.1)}}">{{department.0}}</a></li>
-              {% endfor %}
-            </ul>
-            {% endif %}
-          </div>
-
-          <a class="btn btn-outline-primary mt-3 " href="{{ url_for('medical_record')}}">
-            Bệnh án đã nộp
-         </a>
-
-
     </div>
   </div>
 
   <div class="col-lg-8">
+    
+    <nav>
+      <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Bệnh án chưa nộp</button>
+        <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Bệnh án đã nộp</button>
+        <button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Bệnh án trả về khoa</button>
+   
+      </div>
+    </nav>
+    <div class="tab-content" id="nav-tabContent">
+      <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab" tabindex="0">
+        {% include 'include/table_medical_records_no_archived.html' %}
+      </div>
+      <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab" tabindex="0">
+        {% include 'include/table_medical_records_archived.html' %}
+      </div>
+      <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab" tabindex="0">...</div>
+    </div>
 
-    {% include 'include/table_medical_record.html' %}
 
   </div>
 
