@@ -1,0 +1,68 @@
+
+{% block content %}
+<div class="p-3 border rounded bg-white shadow-sm table-responsive">
+  <form action="" method="post">
+    <input type="hidden" id="benhan_soluutru3" name="soluutru3">
+    <p>Số bệnh án được chọn: <span id="countBenhAn3" class="fw-semibold"></span><span id="soluutruSpan3" class="text-muted fst-italic ms-2"></span> </p>
+    <button id="button" type="submit" class="btn btn-success mb-3" name="update_giveback"><i class="fa-solid fa-box-archive me-2"></i>Nạp</button>
+
+  </form>
+{% if value.archived_list_giveback %}
+{% set list=value.archived_list_giveback%}
+
+    <table id="myTable3" class="table table-striped bg-white table-sm " style="width:100%">
+        <thead>
+            <tr>
+                {% for title in value.table_column_title3 %}
+                <th>{{ title }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in list %}
+            <tr>
+                {% for col in row %}
+                <td>{{ col }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+</div>
+
+<script>
+  $(document).ready(function () {
+    // Create DataTable
+    var table3 = $('#myTable3').DataTable({
+        dom: 'Bfrtip',
+        order: [[1, 'desc']],
+        pagingType: 'full_numbers',
+        lengthMenu: [
+            [50, -1],
+            [50, 'All'],
+        ],
+        buttons: [
+        'searchPanes','copy', 'csv', 'excel', 'pdf', 'print', 
+        ],
+
+    });
+
+    $('#myTable3 tbody').on('click', 'tr', function () {
+        $(this).toggleClass('selected');
+        const soluutruE = document.getElementById('benhan_soluutru3')
+        let text = ""
+        const data =  table3.rows('.selected').data()
+        for(let i=0; i < data.length; i++){
+        text += data[i][2] + ';'
+        const count = data.length;
+        const countBenhAn = document.getElementById('countBenhAn3');
+        const soluutruSpan = document.getElementById('soluutruSpan3');
+        countBenhAn.textContent = count;
+        soluutruSpan.textContent = text;
+       };
+       soluutruE.value = text;
+    });
+    });
+</script>
+{% endblock %}

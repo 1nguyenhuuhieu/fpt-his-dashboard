@@ -5,6 +5,24 @@
 {% block content %}
 <h5 class="mb-3">Ngày ra viện từ {{ value.start_day }} đến {{ value.end_day }} </h5>
 
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    {% for message in messages %}
+   <div class="alert alert-success my-2 alert-dismissible fade show" role="alert" data-bs-dismiss="alert">
+    <i class="fa-solid fa-circle-check me-2"></i> {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+<script>
+  window.setTimeout(function() {
+    $(".alert").fadeTo(500, 0).slideUp(500, function(){
+        $(this).remove(); 
+    });
+}, 4000);
+</script>
+
 <div class="row g-2">
     <div class="col-lg-4">
         <div class="bg-white rounded border shadow-sm p-4 d-flex flex-column">
@@ -12,41 +30,50 @@
             <div class="d-flex flex-column align-items-end">
               <div class="input-group mb-3">
                 <span class="input-group-text" id="basic-addon1">Từ ngày</span>
-                <input type="date" class="form-control " name="start_day">
+                <input type="date" class="form-control " name="start_day" value="{{value.start_day}}">
               </div>
               <div class="input-group mb-2">
                 <span class="input-group-text" id="basic-addon1">Đến ngày</span>
-                <input type="date" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" name="end_day"> 
+                <input type="date" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1" name="end_day" value="{{value.end_day if value.is_start_day else value.today}}"> 
               </div>
             </div>
             <div class="d-flex flex-column justify-content-end align-items-end mt-3">
    
               <div>
-            <button class="btn btn-warning">Lọc<i class="fa-solid fa-magnifying-glass ms-2"></i></button>
+            <button class="btn btn-primary">Xem<i class="fa-solid fa-magnifying-glass ms-2"></i></button>
               </div>
             </div>
           </form>
     </div>
+    <div class="bg-white rounded border shadow-sm p-4 d-flex flex-column mt-3">
+      <h6>Thống kê</h6>
+      <hr>
+      
+
+</div>
+
   </div>
 
   <div class="col-lg-8">
     
     <nav>
       <div class="nav nav-tabs" id="nav-tab" role="tablist">
-        <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Bệnh án chưa nộp</button>
-        <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Bệnh án đã nộp</button>
-        <button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Bệnh án trả về khoa</button>
+        <button class="nav-link  {{ 'active' if value.active_archived==1 }}" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button" role="tab" aria-controls="nav-home" aria-selected="true">Bệnh án chưa nộp</button>
+        <button class="nav-link {{ 'active' if value.active_archived==2 }} " id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button" role="tab" aria-controls="nav-profile" aria-selected="false">Bệnh án đã nộp</button>
+        <button class="nav-link {{ 'active' if value.active_archived==3 }}" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact" type="button" role="tab" aria-controls="nav-contact" aria-selected="false">Bệnh án trả về khoa</button>
    
       </div>
     </nav>
     <div class="tab-content" id="nav-tabContent">
-      <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab" tabindex="0">
+      <div class="tab-pane fade {{ 'active show' if value.active_archived==1 }}" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab" tabindex="0">
         {% include 'include/table_medical_records_no_archived.html' %}
       </div>
-      <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab" tabindex="0">
+      <div class="tab-pane fade {{ 'active show' if value.active_archived==2 }}" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab" tabindex="0">
         {% include 'include/table_medical_records_archived.html' %}
       </div>
-      <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab" tabindex="0">...</div>
+      <div class="tab-pane fade {{ 'active show' if value.active_archived==3 }}" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab" tabindex="0">
+        {% include 'include/table_medical_records_giveback.html' %}
+      </div>
     </div>
 
 

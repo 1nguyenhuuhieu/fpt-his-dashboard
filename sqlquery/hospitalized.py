@@ -599,6 +599,22 @@ def medical_record_archived_no_giveback(start_day, end_day, cursor):
         print("Lỗi query hospitalized.medical_record_archived_no_giveback")
         return None
         
+# danh sách bệnh án với số lưu trữ đã nạp ở phòng kế hoạch  bị trả
+def medical_record_archived_giveback(start_day, end_day, cursor):
+    sql = """
+    SELECT ngayravien,sobenhan,soluutru,benhnhan,khoa,note
+    FROM archived
+    WHERE is_giveback = True
+    AND ngayravien BETWEEN ? AND ?
+    """
+    try:
+        q = cursor.execute(sql, (start_day, end_day)).fetchall()
+
+        return q
+    except:
+        print("Lỗi query hospitalized.medical_record_archived_giveback")
+        return None
+        
 # danh sách bệnh án với số lưu trữ đã nạp ở phòng kế hoạch 
 def medical_record_archived_all(start_day, end_day, cursor):
     sql = """
@@ -630,5 +646,35 @@ def medical_record_info(soluutru,cursor):
         return q
     except:
         print("Lỗi query hospitalized.medical_record_info")
+        return None
+        
+# Số lượng bệnh án ra viện theo từng khoa
+def medical_record_between(start,end,cursor):
+    sql = """SELECT TenPhongBan, COALESCE(COUNT(BenhAn_Id),0) as total
+    FROM BenhAn
+    INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_PhongBan] as phongban
+    ON BenhAn.KhoaRa_Id = phongban.PhongBan_Id
+    WHERE NgayRaVien BETWEEN ? AND ?
+    GROUP BY TenPhongBan"""
+    try:
+        q = cursor.execute(sql,start, end).fetchall()
+        return q
+    except:
+        print("Lỗi query hospitalized.medical_record_between")
+        return None
+
+# Số lượng bệnh án đã nạp theo tên khoa
+def medical_archived(start,end,khoa,cursor):
+    sql = """SELECT TenPhongBan, COALESCE(COUNT(BenhAn_Id),0) as total
+    FROM BenhAn
+    INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_PhongBan] as phongban
+    ON BenhAn.KhoaRa_Id = phongban.PhongBan_Id
+    WHERE NgayRaVien BETWEEN ? AND ?
+    GROUP BY TenPhongBan"""
+    try:
+        q = cursor.execute(sql,start, end).fetchall()
+        return q
+    except:
+        print("Lỗi query hospitalized.medical_record_between")
         return None
         

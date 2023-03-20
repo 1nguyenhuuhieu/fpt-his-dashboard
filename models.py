@@ -294,3 +294,14 @@ class Bed():
         elif self.percent() > 70: return 'cool'
         elif self.percent() > 60: return 'warm'
         else: return 'ice'
+
+class DepartmentRecord:
+    def __init__(self, name, total, archived, giveback):
+        self.name = name
+        self.total = total
+        self.archived = archived
+        self.giveback = giveback
+        self.unarchived = total - archived
+
+    def get_percent(self):
+        return get_percent(self.archived, self.total)[1]
