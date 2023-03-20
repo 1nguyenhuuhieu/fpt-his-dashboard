@@ -1896,6 +1896,26 @@ def medical_record(department_id=None):
         con = sqlite3.connect("medical_record.db")
         cursor = con.cursor()
         # cursor.row_factory = sqlite3.Row
+
+        
+        # ngày bắt đầu và kết thúc truy vấn dữ liệu
+        time_filter = request.args.get('time')
+        start_get = request.args.get('start')
+        end_get = request.args.get('end')
+
+        # lấy ngày xem dashboard
+        day_query=None
+        day_class = DayQuery(day_query, time_filter, start_get, end_get)
+        today = day_class.today
+        monday = day_class.monday()
+        start = day_class.start
+        end = day_class.end
+
+        previous_start = day_class.previous_start
+        previous_end = day_class.previous_end
+
+        diff = diff_days(start, end)
+        
         medical_records = None
         staffs = None
         archived_list = None
@@ -1910,7 +1930,8 @@ def medical_record(department_id=None):
             'Liên chuyên khoa TMH-RHM-Mắt': 2385
         }
         medical_records = query_hospitalized.medical_record_archived_all(cursor)
-        table_column_title = ['ID',  'Thời gian', 'Người nạp','Số lưu trữ','Khoa', ]
+
+        table_column_title = ['ID','Thời gian', 'Người nạp','Số lưu trữ','Khoa', ]
         list_department = [(k, v) for k, v in dict_department.items()]
         if department_id:
             table_column_title = ['Ngày ra',  'Mã y tế', 'Số BA','Số lưu trữ','Tên bệnh nhân', ]
@@ -1976,7 +1997,7 @@ def medical_record(department_id=None):
         close_db_dashboard()
         con.close()
 
-        return render_template('admin/medical-report.html', value=context, active='news', hidden_top_filter=True)
+        return render_template('admin/medical-report.html', value=context, not_patient_btn = True, hidden_top_filter=True)
     else:
         return redirect(url_for('user_login'))
     
