@@ -475,17 +475,17 @@ def patiens_department_new(day, department_name, cursor):
         return None
     
 # danh sách bệnh án
-def medical_record_notin(department_id,archived_list,cursor):
+def medical_record_notin(department_id,start_day,archived_list,cursor):
     if len(archived_list) > 1:
         archived = tuple(archived_list)
         sql = f"""SELECT NgayRaVien, benhnhan.MaYTe,SoBenhAn, SoLuuTru, benhnhan.TenBenhNhan
         FROM BenhAn
         INNER JOIN  [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan] as benhnhan
         ON BenhAn.BenhNhan_Id = benhnhan.BenhNhan_Id
-        WHERE BenhAn.KhoaVao_Id = ? AND ThoiGianRaVien > '2023-03-01'
+        WHERE BenhAn.KhoaVao_Id = ? AND ThoiGianRaVien > ?
         AND SoLuuTru NOT IN{archived}"""
         try:
-            q = cursor.execute(sql,department_id).fetchall()
+            q = cursor.execute(sql,department_id,start_day).fetchall()
             return q
         except:
             print("Lỗi query hospitalized.medical_record_notin")
@@ -496,26 +496,26 @@ def medical_record_notin(department_id,archived_list,cursor):
         FROM BenhAn
         INNER JOIN  [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan] as benhnhan
         ON BenhAn.BenhNhan_Id = benhnhan.BenhNhan_Id
-        WHERE BenhAn.KhoaVao_Id = ? AND ThoiGianRaVien > '2023-03-01'
+        WHERE BenhAn.KhoaVao_Id = ? AND ThoiGianRaVien > ?
         AND SoLuuTru <> '{archived}'"""
         try:
-            q = cursor.execute(sql,department_id).fetchall()
+            q = cursor.execute(sql,department_id, start_day).fetchall()
             return q
         except:
             print("Lỗi query hospitalized.medical_record_notin")
             return None
         
 # danh sách bệnh án
-def medical_record(department_id,cursor):
+def medical_record(department_id,start_day,cursor):
    
     sql = f"""SELECT NgayRaVien, benhnhan.MaYTe,SoBenhAn, SoLuuTru, benhnhan.TenBenhNhan
     FROM BenhAn
     INNER JOIN  [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan] as benhnhan
     ON BenhAn.BenhNhan_Id = benhnhan.BenhNhan_Id
-    WHERE BenhAn.KhoaVao_Id = ? AND ThoiGianRaVien > '2023-03-01'
+    WHERE BenhAn.KhoaVao_Id = ? AND ThoiGianRaVien > ?
     """
     try:
-        q = cursor.execute(sql,department_id).fetchall()
+        q = cursor.execute(sql,department_id,start_day).fetchall()
         return q
     except:
         print("Lỗi query hospitalized.medical_record")

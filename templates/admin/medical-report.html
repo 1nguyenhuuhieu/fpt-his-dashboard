@@ -8,6 +8,11 @@
 
     <div class="col-lg-4">
         <div class="bg-white rounded border shadow-sm p-4 d-flex flex-column">
+          <p>Ngày ra viện từ: {{ value.start_day }}</p>
+          <form action="" method="get">
+            <input type="date" name="start_day" class="form-control mb-3">
+            <button class="btn btn-primary mb-3">Chọn ngày</button>
+          </form>
 
           <div class="dropdown">
             <a class="btn btn-outline-primary dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -40,6 +45,7 @@
 
 
 </div>
+
 
 <script>
   function getStaff(){

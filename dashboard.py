@@ -1902,19 +1902,16 @@ def medical_record(department_id=None):
         time_filter = request.args.get('time')
         start_get = request.args.get('start')
         end_get = request.args.get('end')
-
-        # lấy ngày xem dashboard
         day_query=None
+        # lấy ngày xem dashboard
         day_class = DayQuery(day_query, time_filter, start_get, end_get)
         today = day_class.today
-        monday = day_class.monday()
-        start = day_class.start
-        end = day_class.end
+        monday = day_class.lastweek_monday()
 
-        previous_start = day_class.previous_start
-        previous_end = day_class.previous_end
+        start_day = request.args.get('start_day')
+        if not start_day:
+            start_day = monday.strftime('%Y-%m-%d')
 
-        diff = diff_days(start, end)
         
         medical_records = None
         staffs = None
@@ -1941,9 +1938,9 @@ def medical_record(department_id=None):
             if archived_list:
                 archived_list = list(archived_list)
                 archived_list = list(i[0] for i in archived_list)
-                medical_records = query_hospitalized.medical_record_notin(department_id,archived_list,cursor_sqlserver)
+                medical_records = query_hospitalized.medical_record_notin(department_id,start_day,archived_list,cursor_sqlserver)
             else:
-                medical_records = query_hospitalized.medical_record(department_id,cursor_sqlserver)
+                medical_records = query_hospitalized.medical_record(department_id,start_day,cursor_sqlserver)
         if request.method == 'POST' and 'update' in request.form:
             if request.form['soluutru']:
                 str_soluutru = request.form['soluutru']
@@ -1978,12 +1975,7 @@ def medical_record(department_id=None):
                         con.commit()
                 con.close()        
                 return redirect(url_for('medical_record', department_id=department_id))
-                
-        
-        
-
-
-        today = datetime.today().strftime('%Y-%m-%d')
+            
         
         context = {
             'today': today,
@@ -1992,7 +1984,8 @@ def medical_record(department_id=None):
             'staffs': staffs,
             'department_id': department_id,
             'list_department': list(list_department),
-            'department_name': department_name
+            'department_name': department_name,
+            'start_day': start_day
         }
         close_db_dashboard()
         con.close()
@@ -2016,7 +2009,7 @@ def addressbook():
         'today': today
     }
     close_db_dashboard()
-    return render_template('user/addressbook.html', value=context, active='addressbook', hidden_top_filter=True)
+    return render_template('user/addressbook.html', value=context, active='addressbook')
 
 
 # API Thông tin của bệnh nhân
