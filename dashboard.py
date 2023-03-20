@@ -1912,7 +1912,7 @@ def medical_record(department_id=None):
         if not start_day:
             start_day = monday.strftime('%Y-%m-%d')
 
-        
+        #df
         medical_records = None
         staffs = None
         archived_list = None
