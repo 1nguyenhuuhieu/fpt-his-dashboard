@@ -1906,11 +1906,11 @@ def medical_record(department_id=None):
         # lấy ngày xem dashboard
         day_class = DayQuery(day_query, time_filter, start_get, end_get)
         today = day_class.today
-        monday = day_class.lastweek_monday()
+        first_month = day_class.first_day_2month()
 
         start_day = request.args.get('start_day')
         if not start_day:
-            start_day = monday.strftime('%Y-%m-%d')
+            start_day = first_month.strftime('%Y-%m-%d')
 
         #df
         medical_records = None
