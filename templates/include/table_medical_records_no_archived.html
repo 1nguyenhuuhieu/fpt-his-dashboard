@@ -52,18 +52,21 @@
     });
 
     $('#myTable tbody').on('click', 'tr', function () {
+        const countBenhAn = document.getElementById('countBenhAn');
+        const soluutruSpan = document.getElementById('soluutruSpan');
         $(this).toggleClass('selected');
         const soluutruE = document.getElementById('benhan_soluutru')
         let text = ""
         const data =  table.rows('.selected').data()
+        const count = data.length;
+
         for(let i=0; i < data.length; i++){
         text += data[i][2] + ';'
-        const count = data.length;
-        const countBenhAn = document.getElementById('countBenhAn');
-        const soluutruSpan = document.getElementById('soluutruSpan');
-        countBenhAn.textContent = count;
-        soluutruSpan.textContent = text;
+
        };
+       soluutruSpan.textContent = text;
+       countBenhAn.textContent = count;
+
        soluutruE.value = text;
     });
     });
