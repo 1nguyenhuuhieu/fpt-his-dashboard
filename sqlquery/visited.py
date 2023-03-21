@@ -305,7 +305,7 @@ def list_department(start, end,department_id, cursor):
     ON KhamBenh.BenhNhan_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan].BenhNhan_Id
     INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[NhanVien]
     ON KhamBenh.BacSiKham_Id = [eHospital_NgheAn_Dictionary].[dbo].[NhanVien].NhanVien_Id
-    INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[Lst_Dictionary] as dict
+    LEFT JOIN [eHospital_NgheAn_Dictionary].[dbo].[Lst_Dictionary] as dict
     ON KhamBenh.HuongGiaiQuyet_Id = dict.Dictionary_Id
     WHERE KhamBenh.ThoiGianKham BETWEEN ? AND ? AND KhamBenh.PhongBan_Id = ?
 
@@ -423,3 +423,49 @@ def doctors(start, end, cursor):
         print("Lỗi query visited.doctors")
         return None 
     
+# Số lượt khám theo bác sĩ
+def doctors_department(start, end, d_id,cursor):
+    query = """
+            SELECT
+            TenNhanVien as name,
+            COALESCE(COUNT(KhamBenh_Id), 0) as total
+            FROM KhamBenh
+            INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[NhanVien] as nhanvien
+            ON KhamBenh.BacSiKham_Id = nhanvien.NhanVien_Id
+            WHERE ThoiGianKham BETWEEN ? AND ?
+            AND KhamBenh.PhongBan_id = ?
+            GROUP BY TenNhanVien
+            ORDER BY total DESC
+    """
+    try:
+        q = cursor.execute(query, start, end, d_id).fetchall()
+        return q
+    except:
+        print("Lỗi query visited.doctors_department")
+        return None 
+    
+# Số lượt khám theo bác sĩ 2 phòng gộp 1
+def doctors_department_merge(start, end, d_id,cursor):
+    d_id = str(d_id)
+    d_id_1 = d_id[:4]
+    d_id_2 = d_id[4:]
+
+
+    query = """
+            SELECT
+            TenNhanVien as name,
+            COALESCE(COUNT(KhamBenh_Id), 0) as total
+            FROM KhamBenh
+            INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[NhanVien] as nhanvien
+            ON KhamBenh.BacSiKham_Id = nhanvien.NhanVien_Id
+            WHERE ThoiGianKham BETWEEN ? AND ?
+            AND (KhamBenh.PhongBan_id = ? OR KhamBenh.PhongBan_id = ?)
+            GROUP BY TenNhanVien
+            ORDER BY total DESC
+            """
+    try:
+        q = cursor.execute(query, start, end, d_id_1, d_id_2).fetchall()
+        return q
+    except:
+        print("Lỗi query visited.doctors_department_merge")
+        return None 

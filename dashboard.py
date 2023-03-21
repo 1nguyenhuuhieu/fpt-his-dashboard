@@ -1359,6 +1359,15 @@ def visited_department(department_id, day_query=None):
         list_patients.extend(
             query_visited.list_department(start, end, d_id, cursor))
 
+    if department_id > 9999:
+        doctors_count_khambenh = query_visited.doctors_department_merge(start, end, department_id, cursor)
+
+    else:
+        doctors_count_khambenh = query_visited.doctors_department(start, end, department_id, cursor)
+
+    doctors_count_khambenh_chart = convert_to_chart(doctors_count_khambenh)
+    doctors_count_khambenh_chart.insert(0, ['Bác sĩ', 'Lượt khám'])
+
     department_name = ''
     for d_id in department_id_list:
         department_name += (query_visited.name_department(d_id,
@@ -1367,6 +1376,7 @@ def visited_department(department_id, day_query=None):
     visited_department_chart = query_visited.department_id_between(
         startday, today, department_id, cursor)
     visited_department_chart = convert_to_chart(visited_department_chart)
+    total = len(list_patients)
 
     today = today.strftime("%Y-%m-%d")
 
@@ -1376,7 +1386,9 @@ def visited_department(department_id, day_query=None):
         'table_column_title': table_column_title,
         'department_id': department_id,
         'department_name': department_name,
-        'visited_department_chart': visited_department_chart
+        'visited_department_chart': visited_department_chart,
+        'doctors_count_khambenh_chart': doctors_count_khambenh_chart,
+        'total': total
     }
     close_db()
     return render_template('visited/department.html', value=context, active='visited', order_column=0)
