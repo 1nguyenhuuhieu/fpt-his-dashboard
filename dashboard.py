@@ -641,8 +641,8 @@ def new_patients(day_query=None):
     diff = diff_days(start, end)
     
     # card
-    current = query_hospitalized.total_in_between(start, end, cursor )
-    previous = query_hospitalized.total_in_between(previous_start, start, cursor )
+    current = query_hospitalized.new_in(start, end, cursor )
+    previous = query_hospitalized.new_in(previous_start, start, cursor )
     card = CardWithPercent('fa-solid fa-hospital', 'Lượt nhập viện', current, previous )
 
     # chart department
