@@ -3,7 +3,6 @@
 <i class="fa-solid fa-user me-2"></i>{% block title %}Quản trị{% endblock %}
 {% endblock %}
 {% block content %}
-<h5 class="mb-3">Ngày ra viện từ {{ value.start_day }} đến {{ value.end_day }} </h5>
 
 {% with messages = get_flashed_messages() %}
   {% if messages %}
@@ -23,9 +22,11 @@
 }, 4000);
 </script>
 
-<div class="row g-2">
-    <div class="col-lg-4">
+<div class="row mb-3">
+    <div class="col-lg-5">
         <div class="bg-white rounded border shadow-sm p-4 d-flex flex-column">
+<h6 class="mb-3 fw-semibold" >Ngày ra viện từ {{ value.start_day }} đến {{ value.end_day }} </h6>
+
           <form action="" method="get">
             <div class="d-flex flex-column align-items-end">
               <div class="input-group mb-3">
@@ -45,16 +46,45 @@
             </div>
           </form>
     </div>
-    <div class="bg-white rounded border shadow-sm p-4 d-flex flex-column mt-3">
-      <h6>Thống kê</h6>
-      <hr>
-      
+    </div>
+    <div class="col-lg-7">
+    <div class="bg-white rounded border shadow-sm pt-3 px-3 d-flex flex-column">
+{% if value.analytics %}
+{% set analytics = value.analytics %}
+      <table class="table table-sm">
+        <thead>
+          <tr>
+            <th scope="col">Khoa</th>
+            <th scope="col">Đã nộp</th>
+            <th scope="col">Trả về khoa</th>
+            <th scope="col">Chưa nộp</th>
+            <th scope="col">Tổng</th>
+            <th scope="col">% Chưa nộp</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for info in analytics %}
+          <tr>
+            <td>{{ info.name }}</td>
+            <td>{{ info.archived }}</td>
+            <td>{{ info.giveback }}</td>
+            <td>{{ info.unarchived }}</td>
+            <td>{{ info.total }}</td>
+            <td>{{ info.get_percent() }}%</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% endif %}
+
 
 </div>
 
   </div>
+  </div>
+  <div class="row">
 
-  <div class="col-lg-8">
+  <div class="col-lg-12">
     
     <nav>
       <div class="nav nav-tabs" id="nav-tab" role="tablist">

@@ -304,4 +304,4 @@ class DepartmentRecord:
         self.unarchived = total - archived
 
     def get_percent(self):
-        return get_percent(self.archived, self.total)[1]
+        return get_percent(self.unarchived, self.total)[1]

@@ -4,9 +4,13 @@
   <form action="" method="post">
     <input type="hidden" id="benhan_soluutru" name="soluutru">
     <p>Số bệnh án được chọn: <span id="countBenhAn" class="fw-semibold"></span><span id="soluutruSpan" class="text-muted fst-italic ms-2"></span> </p>
+
     <button id="button" type="submit" class="btn btn-success mb-3" name="insert"><i class="fa-solid fa-box-archive me-2"></i>Nạp</button>
 
   </form>
+
+  <button id="btnClickAll" class="btn btn-outline-primary mb-3 me-3" >Chọn tất cả</button>
+
 {% if value.list_no_archived %}
 {% set list=value.list_no_archived%}
 
@@ -22,7 +26,7 @@
             {% for row in list %}
             <tr>
                 {% for col in row %}
-                <td>{{ col }}</td>
+                <td name="abc">{{ col }}</td>
                 {% endfor %}
             </tr>
             {% endfor %}
@@ -63,18 +67,13 @@
        };
        soluutruE.value = text;
     });
+    const btnClickAll = document.getElementById('btnClickAll')
+    btnClickAll.addEventListener('click', clickAll)
+    function clickAll(){
+    const a = document.getElementByName('abc')
+    a.click()
 
-
-    // $('#button').click(function () {
-    //   const soluutruE = document.getElementById('benhan_soluutru')
-    //   let text = ""
-    //   const data =  table.rows('.selected').data()
-    //    for(let i=0; i < data.length; i++){
-    //     text += data[i][3] + ';'
-    //    };
-    //    soluutruE.textContent = text;
-    // });
-    
+    }
 
     });
 </script>

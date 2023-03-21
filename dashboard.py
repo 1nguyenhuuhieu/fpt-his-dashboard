@@ -1981,6 +1981,7 @@ def medical_record():
             start_day = first_month.strftime('%Y-%m-%d')
             end_day = today.strftime('%Y-%m-%d')
         
+        start_day_sqlite = datetime.strptime(start_day,'%Y-%m-%d')
         end_day_sqlite = datetime.strptime(end_day,'%Y-%m-%d')
         archived_list = query_hospitalized.medical_record_archived_all(start_day, end_day_sqlite,cursor)
         archived_list_nogiveback = query_hospitalized.medical_record_archived_no_giveback(start_day, end_day_sqlite,cursor)
@@ -2003,9 +2004,15 @@ def medical_record():
 
 
         list_count_medical_record = query_hospitalized.medical_record_between(start_day, end_day, cursor_sqlserver)
+        analytics = []
         for department in list_count_medical_record:
-            print(department.TenPhongBan)
-            print(department)
+            khoa = department.TenPhongBan
+            archived = query_hospitalized.archived_department(start_day_sqlite, end_day_sqlite, khoa, cursor)
+            giveback = query_hospitalized.archived_department_giveback(start_day_sqlite, end_day_sqlite, khoa, cursor)
+         
+            d = DepartmentRecord(khoa, department.total, archived, giveback)
+            analytics.append(d)
+ 
         today = today.strftime('%Y-%m-%d')
         context = {
             'today': today,
@@ -2019,7 +2026,8 @@ def medical_record():
             'list_archived_nogiveback' :archived_list_nogiveback,
             'is_start_day': is_start_day,
             'active_archived': active_archived,
-            'archived_list_giveback': archived_list_giveback
+            'archived_list_giveback': archived_list_giveback,
+            'analytics': analytics
         }
         close_db()
         con.close()

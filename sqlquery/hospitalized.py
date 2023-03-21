@@ -678,3 +678,31 @@ def medical_archived(start,end,khoa,cursor):
         print("Lỗi query hospitalized.medical_record_between")
         return None
         
+def archived_department(start, end, khoa, cursor):
+
+    sql = """SELECT COUNT(id) as total
+    FROM archived
+    WHERE ngayravien BETWEEN ? AND ?
+    AND khoa=?
+    AND is_giveback=False"""
+    try:
+        q = cursor.execute(sql,(start, end,khoa)).fetchone()[0]
+        return q
+    except:
+        print("Lỗi query hospitalized.archived_department")
+        return 0
+        
+def archived_department_giveback(start, end, khoa, cursor):
+
+    sql = """SELECT COUNT(id) as total
+    FROM archived
+    WHERE ngayravien BETWEEN ? AND ?
+    AND khoa=?
+    AND is_giveback=True"""
+    try:
+        q = cursor.execute(sql,(start, end,khoa)).fetchone()[0]
+        return q
+    except:
+        print("Lỗi query hospitalized.archived_department")
+        return 0
+        
