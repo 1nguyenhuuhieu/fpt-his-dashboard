@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block header %}
+<i class="fa-solid fa-user me-2"></i>{% block title %}Quản trị{% endblock %}
+{% endblock %}
+{% block content %}
+<h1> Lịch trực</h1>
+<hr>
+<table class="table table-bordered table-sm">
+    <thead>
+      <tr>
+        <th scope="col">Ngày</th>
+        {% if value.table_column_title %}
+        {% for title in value.table_column_title %}
+        <th>{{title}}</th>
+        {% endfor %}
+        {% endif %}
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <th scope="row">1</th>
+        <td><span class="badge text-bg-primary">Bs.Sơn</span></td>
+        <td>Otto</td>
+        <td>@mdo</td>
+        <td>Mark</td>
+        <td>Otto</td>
+        <td>@mdo</td>
+        <td>Mark</td>
+        <td>Otto</td>
+        <td>@mdo</td>
+        <td>@mdo</td>
+      </tr>
+      <tr>
+        <th scope="row">1</th>
+        <td>Mark</td>
+        <td>Otto</td>
+        <td>@mdo</td>
+        <td>Mark</td>
+        <td>Otto</td>
+        <td>@mdo</td>
+        <td>Mark</td>
+        <td>Otto</td>
+        <td>@mdo</td>
+        <td>@mdo</td>
+      </tr>
+
+      <tr>
+        <th scope="row">1</th>
+        <td>Mark</td>
+        <td>Otto</td>
+        <td>@mdo</td>
+        <td>Mark</td>
+        <td>Otto</td>
+        <td>@mdo</td>
+        <td>Mark</td>
+        <td>Otto</td>
+        <td>@mdo</td>
+        <td>@mdo</td>
+      </tr>
+
+      <tr>
+        <th scope="row">1</th>
+        <td>Mark</td>
+        <td>Otto</td>
+        <td>@mdo</td>
+        <td>Mark</td>
+        <td>Otto</td>
+        <td>@mdo</td>
+        <td>Mark</td>
+        <td>Otto</td>
+        <td>@mdo</td>
+        <td>@mdo</td>
+      </tr>
+
+
+
+    </tbody>
+  </table>
+{% endblock %}
+
+

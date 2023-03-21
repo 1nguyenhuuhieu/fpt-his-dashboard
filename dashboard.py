@@ -2066,6 +2066,18 @@ def addressbook():
     close_db_dashboard()
     return render_template('user/addressbook.html', value=context, active='addressbook')
 
+# Trang lịch trực
+@app.route('/schedule')
+@register_breadcrumb(app, '..schedule', 'Lịch trực')
+def schedule():
+
+    table_column_title = ['Lãnh đạo', 'Hội chẩn', 'Ngoại, Sản, 3CK', 'HSCC,Nội, YHCT', 'Khám bệnh', 'CLS', 'Dược', 'Hành chính', 'Thường trú', 'Hộ tống']
+
+    context = {
+        'table_column_title': table_column_title
+    }
+    return render_template('admin/schedule.html', value=context, active='schedule')
+
 
 # API Thông tin của bệnh nhân
 @app.route('/patient-api/<string:mayte>')
