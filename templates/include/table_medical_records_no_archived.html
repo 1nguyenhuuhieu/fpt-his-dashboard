@@ -9,7 +9,6 @@
 
   </form>
 
-  <button id="btnClickAll" class="btn btn-outline-primary mb-3 me-3" >Chọn tất cả</button>
 
 {% if value.list_no_archived %}
 {% set list=value.list_no_archived%}
@@ -67,14 +66,6 @@
        };
        soluutruE.value = text;
     });
-    const btnClickAll = document.getElementById('btnClickAll')
-    btnClickAll.addEventListener('click', clickAll)
-    function clickAll(){
-    const a = document.getElementByName('abc')
-    a.click()
-
-    }
-
     });
 </script>
 
