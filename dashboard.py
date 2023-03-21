@@ -2005,6 +2005,7 @@ def medical_record():
         list_count_medical_record = query_hospitalized.medical_record_between(start_day, end_day, cursor_sqlserver)
         for department in list_count_medical_record:
             print(department.TenPhongBan)
+            print(department)
         today = today.strftime('%Y-%m-%d')
         context = {
             'today': today,
