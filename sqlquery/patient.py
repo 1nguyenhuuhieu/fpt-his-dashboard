@@ -59,7 +59,7 @@ def visited_history(mayte, cursor):
 def hospitalized_history(mayte, cursor):
     query = """
         SELECT TenPhongBan, ChanDoanVaoKhoa, TenNhanVien, ThoiGianVaoVien,ThoiGianRaVien,
-        [eHospital_NgheAn_Dictionary].[dbo].[Lst_Dictionary].Dictionary_Name, SoBenhAn, ChanDoanRaVien, t2.Dictionary_Name,BenhAn_Id
+        [eHospital_NgheAn_Dictionary].[dbo].[Lst_Dictionary].Dictionary_Name as ravien, SoBenhAn, ChanDoanRaVien, t2.Dictionary_Name as ketqua,BenhAn_Id
         FROM BenhAn
         LEFT JOIN [eHospital_NgheAn_Dictionary].[dbo].NhanVien
         ON BenhAn.BacSiDieuTri_Id = [eHospital_NgheAn_Dictionary].[dbo].NhanVien.NhanVien_Id

@@ -1513,9 +1513,10 @@ def patient_detail(mayte):
 
     history_visited = query_patient.visited_history(mayte, cursor)
     history_hospital = query_patient.hospitalized_history(mayte, cursor)
+    history_hospital_list = []
     for row in history_hospital:
-        a = HospitalizedPatient(row)
-        print(a.department_name)
+        info = HospitalizedPatient(row)
+        history_hospital_list.append(info)
     doanhthu = query_patient.doanhthu(mayte, cursor)
     thanhtoan = query_patient.thanhtoan(mayte, cursor)
 
@@ -1526,9 +1527,9 @@ def patient_detail(mayte):
         'mayte': mayte,
         'detail': detail,
         'history_visited': history_visited,
-        'history_hospital': history_hospital,
         'doanhthu': doanhthu,
-        'thanhtoan': thanhtoan
+        'thanhtoan': thanhtoan,
+        'history_hospital_list': history_hospital_list
     }
     close_db()
     return render_template('patient/detail.html', value=context, active='patient')

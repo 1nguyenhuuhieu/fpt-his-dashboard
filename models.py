@@ -308,4 +308,4 @@ class DepartmentRecord:
     
 class HospitalizedPatient:
     def __init__(self, row):
-        self.department_name = row.TenPhongBan
+        self.row = row
