@@ -176,3 +176,19 @@ def cls_ketqua(cls_id, cursor):
         print("Lỗi khi query patient.cls_ketqua")
         return None
         
+
+# khám bệnh nội trú
+def khambenh_noitru(benhan_id, cursor):
+    query = """
+    SELECT noitru.KhamBenh_Id, ThoiGianKham, TenNhanVien, DinhBenh, DienBien
+    FROM [eHospital_NgheAn].[dbo].[NoiTru_KhamBenh] as noitru
+    LEFT JOIN [eHospital_NgheAn_Dictionary].[dbo].NhanVien as nhanvien
+    ON noitru.BasSiKham_id= nhanvien.NhanVien_Id
+    where benhan_id=?
+    """
+    try:
+        q = cursor.execute(query, benhan_id).fetchall()
+        return q
+    except:
+        print("Lỗi khi query patient.khambenh_noitru")
+        return None

@@ -1514,9 +1514,21 @@ def patient_detail(mayte):
     history_visited = query_patient.visited_history(mayte, cursor)
     history_hospital = query_patient.hospitalized_history(mayte, cursor)
     history_hospital_list = []
+
     for row in history_hospital:
-        info = HospitalizedPatient(row)
+        extrainfo_khambenh_list = []
+        khambenhs = query_patient.khambenh_noitru(row.BenhAn_Id, cursor)
+        for khambenh in khambenhs:
+            extrainfo_khambenh = HospitalizedPatientKhamBenh(khambenh)
+            extrainfo_khambenh_list.append(extrainfo_khambenh)
+        info = HospitalizedPatient(row,extrainfo_khambenh_list)
         history_hospital_list.append(info)
+
+    for i in history_hospital_list:
+        for j in i.khambenhs:
+            print(j.khambenh.KhamBenh_Id)
+
+            
     doanhthu = query_patient.doanhthu(mayte, cursor)
     thanhtoan = query_patient.thanhtoan(mayte, cursor)
 
