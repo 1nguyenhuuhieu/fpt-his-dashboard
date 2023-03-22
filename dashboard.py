@@ -1513,6 +1513,9 @@ def patient_detail(mayte):
 
     history_visited = query_patient.visited_history(mayte, cursor)
     history_hospital = query_patient.hospitalized_history(mayte, cursor)
+    for row in history_hospital:
+        a = HospitalizedPatient(row)
+        print(a.department_name)
     doanhthu = query_patient.doanhthu(mayte, cursor)
     thanhtoan = query_patient.thanhtoan(mayte, cursor)
 

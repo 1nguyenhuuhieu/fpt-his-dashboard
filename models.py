@@ -305,3 +305,7 @@ class DepartmentRecord:
 
     def get_percent(self):
         return get_percent(self.unarchived, self.total)[1]
+    
+class HospitalizedPatient:
+    def __init__(self, row):
+        self.department_name = row.TenPhongBan
