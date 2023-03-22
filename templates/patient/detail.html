@@ -111,9 +111,16 @@
                     {% if value.history_visited %}
                     {% for visited in value.history_visited %}
                     <a href="#" class="list-group-item list-group-item-action" data-bs-toggle="modal"
-                        data-bs-target="#patientVisitedHistory" data-department="{{visited.0}}"
-                        data-doctor="{{visited.2}}" data-time="{{visited.3}}" data-chandoan="{{visited.1}}"
-                        data-khambenhid="{{ visited.5}}" data-ketqua="{{visited.4}}" data-tiepnhanid="{{visited.6}}" onclick="getVisitedHistory(this.getAttribute('data-department'),
+                        data-bs-target="#patientVisitedHistory"
+                        data-department="{{visited.0}}"
+                        data-doctor="{{visited.2}}"
+                        data-time="{{visited.3}}"
+                        data-chandoan="{{visited.1}}"
+                        data-khambenhid="{{ visited.5}}"
+                        data-ketqua="{{visited.4}}"
+                        data-tiepnhanid="{{visited.6}}"
+                        onclick="getVisitedHistory(
+                            this.getAttribute('data-department'),
                             this.getAttribute('data-doctor'),
                             this.getAttribute('data-time'),
                             this.getAttribute('data-chandoan'),
@@ -148,7 +155,7 @@
                     <!-- Modal -->
                     <div class="modal fade" id="patientVisitedHistory" tabindex="-1" aria-labelledby="exampleModalLabel"
                         aria-hidden="true">
-                        <div class="modal-dialog">
+                        <div class="modal-dialog modal-lg">
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h1 class="modal-title fs-5" id="exampleModalLabel">Lịch sử khám bệnh</h1>
@@ -191,7 +198,17 @@
                 <div class="list-group list-group-flush">
                     {% if value.history_hospital %}
                     {% for visited in value.history_hospital %}
-                    <a href="#" class="list-group-item list-group-item-action">
+                    <a href="#" class="list-group-item list-group-item-action" data-bs-toggle="modal" data-bs-target="#patientHospitalHistory"
+                        data-department="{{visited.0}}"
+                        data-doctor="{{visited.2}}"
+                        data-time="{{visited.3}}"
+                        data-time2="{{visited.4}}"
+                        data-chandoan="{{visited.1}}"
+                        data-chandoanravien="{{visited.7}}"
+                        data-ketquadieutri="{{visited.8}}"
+                        data-sobenhan="{{ visited.6}}"
+                        data-ketqua="{{visited.5}}"
+                        onclick="getHospitalHistory(this)">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <h6 class="">{{loop.index}}. {{visited.0}} </h6>
@@ -216,6 +233,54 @@
                         </div>
                     </a>
                     {% endfor %}
+
+
+                        <!-- Modal -->
+                        <div class="modal fade" id="patientHospitalHistory" tabindex="-1" aria-labelledby="exampleModalLabel2"
+                        aria-hidden="true">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h1 class="modal-title fs-5" id="exampleModalLabel2">Lịch sử điều trị nội trú</h1>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <h6 id="departmentName2"></h6>
+                                    <div class="d-flex align-items-center">
+                                        <small class="text-muted" id="timeVisitedModal2"></small>
+                                        <small class="text-muted mx-1">đến</small>
+                                        <small class="text-muted" id="timeVisitedModal22"></small>
+                                        <span class="badge bg-danger ms-2" id="ketquadanger2"></span>
+                                        <span class="badge text-bg-warning ms-2" id="ketquawarning2"></span>
+                                        <span class="badge bg-success ms-2" id="ketquasucess2"></span>
+                                        <span class="badge text-bg-primary ms-2" id="doctorNameModal2"></span>
+                                    </div>
+                                    <hr class="my-2">
+                   
+                                    <p><span class="fw-bold">Chẩn đoán vào khoa: </span><span id="chanDoan2"></span> </p>
+                                    <p><span class="fw-bold">Chẩn đoán ra khoa: </span><span class="badge bg-primary me-2" id="ketquadieutri"></span><span id="chanDoanrakhoa2"></span> </p>
+                                    <hr class="my-2">
+
+                                    <p><span class="fw-bold">Khám nội trú </span><span id="khamnoitru"></span> </p>
+                                    <hr class="my-2">
+                                    <p><span class="fw-bold">Đơn thuốc: </span><span id="donthuoc2"
+                                            class="d-flex flex-column"></span> </p>
+                                    <hr class="my-2">
+                                    <p><span class="fw-bold">Chỉ định: </span><span id="chidinh2"
+                                        class="d-flex flex-column"></span> </p>
+                                    <hr class="my-2">
+                                    <p><span class="fw-bold">Kết quả cận lâm sàng: </span><span id="ketqua2"
+                                        class="d-flex flex-column"></span> </p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Đóng</button>
+                                    <button type="button" class="btn btn-primary">In</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
 
                     {% endif %}
@@ -335,5 +400,73 @@
 
 
     }
+</script>
+
+<script>
+
+function getHospitalHistory(e) {
+
+    department = e.getAttribute('data-department');
+    sobenhan = e.getAttribute('data-sobenhan');
+
+    doctor = e.getAttribute('data-doctor'),
+    time = e.getAttribute('data-time'),
+    time2 = e.getAttribute('data-time2'),
+    chandoantext = e.getAttribute('data-chandoan'),
+    chandoanravien = e.getAttribute('data-chandoanravien'),
+    ketquadieutri = e.getAttribute('data-ketquadieutri'),
+    e.getAttribute('data-khambenhid'),
+    ketquatext = e.getAttribute('data-ketqua'),
+    e.getAttribute('data-tiepnhanid')
+
+    const departmentName = document.getElementById('departmentName2');
+    departmentName.textContent = department + ' - Bệnh án: ' + sobenhan;
+
+    const doctorNameModal = document.getElementById('doctorNameModal2');
+    doctorNameModal.textContent = 'BS.' + doctor;
+
+    const timeVisitedModal = document.getElementById('timeVisitedModal2');
+    const timeVisitedModal2 = document.getElementById('timeVisitedModal22');
+    timeKham = new Date(time)
+    timeKham2 = new Date(time2)
+    timeVisitedModal.textContent = timeKham.toLocaleDateString('vi-VN');;
+    timeVisitedModal2.textContent = timeKham2.toLocaleDateString('vi-VN');;
+
+    const chanDoan = document.getElementById('chanDoan2');
+    const chanDoan2 = document.getElementById('chanDoanrakhoa2');
+    const ketquadieutriE = document.getElementById('ketquadieutri');
+    chanDoan.textContent = chandoantext;
+    chanDoan2.textContent = chandoanravien;
+    ketquadieutriE.textContent = ketquadieutri;
+
+    const ketquadanger = document.getElementById('ketquadanger2');
+    ketquadanger.textContent = ""
+    const ketquawarning = document.getElementById('ketquawarning2');
+    ketquawarning.textContent = ""
+    const ketquasucess = document.getElementById('ketquasucess2');
+    ketquasucess.textContent = ""
+    if (ketquatext == 'Chuyển tuyến' || ketquatext == 'Chuyển viện') {
+        ketquadanger.textContent = ketquatext
+}
+else if (ketquatext == 'Nhập viện') {
+    ketquawarning.textContent = ketquatext
+}
+else {
+    ketquasucess.textContent = ketquatext
+}
+
+const prescriptionAPI = window.location.origin + '/prescription-api/' + khambenh_id;
+fetch(prescriptionAPI)
+    .then((response) => response.json())
+    .then((data) => updatePatientModal(data));
+
+const clsAPI = window.location.origin + '/cls-api/' + tiepnhanid;
+fetch(clsAPI)
+    .then((response) => response.json())
+    .then((data) => updatePatientModal2(data));
+
+
+}
+
 </script>
 {% endblock %}

@@ -58,7 +58,8 @@ def visited_history(mayte, cursor):
 # Lịchh sử nhập viện của bệnh nhân
 def hospitalized_history(mayte, cursor):
     query = """
-        SELECT TenPhongBan, ChanDoanVaoKhoa, TenNhanVien, ThoiGianVaoVien,ThoiGianRaVien, Dictionary_Name
+        SELECT TenPhongBan, ChanDoanVaoKhoa, TenNhanVien, ThoiGianVaoVien,ThoiGianRaVien,
+        [eHospital_NgheAn_Dictionary].[dbo].[Lst_Dictionary].Dictionary_Name, SoBenhAn, ChanDoanRaVien, t2.Dictionary_Name,BenhAn_Id
         FROM BenhAn
         LEFT JOIN [eHospital_NgheAn_Dictionary].[dbo].NhanVien
         ON BenhAn.BacSiDieuTri_Id = [eHospital_NgheAn_Dictionary].[dbo].NhanVien.NhanVien_Id
@@ -66,9 +67,11 @@ def hospitalized_history(mayte, cursor):
         ON BenhAn.KhoaVao_Id = [eHospital_NgheAn_Dictionary].[dbo].DM_PhongBan.PhongBan_Id
         LEFT JOIN [eHospital_NgheAn_Dictionary].[dbo].[Lst_Dictionary]
         ON BenhAn.LyDoXuatVien_Id = [eHospital_NgheAn_Dictionary].[dbo].[Lst_Dictionary].Dictionary_Id
+        LEFT JOIN [eHospital_NgheAn_Dictionary].[dbo].[Lst_Dictionary] as t2
+        ON BenhAn.KetQuaDieuTri_Id = t2.Dictionary_Id
         INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan]
         ON BenhAn.BenhNhan_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan].BenhNhan_Id
-        WHERE [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan].MaYTe=?
+        WHERE [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan].MaYTe= ?
         ORDER BY BenhAn.BenhAn_Id DESC
         """
     try:
