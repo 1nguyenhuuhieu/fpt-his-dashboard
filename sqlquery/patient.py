@@ -192,3 +192,20 @@ def khambenh_noitru(benhan_id, cursor):
     except:
         print("Lỗi khi query patient.khambenh_noitru")
         return None
+    
+# khám bệnh nội trú dược
+def khambenh_noitru_toathuoc(khambenh_id, cursor):
+    query = """
+    SELECT  Tenhang, SoLuong
+    FROM [eHospital_NgheAn].[dbo].[NoiTru_ToaThuoc] as toathuoc
+    INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_Duoc]
+    ON toathuoc.Duoc_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_Duoc].Duoc_Id
+    WHERE KhamBenh_Id = ?
+    """
+    try:
+        q = cursor.execute(query, khambenh_id).fetchall()
+        return q
+    except:
+        print("Lỗi khi query patient.khambenh_noitru_toathuoc")
+        return None
+    

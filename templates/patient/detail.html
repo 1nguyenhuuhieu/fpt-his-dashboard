@@ -263,7 +263,43 @@
                                     </span> </p>
                                     <hr class="my-2">
 
-                                    <p><span class="fw-bold">Khám nội trú </span><span id="khamnoitru"></span> </p>
+                                        {% if patient.khambenhs %}
+                                        {% for khambenh in patient.khambenhs %}
+                                        <p class="my-2">
+                                        <span class="fw-bold ">{{loop.index}}. Khám {{ khambenh.khambenh.ThoiGianKham.strftime('%H:%M %d-%m-%Y') }} </span>
+                                        <span class="badge text-bg-primary">
+                                            BS. {{ khambenh.khambenh.TenNhanVien }} </span>
+                                        </p>
+                                     
+                                            <p class="">
+                                            <span class="fw-bold">Định bệnh:</span>{{ khambenh.khambenh.DinhBenh }}
+                                        </p>
+                                        <p>
+                                            
+                                              <div class="accordion" id="accordionFlushExample{{loop.index}}">
+                                                <div class="accordion-item">
+                                                  <h6 class="accordion-header p-0" id="flush-headingOne">
+                                                    <button class="accordion-button collapsed p-2" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne{{loop.index}}" aria-expanded="false" aria-controls="flush-collapseOne">
+                                                        Xem diễn biến chi tiết
+                                                    </button>
+                                                  </h6>
+                                                  <div id="flush-collapseOne{{loop.index}}" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+                                                    <div class="accordion-body">
+                                                        {{ khambenh.khambenh.DienBien }} 
+                                                    </div>
+                                                  </div>
+                                                </div>
+                            
+                  
+                                              </div>
+
+
+                                       
+                                    </p>
+                                  <hr>
+                                    {% endfor %}
+                                    {% endif %}
+                             
                                     <hr class="my-2">
                                     <p><span class="fw-bold">Đơn thuốc: </span><span id="donthuoc2"
                                             class="d-flex flex-column"></span> </p>

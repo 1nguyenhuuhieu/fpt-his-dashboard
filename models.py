@@ -313,5 +313,6 @@ class HospitalizedPatient:
 
 
 class HospitalizedPatientKhamBenh:
-    def __init__(self, row):
+    def __init__(self, row, duocs):
         self.khambenh = row
+        self.duocs = duocs
