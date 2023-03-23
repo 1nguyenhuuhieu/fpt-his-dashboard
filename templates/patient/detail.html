@@ -160,6 +160,8 @@
                         <div class="modal fade" id="patientVisitedHistory" tabindex="-1" aria-labelledby="exampleModalLabel"
                         aria-hidden="true">
                         <div class="modal-dialog modal-lg">
+                            <form method="post" action="#" id="printJS-formVisited">
+                               
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h1 class="modal-title fs-5" id="exampleModalLabel">Lịch sử khám bệnh</h1>
@@ -190,9 +192,10 @@
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary"
                                         data-bs-dismiss="modal">Đóng</button>
-                                    <button type="button" class="btn btn-primary">In</button>
+                                    <button type="button"  onclick="printJS('printJS-formVisited', 'html')" class="btn btn-primary">In</button>
                                 </div>
                             </div>
+                        </form>
                         </div>
                     </div>
 
@@ -236,6 +239,7 @@
                         <div class="modal fade" id="patientHospitalHistory{{loop.index}}" tabindex="-1" aria-labelledby="exampleModalLabel2"
                         aria-hidden="true">
                         <div class="modal-dialog modal-lg">
+                            <form method="post" action="#" id="printJS-form{{loop.index}}">
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h1 class="modal-title fs-5" id="exampleModalLabel2">Lịch sử điều trị nội trú</h1>
@@ -330,15 +334,14 @@
                                         {% endfor %}
                                     {% endif %}
                                 </ol>
-                                    <p><span class="fw-bold">Kết quả cận lâm sàng: </span><span id="ketqua2"
-                                        class="d-flex flex-column"></span> </p>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary"
                                         data-bs-dismiss="modal">Đóng</button>
-                                    <button type="button" class="btn btn-primary">In</button>
+                                    <button type="button" onclick="printJS('printJS-form{{loop.index}}', 'html')" class="btn btn-primary">In</button>
                                 </div>
                             </div>
+                        </form>
                         </div>
                     </div>
 
