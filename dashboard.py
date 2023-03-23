@@ -1489,10 +1489,13 @@ def all_patients():
     if search_input:
         q = f"""
         SELECT TOP 1000
-        NgayTao, MaYTe, TenBenhNhan,NgaySinh, SoDienThoai, DiaChi
+        [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan].NgayTao, MaYTe, TenBenhNhan,NgaySinh, SoDienThoai, DiaChi
         FROM [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan]
+        INNER JOIN [eHospital_NgheAn].[dbo].TiepNhan
+        ON TiepNhan.BenhNhan_Id = [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan].BenhNhan_Id
         WHERE MaYTe LIKE '%{search_input}%'
         OR TenBenhNhan LIKE N'%{search_input}%'
+        ORDER BY TiepNhan.TiepNhan_Id DESC 
         """
         list_patients = cursor.execute(q).fetchall()
     else:
