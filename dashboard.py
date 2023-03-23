@@ -1484,7 +1484,20 @@ def all_patients():
 
     # lấy ngày xem dashboard
 
-    list_patients = query_patient.patients(cursor)
+    search_input = request.args.get('search')
+    rows = None
+    if search_input:
+        q = f"""
+        SELECT TOP 1000
+        NgayTao, MaYTe, TenBenhNhan,NgaySinh, SoDienThoai, DiaChi
+        FROM [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan]
+        WHERE MaYTe LIKE '%{search_input}%'
+        OR TenBenhNhan LIKE N'%{search_input}%'
+        """
+        list_patients = cursor.execute(q).fetchall()
+    else:
+
+        list_patients = query_patient.patients(cursor)
     table_column_title = ['Ngày tạo', 'Mã Y tế',
                           'Tên bệnh nhân', 'Ngày sinh', 'Số điện thoại', 'Địa chỉ']
     
@@ -1494,7 +1507,8 @@ def all_patients():
     context = {
         'today': today,
         'list': list_patients,
-        'table_column_title': table_column_title
+        'table_column_title': table_column_title,
+        'search_input': search_input
     }
     close_db()
     return render_template('patient/index.html', value=context, active='patient')

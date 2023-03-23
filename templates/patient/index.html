@@ -4,18 +4,22 @@
 {% endblock %}
 {% block content %}
 <div class="row mb-4">
-    <div class="col-lg-7">
+    <div class="col-lg-4">
      <form method="get">
         <div class="input-group">
-            <input type="search" required class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload" placeholder="Tìm theo tên, số bệnh án, mã y tế hoặc số tiếp nhận" name="search">
+            <input type="search" required class="form-control form-control-lg" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload" placeholder="Tên hoặc mã y tế" name="search">
             <button class="btn btn-primary" type="submit" id="inputGroupFileAddon04" >Tìm kiếm <i class="fa-solid fa-magnifying-glass ms-2"></i></button>
           </div>
         </form>
 </div>
 </div>
 
+{% if value.search_input %}
+<h6 class="mb-3">{{ value.list|length }} kết quả cho: {{ value.search_input }}</h6>
 
+{% else %}
 <h6 class="mb-3">Danh sách 2000 hồ sơ bệnh nhân được cập nhập mới nhất</h6>
+{% endif %}
 {% include 'include/table.html' %}
 
 <script>
