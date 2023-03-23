@@ -3,19 +3,19 @@
 <i class="fa-solid fa-book-medical me-2"></i>{% block title %}Hồ sơ bệnh nhân{% endblock %}
 {% endblock %}
 {% block content %}
-<div class="row">
-    <div class="col-12">
+<div class="row mb-4">
+    <div class="col-lg-7">
+     <form method="get">
         <div class="input-group">
-            <input type="search" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload">
-            <button class="btn btn-primary" type="button" id="inputGroupFileAddon04">Tìm theo tên</button>
+            <input type="search" required class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload" placeholder="Tìm theo tên, số bệnh án, mã y tế hoặc số tiếp nhận" name="search">
+            <button class="btn btn-primary" type="submit" id="inputGroupFileAddon04" >Tìm kiếm <i class="fa-solid fa-magnifying-glass ms-2"></i></button>
           </div>
-
-    </div>
+        </form>
+</div>
 </div>
 
 
-<hr>
-<h6>Danh sách 2000 hồ sơ bệnh nhân được cập nhập mới nhất</h6>
+<h6 class="mb-3">Danh sách 2000 hồ sơ bệnh nhân được cập nhập mới nhất</h6>
 {% include 'include/table.html' %}
 
 <script>

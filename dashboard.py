@@ -2091,6 +2091,18 @@ def schedule():
     }
     return render_template('admin/schedule.html', value=context, active='schedule')
 
+# Trang lịch trực
+@app.route('/search')
+@register_breadcrumb(app, '..patients.search', 'Tìm kiếm bệnh nhân')
+def search():
+
+    table_column_title = ['Lãnh đạo', 'Hội chẩn', 'Ngoại, Sản, 3CK', 'HSCC,Nội, YHCT', 'Khám bệnh', 'CLS', 'Dược', 'Hành chính', 'Thường trú', 'Hộ tống']
+
+    context = {
+        'table_column_title': table_column_title
+    }
+    return render_template('patient/search.html', value=context, active='schedule')
+
 
 # API Thông tin của bệnh nhân
 @app.route('/patient-api/<string:mayte>')
