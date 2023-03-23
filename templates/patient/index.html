@@ -3,9 +3,19 @@
 <i class="fa-solid fa-book-medical me-2"></i>{% block title %}Hồ sơ bệnh nhân{% endblock %}
 {% endblock %}
 {% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="input-group">
+            <input type="search" class="form-control" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload">
+            <button class="btn btn-primary" type="button" id="inputGroupFileAddon04">Tìm theo tên</button>
+          </div>
+
+    </div>
+</div>
+
 
 <hr>
-<h6>Danh sách 1000 hồ sơ bệnh nhân được cập nhập mới nhất</h6>
+<h6>Danh sách 2000 hồ sơ bệnh nhân được cập nhập mới nhất</h6>
 {% include 'include/table.html' %}
 
 <script>

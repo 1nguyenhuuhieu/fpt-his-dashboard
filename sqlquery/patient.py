@@ -16,7 +16,7 @@ def detail(mayte, cursor):
 # Danh sách toàn bộ bệnh nhân có hoạt động gần nhất
 def patients(cursor):
     query = """
-        SELECT TOP 1000
+        SELECT TOP 2000
         XacNhanChiPhi.NgayXacNhan, MaYTe, TenBenhNhan,NgaySinh, SoDienThoai, DiaChi
         FROM [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan]
         INNER JOIN [eHospital_NgheAn].[dbo].[XacNhanChiPhi]
@@ -214,7 +214,7 @@ def khambenh_noitru_toathuoc(khambenh_id, cursor):
 # cls nội trú
 def cls_noitru(benhan_id, cursor):
     query = """
-    select NoiDungChiTiet, MoTa_Text, KetLuan, TenNhanVien
+    select NoiDungChiTiet, MoTa_Text, KetLuan, TenNhanVien, ThoiGianThucHien
     from CLSYeuCau 
     left join CLSKetQua
     on CLSYeuCau.CLSYeuCau_Id = CLSKetQua.CLSYeuCau_Id

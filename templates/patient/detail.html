@@ -271,53 +271,38 @@
                                     <hr class="my-2">
                                     <span class="fw-bold">Khám bệnh </span>
                                         {% if patient.khambenhs %}
-                                       <ol class="list-group list-group-numbered my-3">
+                                       <ol class="list-group list-group-numbered my-3 shadow-sm">
                                         {% for khambenh in patient.khambenhs %}
-                                        <li class="list-group-item list-group-item-primary">
+                                        <li class="list-group-item">
                                    
-                                        <span class="fw-bold fst-italic ">{{ khambenh.khambenh.ThoiGianKham.strftime('%H:%M %d-%m-%Y') }} </span>
+                                        <span class="fw-semibold">{{ khambenh.khambenh.ThoiGianKham.strftime('%H:%M %d-%m-%Y') }} </span>
                                         <span class="badge text-bg-primary">
                                             BS. {{ khambenh.khambenh.TenNhanVien }} </span>
                                   
                                      
-                                            <p class="">
-                                            <span class="fw-bold">Định bệnh:</span>{{ khambenh.khambenh.DinhBenh }}
+                                            <p class="text-danger fw-bold mt-2">
+                                         Định bệnh: {{ khambenh.khambenh.DinhBenh }}
                                             
                                         </p>
-                                        <p>
-                                            {% if khambenh.duocs %} {% for duoc in khambenh.duocs %}<span class="fst-italic me-2">{{ duoc.Tenhang }}({{duoc.SoLuong}}).</span>{%endfor%} {% endif %}
-                                        </p>
-                                        <p>
-                                            
-                                              <div class="accordion" id="accordionFlushExample{{loop.index}}">
-                                                <div class="accordion-item">
-                                                  <h6 class="accordion-header p-0" id="flush-headingOne">
-                                                    <button class="accordion-button collapsed p-2" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne{{loop.index}}" aria-expanded="false" aria-controls="flush-collapseOne">
-                                                        Xem diễn biến chi tiết
-                                                    </button>
-                                                  </h6>
-                                                  <div id="flush-collapseOne{{loop.index}}" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
-                                                    <div class="accordion-body">
+                                  
+                                        <p class="">
+                                            <span class="fw-semibold">Diễn biến chi tiết: </span>
                                                         {{ khambenh.khambenh.DienBien }} 
-                                                    </div>
-                                                  </div>
-                                                </div>
-                            
-                  
-                                              </div>
-
-                                    </p>
+                                        </p>
+                                        <p>
+                                            {% if khambenh.duocs %}<span class="fw-semibold">Dược: </span>  {% for duoc in khambenh.duocs %}<span class="me-1">{{ duoc.Tenhang }}({{duoc.SoLuong}}).</span>{%endfor%} {% endif %}
+                                        </p>
                                 </li>
                                     {% endfor %}
                                 </ol>
                                     {% endif %}
                                     <span class="fw-bold">Chỉ định</span> {% if patient.cls %} 
-                                        <ol class="list-group list-group-numbered my-3">
+                                        <ol class="list-group list-group-numbered my-3 shadow-sm">
                                         {% for cls in patient.cls %}
-                                        <li class="list-group-item list-group-item-warning">
+                                        <li class="list-group-item">
                          
                                                 <span class="fw-semibold">
-                                                    {{ cls.NoiDungChiTiet }}
+                                                    {{ cls.NoiDungChiTiet }}{% if cls.ThoiGianThucHien %}  - {{ cls.ThoiGianThucHien.strftime("%H:%M %d-%m-%Y") }} {% endif %}
                                                 </span>
                                             
                                             {% if cls.TenNhanVien %}
