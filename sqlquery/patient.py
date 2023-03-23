@@ -204,8 +204,28 @@ def khambenh_noitru_toathuoc(khambenh_id, cursor):
     """
     try:
         q = cursor.execute(query, khambenh_id).fetchall()
+        for row in q:
+            row.SoLuong = int(row.SoLuong)
         return q
     except:
         print("Lỗi khi query patient.khambenh_noitru_toathuoc")
+        return None
+    
+# cls nội trú
+def cls_noitru(benhan_id, cursor):
+    query = """
+    select NoiDungChiTiet, MoTa_Text, KetLuan, TenNhanVien
+    from CLSYeuCau 
+    left join CLSKetQua
+    on CLSYeuCau.CLSYeuCau_Id = CLSKetQua.CLSYeuCau_Id
+    LEFT JOIN [eHospital_NgheAn_Dictionary].[dbo].NhanVien as nhanvien
+    ON CLSKetQua.BacSiKetLuan_Id= nhanvien.NhanVien_Id
+    where BenhAn_Id=?
+    """
+    try:
+        q = cursor.execute(query, benhan_id).fetchall()
+        return q
+    except:
+        print("Lỗi khi query patient.cls_noitru")
         return None
     

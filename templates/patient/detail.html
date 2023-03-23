@@ -110,6 +110,7 @@
                 <div class="list-group list-group-flush">
                     {% if value.history_visited %}
                     {% for visited in value.history_visited %}
+
                     <a href="#" class="list-group-item list-group-item-action" data-bs-toggle="modal"
                         data-bs-target="#patientVisitedHistory"
                         data-department="{{visited.0}}"
@@ -137,6 +138,7 @@
                                     %d-%m-%Y')}}</small>
 
                             </div>
+                        {% if visited.4 and visited.2 %}
                             <div class="d-flex flex-column justify-content-start align-items-end ms-2">
                                 {% if visited.4 == 'Chuyển tuyến' or visited.4 == 'Chuyển viện' %}
                                 <span class="badge bg-danger m-0">{{ visited.4 }}</span>
@@ -149,6 +151,8 @@
                                 <span class="text-primary"><small>Xem chi tiết<i
                                             class="fa-solid fa-arrow-right ms-1"></i></small></span>
                             </div>
+                        {% endif %}
+
                         </div>
                     </a>
 
@@ -195,6 +199,7 @@
 
                     {% endfor %}
 
+
                     {% endif %}
                 </div>
             </div>
@@ -214,7 +219,7 @@
                             </div>
                             <div class="d-flex flex-column justify-content-start align-items-end ms-2">
                                 {% if patient.row.ravien == 'Chuyển tuyến' or patient.row.ravien == 'Chuyển viện' %}
-                                <span class="badge bg-danger m-0">{{ visited.5 }}</span>
+                                <span class="badge bg-danger m-0">{{ patient.row.ravien }}</span>
                                 {% elif patient.row.ravien == 'Nhập viện'%}
                                 <span class="badge text-bg-warning m-0">{{ patient.row.ravien }}</span>
                                 {% else %}
@@ -226,8 +231,6 @@
                             </div>
                         </div>
                     </a>
-
-                    
 
                         <!-- Modal -->
                         <div class="modal fade" id="patientHospitalHistory{{loop.index}}" tabindex="-1" aria-labelledby="exampleModalLabel2"
@@ -247,7 +250,7 @@
                                                 patient.row.ThoiGianRaVien %}đến {{patient.row.ThoiGianRaVien.strftime('%d-%m-%Y')}} {% else %}(chưa ra viện){% endif
                                         %}</small>
                                         {% if patient.row.ravien == 'Chuyển tuyến' or patient.row.ravien == 'Chuyển viện' %}
-                                        <span class="badge bg-danger mx-2">{{ visited.5 }}</span>
+                                        <span class="badge bg-danger mx-2">{{patient.row.ravien }}</span>
                                         {% elif patient.row.ravien == 'Nhập viện'%}
                                         <span class="badge text-bg-warning mx-2">{{ patient.row.ravien }}</span>
                                         {% else %}
@@ -262,17 +265,23 @@
                                         {{patient.row.ChanDoanRaVien}}
                                     </span> </p>
                                     <hr class="my-2">
-
+                                    <span class="fw-bold">Khám bệnh </span>
                                         {% if patient.khambenhs %}
+                                       <ol class="list-group list-group-numbered my-3">
                                         {% for khambenh in patient.khambenhs %}
-                                        <p class="my-2">
-                                        <span class="fw-bold ">{{loop.index}}. Khám {{ khambenh.khambenh.ThoiGianKham.strftime('%H:%M %d-%m-%Y') }} </span>
+                                        <li class="list-group-item list-group-item-primary">
+                                   
+                                        <span class="fw-bold fst-italic ">{{ khambenh.khambenh.ThoiGianKham.strftime('%H:%M %d-%m-%Y') }} </span>
                                         <span class="badge text-bg-primary">
                                             BS. {{ khambenh.khambenh.TenNhanVien }} </span>
-                                        </p>
+                                  
                                      
                                             <p class="">
                                             <span class="fw-bold">Định bệnh:</span>{{ khambenh.khambenh.DinhBenh }}
+                                            
+                                        </p>
+                                        <p>
+                                            {% if khambenh.duocs %} {% for duoc in khambenh.duocs %}<span class="fst-italic me-2">{{ duoc.Tenhang }}({{duoc.SoLuong}}).</span>{%endfor%} {% endif %}
                                         </p>
                                         <p>
                                             
@@ -293,20 +302,34 @@
                   
                                               </div>
 
-
-                                       
                                     </p>
-                                  <hr>
+                                </li>
                                     {% endfor %}
+                                </ol>
                                     {% endif %}
-                             
-                                    <hr class="my-2">
-                                    <p><span class="fw-bold">Đơn thuốc: </span><span id="donthuoc2"
-                                            class="d-flex flex-column"></span> </p>
-                                    <hr class="my-2">
-                                    <p><span class="fw-bold">Chỉ định: </span><span id="chidinh2"
-                                        class="d-flex flex-column"></span> </p>
-                                    <hr class="my-2">
+                                    <span class="fw-bold">Chỉ định</span> {% if patient.cls %} 
+                                        <ol class="list-group list-group-numbered my-3">
+                                        {% for cls in patient.cls %}
+                                        <li class="list-group-item list-group-item-warning">
+                         
+                                                <span class="fw-semibold">
+                                                    {{ cls.NoiDungChiTiet }}
+                                                </span>
+                                            
+                                            {% if cls.TenNhanVien %}
+                                            <p>
+                                            <span class="badge text-bg-primary">BS. {{cls.TenNhanVien}}</span>
+                                            <span>{{ cls.MoTa_Text}}</span>
+                                        </p>
+                                   
+                                            <p class="fst-italic fw-semibold my-2 text-danger">Kết luận: {{ cls.KetLuan}}</p>
+                                            {% endif %}
+
+                                        </li>
+                                        
+                                        {% endfor %}
+                                    {% endif %}
+                                </ol>
                                     <p><span class="fw-bold">Kết quả cận lâm sàng: </span><span id="ketqua2"
                                         class="d-flex flex-column"></span> </p>
                                 </div>

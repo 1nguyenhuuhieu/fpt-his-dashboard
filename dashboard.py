@@ -1518,11 +1518,12 @@ def patient_detail(mayte):
     for row in history_hospital:
         extrainfo_khambenh_list = []
         khambenhs = query_patient.khambenh_noitru(row.BenhAn_Id, cursor)
+        cls = query_patient.cls_noitru(row.BenhAn_Id, cursor)
         for khambenh in khambenhs:
             khambenh_noitru_toathuoc = query_patient.khambenh_noitru_toathuoc(khambenh.KhamBenh_Id, cursor)
             extrainfo_khambenh = HospitalizedPatientKhamBenh(khambenh,khambenh_noitru_toathuoc)
             extrainfo_khambenh_list.append(extrainfo_khambenh)
-        info = HospitalizedPatient(row,extrainfo_khambenh_list)
+        info = HospitalizedPatient(row,extrainfo_khambenh_list, cls)
         history_hospital_list.append(info)
 
     doanhthu = query_patient.doanhthu(mayte, cursor)
