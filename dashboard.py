@@ -1593,6 +1593,19 @@ def patient_hospitalized(sobenhan):
     FROM BenhAn
     WHERE SoBenhAn = ?
     """, sobenhan).fetchone()
+    
+    examinitions = cursor.execute("""
+    select * from NoiTru_KhamBenh where BenhAn_Id=?
+    """,medical_record_info.BenhAn_Id).fetchall()
+
+    list_examinition = []
+    for examinition in examinitions:
+        e = MedicalRecordDetail(examinition.KhamBenh_Id, cursor)
+        list_examinition.append(e)
+
+    for examinition in list_examinition:
+        print(examinition.khambenh.DinhBenh)
+
     value = {
         'medical_record_info': medical_record_info
 

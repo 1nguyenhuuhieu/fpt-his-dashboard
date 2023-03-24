@@ -2,6 +2,7 @@ from datetime import date, datetime, timedelta
 from dateutil.relativedelta import *
 
 
+
 # Tính % tăng, giảm
 def get_change(current, previous):
     if not current:
@@ -317,3 +318,9 @@ class HospitalizedPatientKhamBenh:
     def __init__(self, khambenh, duocs):
         self.khambenh = khambenh
         self.duocs = duocs
+
+class MedicalRecordDetail:
+    def __init__(self, KhamBenh_Id, cursor):
+        self.khambenh = cursor.execute("""
+        select * from NoiTru_KhamBenh where KhamBenh_Id=?
+        """, KhamBenh_Id).fetchone()
