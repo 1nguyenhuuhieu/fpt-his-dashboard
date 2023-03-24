@@ -94,11 +94,16 @@ def home(day_query=None):
     # Service card
     all_service_card = []
     # Tổng Doanh thu dược
-    for row in phannhom_money:
-        if row.PhanNhom == 'DU':
-            current1 = int(row.TongDoanhThu)
-        else:
-            current2 = int(row.TongDoanhThu)
+    if phannhom_money:
+        for row in phannhom_money:
+            if row.PhanNhom == 'DU':
+                current1 = int(row.TongDoanhThu)
+            elif  row.PhanNhom == 'DV' :
+                current2 = int(row.TongDoanhThu)
+    else:
+        current1 = 0
+        current2 = 0
+
     card = ServiceCard('Dược', current1, money_card.current,
                        'fa-solid fa-pills', 'medicine')
     all_service_card.append(card)
