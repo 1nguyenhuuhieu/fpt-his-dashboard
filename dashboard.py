@@ -20,6 +20,7 @@ from sqlquery import born as query_born
 from sqlquery import patient as query_patient
 from sqlquery import report as query_report
 from sqlquery import user as query_user
+from sqlquery import medical_record as query_medical_record
 
 from db import *
 from flask_breadcrumbs import Breadcrumbs, register_breadcrumb
@@ -1561,8 +1562,6 @@ def patient_detail(mayte):
             ketqua_xetnghiem = query_patient.ketqua_xetnghiem(xetnghiem.id, cursor)
             xn.append(ketqua_xetnghiem)
         
-        print(xn)
-        print('-------------')
         info = HospitalizedPatient(row,extrainfo_khambenh_list, cls, xn)
         history_hospital_list.append(info)
 
@@ -1583,6 +1582,22 @@ def patient_detail(mayte):
     close_db()
     return render_template('patient/detail.html', value=context, active='patient')
 
+
+#Trang lịch sử nội trú điều trị
+@app.route('/medical-record/<string:sobenhan>')
+def patient_hospitalized(sobenhan):
+    cnxn = get_db()
+    cursor = cnxn.cursor()
+    medical_record_info = cursor.execute("""
+    SELECT *
+    FROM BenhAn
+    WHERE SoBenhAn = ?
+    """, sobenhan).fetchone()
+    value = {
+        'medical_record_info': medical_record_info
+
+    }
+    return render_template('patient/hospitalized.html', value=value)
 
 # Trang danh sách báo cáo
 @app.route('/report/<string:day_query>')

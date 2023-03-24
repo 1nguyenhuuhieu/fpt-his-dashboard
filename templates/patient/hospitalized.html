@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block header %}
+<i class="fa-solid fa-book-medical me-2"></i>{% block title %}Hồ sơ bệnh nhân{% endblock %}
+{% endblock %}
+{% block content %}
+<h1> lịch sử khám bệnh</h1>
+<h4>{{ value.medical_record_info.BenhAn_Id}}</h4>
+
+<script>
+    const urlGenerator = '/all_patients/';
+    const todayURL = "{{ url_for('all_patients') }}";
+</script>
+{% endblock %}
