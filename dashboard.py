@@ -1607,7 +1607,8 @@ def patient_hospitalized(sobenhan):
         print(examinition.khambenh.DinhBenh)
 
     value = {
-        'medical_record_info': medical_record_info
+        'medical_record_info': medical_record_info,
+        'list_examinition': list_examinition
 
     }
     return render_template('patient/hospitalized.html', value=value)

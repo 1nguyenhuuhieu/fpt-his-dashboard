@@ -5,7 +5,15 @@
 {% block content %}
 <h1> lịch sử khám bệnh</h1>
 <h4>{{ value.medical_record_info.BenhAn_Id}}</h4>
-
+{% if value.list_examinition %}
+{% set examinitions = value.list_examinition %}
+<ol>
+{% for examinition in examinitions %}
+<li> {{ examinition }}</li>
+{% endfor %}
+</ol>
+{% endif %}
+ 
 <script>
     const urlGenerator = '/all_patients/';
     const todayURL = "{{ url_for('all_patients') }}";
