@@ -34,6 +34,9 @@ from slugify import slugify
 from models import *
 from myfunc import *
 
+import time
+
+
 total_bed = {
     'TTYT Anh Sơn': (200, 72, 272),
     'Khoa Ngoại tổng hợp': (44, 8, 52),
@@ -78,25 +81,35 @@ def home(day_query=None):
 
     diff = diff_days(start, end)
 
+    start_time = time.time()
+
+    phannhom_money = query_revenue.phannhom_money(start, end, cursor)
+    previous_phannhom_money = query_revenue.phannhom_money(previous_start, previous_end, cursor)
     # Tổng Doanh thu
-    current = query_revenue.total_money_betweentime(start, end, cursor)
-    previous = query_revenue.total_money_betweentime(
-        previous_start, previous_end, cursor)
+    current = sum(int(row.TongDoanhThu) for row in phannhom_money)
+    previous = sum(int(row.TongDoanhThu) for row in previous_phannhom_money)
     money_card = MoneyCard(current, previous)
 
     # Service card
     all_service_card = []
     # Tổng Doanh thu dược
-    current = query_revenue.service_money(start, end, 'DU', cursor)
-    card = ServiceCard('Dược', current, money_card.current,
+    for row in phannhom_money:
+        if row.PhanNhom == 'DU':
+            current1 = int(row.TongDoanhThu)
+        else:
+            current2 = int(row.TongDoanhThu)
+    card = ServiceCard('Dược', current1, money_card.current,
                        'fa-solid fa-pills', 'medicine')
     all_service_card.append(card)
 
     # Tổng Doanh thu dịch vụ
-    current = query_revenue.service_money(start, end, 'DV', cursor)
-    card = ServiceCard('Dịch vụ', current, money_card.current,
+    card = ServiceCard('Dịch vụ', current2, money_card.current,
                        'fa-solid fa-stethoscope', 'service')
     all_service_card.append(card)
+
+
+    print("--- %s seconds ---" % (time.time() - start_time))
+
 
     # Thống kê bệnh nhân
     patient_card = []
@@ -258,10 +271,12 @@ def revenue(day_query=None):
 
     diff = diff_days(start, end)
 
+    phannhom_money = query_revenue.phannhom_money(start, end, cursor)
+    previous_phannhom_money = query_revenue.phannhom_money(previous_start, previous_end, cursor)
+
     # Money card
-    current = query_revenue.total_money_betweentime(start, end, cursor)
-    previous = query_revenue.total_money_betweentime(
-        previous_start, previous_end, cursor)
+    current = sum(int(row.TongDoanhThu) for row in phannhom_money)
+    previous = sum(int(row.TongDoanhThu) for row in previous_phannhom_money)
     extra_info = query_revenue.tenphanhom_service_format(start, end, cursor)
     money_card = MoneyRevenueCard(
         'fa-solid fa-money-bill', 'Tổng doanh thu', current, previous, extra_info)

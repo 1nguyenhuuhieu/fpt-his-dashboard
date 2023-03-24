@@ -1,3 +1,4 @@
+import time
 # SQL query tổng doanh thu trong khoảng thời gian
 def total_money_betweentime(start, end, cursor):
     try:
@@ -11,7 +12,6 @@ def total_money_betweentime(start, end, cursor):
             WHERE ThoiGianXacNhan BETWEEN ? AND ?
             """, start, end
         ).fetchone()[0]
-
         return int(q)
     except:
         print("Lỗi query revenue.total_money_betweentime")
@@ -334,6 +334,25 @@ def service_money(start,end, phannhom ,cursor):
     except:
         print("Lỗi query service_medicine_day")
         return 0    
+    
+def phannhom_money(start,end ,cursor):
+    query = """
+    SELECT 
+    SUM(SoLuong*DonGiaDoanhThu) AS 'TongDoanhThu', PhanNhom
+    FROM XacNhanChiPhi
+    INNER JOIN XacNhanChiPhiChiTiet
+    ON XacNhanChiPhi.XacNhanChiPhi_Id=XacNhanChiPhiChiTiet.XacNhanChiPhi_Id
+	LEFT JOIN VienPhiNoiTru_Loai_IDRef ON XacNhanChiPhiChiTiet.Loai_IDRef=VienPhiNoiTru_Loai_IDRef.Loai_IDRef
+    WHERE ThoiGianXacNhan BETWEEN ? AND ?
+    GROUP BY PhanNhom
+    """
+    try:
+        q = cursor.execute(query, start, end).fetchall()
+        return q
+    except:
+        print("Lỗi query phannhom_money")
+        return 0    
+
 
 # SQL query tổng doanh thu trong khoảng ngày
 def day_betweenday(startday, endday, cursor):
