@@ -9,7 +9,11 @@
 {% set examinitions = value.list_examinition %}
 <ol>
 {% for examinition in examinitions %}
-<li> {{ examinition }}</li>
+<li> {{ examinition.khambenh.KhamBenh_Id }}
+ 
+   {{examinition.toathuoc}}
+
+</li>
 {% endfor %}
 </ol>
 {% endif %}

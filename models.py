@@ -324,3 +324,7 @@ class MedicalRecordDetail:
         self.khambenh = cursor.execute("""
         select * from NoiTru_KhamBenh where KhamBenh_Id=?
         """, KhamBenh_Id).fetchone()
+        
+        self.toathuoc = cursor.execute("""
+        select * from ToaThuoc where KhamBenh_Id = ?
+        """, KhamBenh_Id).fetchall()
