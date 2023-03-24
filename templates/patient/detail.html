@@ -247,7 +247,7 @@
                                         aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <h6>{{patient.row.TenPhongBan}} - Số bệnh án: {{patient.row.SoBenhAn}}</h6>
+                                    <h5>{{patient.row.TenPhongBan}} - Số bệnh án: {{patient.row.SoBenhAn}}</h5>
                                     <div class="d-flex align-items-center">
                                         <small class="text-muted my-1"><i
                                             class="fa-regular fa-clock me-1"></i>{{patient.row.ThoiGianVaoVien.strftime('%d-%m-%Y')}} {% if
@@ -269,7 +269,7 @@
                                         {{patient.row.ChanDoanRaVien}}
                                     </span> </p>
                                     <hr class="my-2">
-                                    <span class="fw-bold">Khám bệnh </span>
+                                    <h6 class="fw-bold">Khám bệnh </h6>
                                         {% if patient.khambenhs %}
                                        <ol class="list-group list-group-numbered my-3 shadow-sm">
                                         {% for khambenh in patient.khambenhs %}
@@ -296,7 +296,7 @@
                                     {% endfor %}
                                 </ol>
                                     {% endif %}
-                                    <span class="fw-bold">Chỉ định</span> {% if patient.cls %} 
+                                    <h6 class="fw-bold">Chỉ định</h6> {% if patient.cls %} 
                                         <ol class="list-group list-group-numbered my-3 shadow-sm">
                                         {% for cls in patient.cls %}
                                         <li class="list-group-item">
@@ -319,6 +319,49 @@
                                         {% endfor %}
                                     {% endif %}
                                 </ol>
+
+                                <h6 class="fw-bold">Xét nghiệm</h6>
+
+                                {% if patient.xn %}
+                            <ol class="list-group list-group-numbered">
+                                    {% for xn in patient.xn %}
+                                    <li class="list-group-item">
+                                        <span class="fw-semibold">
+                                            {% set a = xn.0 %}
+                                            {% for i in a %}
+                                            {{ i if loop.index == 2 }}
+                                            {{ i.strftime("%H:%M %d-%m-%Y") if loop.first }}
+                                            {% endfor %}
+
+                                        </span>
+                                        <hr>
+                                     
+                                        <table class="table table-sm  table-hover">
+                                            <thead>
+                                              <tr>
+                                                <th scope="col">Nội dung</th>
+                                                <th scope="col">Kết quả</th>
+                                                <th scope="col">Đơn vị tính</th>
+                                                <th scope="col">Chỉ số bình thường</th>
+                                              </tr>
+                                            </thead>
+                                            <tbody>
+                                    {% for detail in xn %}
+                                              <tr>
+                                                <th scope="row">{{detail.ServiceName}}</th>
+                                                <td class="{{ 'text-danger fw-semibold' if detail.Value < detail.MinLimited or detail.Value > detail.MaxLimited  }}">{{ detail.Value}}</td>
+                                                <td>{{ detail.Unit}}</td>
+                                                <td class="text-success fw-semibold">{{ detail.MinLimited}} - {{ detail.MaxLimited}}</td>
+                                              </tr>
+                                              {% endfor %}
+                             
+                                            </tbody>
+                                          </table>
+
+                                </li>
+                                    {% endfor %}
+                                </ol>
+                                {% endif %}
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary"

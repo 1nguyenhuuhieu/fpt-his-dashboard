@@ -11,14 +11,17 @@ cnxn = pyodbc.connect('DRIVER={SQL Server Native Client 11.0};SERVER=' +
 cursor = cnxn.cursor()
 def phannhom_money():
     query = """
-    SELECT 
-    SUM(SoLuong*DonGiaDoanhThu) AS 'TongDoanhThu', XacNhanChiPhiChiTiet.Loai_IDRef
-    FROM XacNhanChiPhi
-    INNER JOIN XacNhanChiPhiChiTiet
-    ON XacNhanChiPhi.XacNhanChiPhi_Id=XacNhanChiPhiChiTiet.XacNhanChiPhi_Id
-
-    WHERE ThoiGianXacNhan BETWEEN '2022-01-01' AND '2023-01-01'
-    GROUP BY XacNhanChiPhiChiTiet.Loai_IDRef
+SELECT xetnghiem.ResultDateTime, NoiDungChiTiet, ServiceName,
+    xetnghiem_ketqua.Unit, xetnghiem_ketqua.Value,
+    xetnghiem_ketqua.Value2, xetnghiem_ketqua.MinLimited, xetnghiem_ketqua.MaxLimited
+    FROM [eHospital_NgheAn].[dbo].[CLSYeuCau] as yeucau
+    INNER JOIN [eLab_NgheAn].[dbo].[LabResult] as xetnghiem
+    ON yeucau.CLSYeuCau_Id = xetnghiem.RequestID
+    INNER JOIN [eLab_NgheAn].[dbo].[LabResultDetail] as xetnghiem_ketqua
+    ON xetnghiem.ResultID = xetnghiem_ketqua.ResultID
+    INNER JOIN [eLab_NgheAn].[dbo].[DIC_Service] as service_dict
+    on service_dict.ServiceID = xetnghiem_ketqua.ServiceID
+    where CLSYeuCau_Id = 271482 AND AssayCode IS NOT NULL
     """
     try:
         q = cursor.execute(query).fetchall()

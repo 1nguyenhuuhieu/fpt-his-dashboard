@@ -216,16 +216,55 @@ def cls_noitru(benhan_id, cursor):
     query = """
     select NoiDungChiTiet, MoTa_Text, KetLuan, TenNhanVien, ThoiGianThucHien
     from CLSYeuCau 
-    left join CLSKetQua
+    INNER join CLSKetQua
     on CLSYeuCau.CLSYeuCau_Id = CLSKetQua.CLSYeuCau_Id
     LEFT JOIN [eHospital_NgheAn_Dictionary].[dbo].NhanVien as nhanvien
     ON CLSKetQua.BacSiKetLuan_Id= nhanvien.NhanVien_Id
-    where BenhAn_Id=?
+    where BenhAn_Id=? AND MoTa_Text IS NOT NULL
     """
     try:
         q = cursor.execute(query, benhan_id).fetchall()
         return q
     except:
         print("Lỗi khi query patient.cls_noitru")
+        return None
+    
+# cls nội trú
+def xetnghiem_id(benhan_id, cursor):
+    query = """
+    select  CLSYeuCau.CLSYeuCau_Id as id
+    from CLSYeuCau 
+    INNER join CLSKetQua
+    on CLSYeuCau.CLSYeuCau_Id = CLSKetQua.CLSYeuCau_Id
+    LEFT JOIN [eHospital_NgheAn_Dictionary].[dbo].NhanVien as nhanvien
+    ON CLSKetQua.BacSiKetLuan_Id= nhanvien.NhanVien_Id
+    where BenhAn_Id=? AND MoTa_Text IS NULL
+    """
+    try:
+        q = cursor.execute(query, benhan_id).fetchall()
+        return q
+    except:
+        print("Lỗi khi query patient.xetnghiem")
+        return None
+    
+# cls nội trú
+def ketqua_xetnghiem(clsyeucau_id, cursor):
+    query = """
+    SELECT xetnghiem.ResultDateTime, NoiDungChiTiet, ServiceName, xetnghiem_ketqua.Unit, xetnghiem_ketqua.Value,
+    xetnghiem_ketqua.Value2, xetnghiem_ketqua.MinLimited, xetnghiem_ketqua.MaxLimited
+    FROM [eHospital_NgheAn].[dbo].[CLSYeuCau] as yeucau
+    INNER JOIN [eLab_NgheAn].[dbo].[LabResult] as xetnghiem
+    ON yeucau.CLSYeuCau_Id = xetnghiem.RequestID
+    INNER JOIN [eLab_NgheAn].[dbo].[LabResultDetail] as xetnghiem_ketqua
+    ON xetnghiem.ResultID = xetnghiem_ketqua.ResultID
+    INNER JOIN [eLab_NgheAn].[dbo].[DIC_Service] as service_dict
+    on service_dict.ServiceID = xetnghiem_ketqua.ServiceID
+    where CLSYeuCau_Id = ? AND Value IS NOT NULL
+    """
+    try:
+        q = cursor.execute(query, clsyeucau_id).fetchall()
+        return q
+    except:
+        print("Lỗi khi query patient.ketqua_xetnghiem")
         return None
     

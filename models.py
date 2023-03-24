@@ -307,11 +307,11 @@ class DepartmentRecord:
         return get_percent(self.unarchived, self.total)[1]
     
 class HospitalizedPatient:
-    def __init__(self, row, khambenhs, cls):
+    def __init__(self, row, khambenhs, cls, xn):
         self.row = row
         self.khambenhs = khambenhs
         self.cls = cls
-
+        self.xn = xn
 
 class HospitalizedPatientKhamBenh:
     def __init__(self, khambenh, duocs):

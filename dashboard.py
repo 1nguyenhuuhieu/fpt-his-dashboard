@@ -1551,11 +1551,19 @@ def patient_detail(mayte):
         extrainfo_khambenh_list = []
         khambenhs = query_patient.khambenh_noitru(row.BenhAn_Id, cursor)
         cls = query_patient.cls_noitru(row.BenhAn_Id, cursor)
+        xetnghiems = query_patient.xetnghiem_id(row.BenhAn_Id, cursor)
         for khambenh in khambenhs:
             khambenh_noitru_toathuoc = query_patient.khambenh_noitru_toathuoc(khambenh.KhamBenh_Id, cursor)
             extrainfo_khambenh = HospitalizedPatientKhamBenh(khambenh,khambenh_noitru_toathuoc)
             extrainfo_khambenh_list.append(extrainfo_khambenh)
-        info = HospitalizedPatient(row,extrainfo_khambenh_list, cls)
+        xn = []
+        for xetnghiem in xetnghiems:
+            ketqua_xetnghiem = query_patient.ketqua_xetnghiem(xetnghiem.id, cursor)
+            xn.append(ketqua_xetnghiem)
+        
+        print(xn)
+        print('-------------')
+        info = HospitalizedPatient(row,extrainfo_khambenh_list, cls, xn)
         history_hospital_list.append(info)
 
     doanhthu = query_patient.doanhthu(mayte, cursor)
