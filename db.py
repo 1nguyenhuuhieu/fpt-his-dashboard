@@ -5,9 +5,9 @@ import sqlite3
 # Kết nối database sql server
 def get_db():
     server = '192.168.1.5'
-    database = 'eHospital_NgheAn'
+    database = 'eHospital_NgheAn11'
     username = 'homereader'
-    password = 'ttytanhson@2023'
+    password = 'ttytanhson@123'
     cnxn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER=' +
                           server+';DATABASE='+database+';UID='+username+';PWD=' + password)
     return cnxn
