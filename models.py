@@ -1,5 +1,7 @@
 from datetime import date, datetime, timedelta
 from dateutil.relativedelta import *
+from sqlquery import medical_record as query_medical_record
+
 
 
 
@@ -319,12 +321,23 @@ class HospitalizedPatientKhamBenh:
         self.khambenh = khambenh
         self.duocs = duocs
 
-class MedicalRecordDetail:
-    def __init__(self, KhamBenh_Id, cursor):
-        self.khambenh = cursor.execute("""
-        select * from NoiTru_KhamBenh where KhamBenh_Id=?
-        """, KhamBenh_Id).fetchone()
+class MedicalRecord:
+    def __init__(self, SoBenhAn, cursor):
+        self.info = query_medical_record.info(SoBenhAn, cursor)
         
-        self.toathuoc = cursor.execute("""
-        select * from ToaThuoc where KhamBenh_Id = ?
-        """, KhamBenh_Id).fetchall()
+        rows_khambenh_id = query_medical_record.examinitions_id(self.info.BenhAn_Id, cursor)
+        examinitions = []
+        for row in rows_khambenh_id:
+            examinition = Examinition(row.KhamBenh_Id, cursor)
+            examinitions.append(examinition)
+        self.examinitions = examinitions
+
+
+    def color_badge_trangthai(self):
+       if self.info.trangthai in ('Ra viện', 'Xin về', 'Bỏ về'):  return 'text-bg-success' 
+       if self.info.trangthai in ('Chuyển viện', 'Tử vong', 'Tử vong trước 24h'):  return 'text-bg-danger' 
+       return 'text-bg-warning' 
+
+class Examinition:
+    def __init__(self, KhamBenh_Id, cursor):
+        self.examinition = query_medical_record.examinition(KhamBenh_Id, cursor)

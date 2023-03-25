@@ -1594,13 +1594,13 @@ def patient_detail(mayte):
 def patient_hospitalized(sobenhan):
     cnxn = get_db()
     cursor = cnxn.cursor()
-    info = query_medical_record.info(sobenhan, cursor)
+    medical_record = MedicalRecord(sobenhan, cursor)
     
  
     today = datetime.today().strftime('%Y-%m-%d')
     value = {
         'today': today,
-        'info': info
+        'medical_record': medical_record
     }
     return render_template('patient/hospitalized.html', value=value)
 

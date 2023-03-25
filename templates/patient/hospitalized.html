@@ -4,32 +4,137 @@
 {% endblock %}
 {% block content %}
 
-{% if value.info %}
-{% set info=value.info%}
+{% if value.medical_record %}
+{% set info=value.medical_record.info %}
 <div class="row">
     <div class="col-lg-6">
         <div class="card" >
             <div class="card-body">
               <h5 class="card-title">{{ info.TenPhongBan }} - Số bệnh án: {{ info.SoBenhAn }}</h5>
               <hr class="my-2">
-              <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-              <a href="#" class="btn btn-primary">Go somewhere</a>
+              <p class="card-text text-muted"><i class="fa-regular fa-clock me-2"></i>{{ info.ThoiGianVaoKhoa }} {% if info.ThoiGianRaVien %} đến {{info.ThoiGianRaVien}} {% else %} (chưa ra viện) {% endif %} {% if info.SoNgayDieuTri %} - {{ info.SoNgayDieuTri}} ngày {% endif %}
+                <span class="badge {{value.medical_record.color_badge_trangthai()}} ms-1">{{info.trangthai}}</span>
+                <span class="badge text-bg-primary ms-1">{{info.ketqua}}</span>
+              </p>
+            
+              <table class="table table-sm">
+      
+                <tbody>
+                  <tr>
+                    <th scope="row">Bác sĩ điều trị</th>
+                    <td>{{ info.TenNhanVien }}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Chẩn đoán vào khoa</th>
+                    <td>{{ info.ChanDoanVaoKhoa }}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Chẩn đoán ra viện</th>
+                    <td>{{ info.ChanDoanRaVien }}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Mã giường</th>
+                    <td>{{ info.MaGiuong }}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Số lưu trữ</th>
+                    <td>{{ info.SoLuuTru }}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Doanh thu</th>
+                    <td>{{ info.doanhthu }} đ</td>
+                  </tr>
+                </tbody>
+              </table>
+
+           
             </div>
           </div>
 
     </div>
-    <div class="col-lg-6">
+    <div class="col-lg-6 mt-3 mt-sm-0">
 
-          <div class="card shadow-sm" >
+          <div class="card shadow-sm h-100" >
             <div class="card-body">
-              <h5 class="card-title">{{ info.TenBenhNhan}} {{ info.tuoi }} tuổi</h5>
+              <h5 class="card-title">{{ info.TenBenhNhan}} {% if info.tuoi %} - {{ info.tuoi }} tuổi {% endif %}</h5>
               <hr class="my-2">
-              <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-              <a href="#" class="btn btn-primary">Go somewhere</a>
+                            
+              <table class="table table-sm">
+      
+                <tbody>
+                  <tr>
+                    <th scope="row">Ngày sinh</th>
+                    <td>{{ info.NgaySinh }}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Địa chỉ</th>
+                    <td>{{ info.DiaChi }}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Điện thoại</th>
+                    <td>{{ info.SoDienThoai }}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Mã giường</th>
+                    <td>{{ info.MaGiuong }}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Mã Y tế</th>
+                    <td>{{ info.MaYTe }}</td>
+                  </tr>
+                </tbody>
+              </table>
+
             </div>
           </div>
     </div>
 </div>
+
+{% if value.medical_record.examinitions %}
+{% set examinitions = value.medical_record.examinitions %}
+
+  {% for examinition in examinitions %}
+  <div class="row mt-3">
+    <div class="col-lg-12">
+      <div class="card" >
+      <div class="row g-0">
+        <div class="col-lg-6 border-end">
+        
+            <div class="card-body">
+              <div class="d-flex justify-content-between">
+                <h6 class="card-title fw-semibold">{{ loop.index}}. {{ examinition.examinition.ThoiGianKham }} </h6>
+                <h6 class="card-title"><span class="badge text-bg-primary">BS. {{ examinition.examinition.TenNhanVien }}</span></h6>
+    
+              </div>
+              
+              
+              <hr class="mt-1 mb-2">
+              <p class="card-text text-danger fw-semibold">Định bệnh: 
+                {{ examinition.examinition.DinhBenh }}</p>
+              <p class="card-text"><span class="fw-semibold">Diễn biến: </span>
+                {{ examinition.examinition.DienBien }}</p>
+            </div>
+          </div>
+
+          <div class="col-lg-6">
+                    
+            <div class="card-body">
+                <h6 class="card-title fw-semibold">Chỉ định</h6>
+            </div>
+          </div>
+    
+
+        </div>
+  
+      </div>
+
+
+    </div>
+  </div>
+
+  {% endfor %}
+
+{% endif %}
 {% endif %}
 
 
