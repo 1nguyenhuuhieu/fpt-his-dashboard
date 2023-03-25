@@ -3,32 +3,32 @@ from flask import g
 import pyodbc
 import sqlite3
 # Kết nối database sql server
-def get_db():
-    server = '192.168.1.5'
-    database = 'eHospital_NgheAn11'
-    username = 'homereader'
-    password = 'ttytanhson@123'
-    cnxn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER=' +
-                          server+';DATABASE='+database+';UID='+username+';PWD=' + password)
-    return cnxn
-
-server_location = 'work'
-
 # def get_db():
-#     if server_location == 'home':
-#         if 'db' not in g:
-#             g.db = pyodbc.connect(driver='{ODBC Driver 17 for SQL Server}', server='localhost', database='eHospital_NgheAn',
-#                                 trusted_connection='yes')
-#             return g.db
-#     else:
-#         if 'db' not in g:
-#             server = '192.168.123.254'
-#             database = 'eHospital_NgheAn'
-#             username = 'dashboard'
-#             password = 'ttytanhson@2023'
-#             g.db = pyodbc.connect('DRIVER={SQL Server Native Client 11.0};SERVER=' +
-#                                 server+';DATABASE='+database+';UID='+username+';PWD=' + password)
-#             return g.db
+#     server = '192.168.1.5'
+#     database = 'eHospital_NgheAn11'
+#     username = 'homereader'
+#     password = 'ttytanhson@123'
+#     cnxn = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER=' +
+#                           server+';DATABASE='+database+';UID='+username+';PWD=' + password)
+#     return cnxn
+
+server_location = 'home'
+
+def get_db():
+    if server_location == 'home':
+        if 'db' not in g:
+            g.db = pyodbc.connect(driver='{ODBC Driver 17 for SQL Server}', server='localhost', database='eHospital_NgheAn',
+                                trusted_connection='yes')
+            return g.db
+    else:
+        if 'db' not in g:
+            server = '192.168.123.254'
+            database = 'eHospital_NgheAn'
+            username = 'dashboard'
+            password = 'ttytanhson@2023'
+            g.db = pyodbc.connect('DRIVER={SQL Server Native Client 11.0};SERVER=' +
+                                server+';DATABASE='+database+';UID='+username+';PWD=' + password)
+            return g.db
 
 def close_db(e=None):
     db = g.pop('db', None)
