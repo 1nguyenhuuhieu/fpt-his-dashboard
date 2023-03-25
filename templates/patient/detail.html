@@ -136,7 +136,6 @@
                                 <small class="text-muted my-1"><i
                                         class="fa-regular fa-clock me-1"></i>{{visited.3.strftime('%H:%M
                                     %d-%m-%Y')}}</small>
-
                             </div>
                         {% if visited.4 and visited.2 %}
                             <div class="d-flex flex-column justify-content-start align-items-end ms-2">
@@ -152,10 +151,8 @@
                                             class="fa-solid fa-arrow-right ms-1"></i></small></span>
                             </div>
                         {% endif %}
-
                         </div>
                     </a>
-
                         <!-- Modal -->
                         <div class="modal fade" id="patientVisitedHistory" tabindex="-1" aria-labelledby="exampleModalLabel"
                         aria-hidden="true">
@@ -198,11 +195,7 @@
                         </form>
                         </div>
                     </div>
-
-
                     {% endfor %}
-
-
                     {% endif %}
                 </div>
             </div>
@@ -210,7 +203,7 @@
                 <div class="list-group list-group-flush">
                     {% if value.history_hospital_list %}
                     {% for patient in value.history_hospital_list %}
-                    <a href="#" class="list-group-item list-group-item-action" data-bs-toggle="modal" data-bs-target="#patientHospitalHistory{{loop.index}}">
+                    <a href="{{ url_for('patient_hospitalized', sobenhan=patient.row.SoBenhAn)}}" class="list-group-item list-group-item-action">
                         <div class="d-flex justify-content-between align-items-center">
                             <div>
                                 <h6 class="">{{loop.index}}. {{patient.row.TenPhongBan}} </h6>
@@ -234,149 +227,7 @@
                             </div>
                         </div>
                     </a>
-
-                        <!-- Modal -->
-                        <div class="modal fade" id="patientHospitalHistory{{loop.index}}" tabindex="-1" aria-labelledby="exampleModalLabel2"
-                        aria-hidden="true">
-                        <div class="modal-dialog modal-lg">
-                            <form method="post" action="#" id="printJS-form{{loop.index}}">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h1 class="modal-title fs-5" id="exampleModalLabel2">Lịch sử điều trị nội trú</h1>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body">
-                                    <h5>{{patient.row.TenPhongBan}} - Số bệnh án: {{patient.row.SoBenhAn}}</h5>
-                                    <div class="d-flex align-items-center">
-                                        <small class="text-muted my-1"><i
-                                            class="fa-regular fa-clock me-1"></i>{{patient.row.ThoiGianVaoVien.strftime('%d-%m-%Y')}} {% if
-                                                patient.row.ThoiGianRaVien %}đến {{patient.row.ThoiGianRaVien.strftime('%d-%m-%Y')}} {% else %}(chưa ra viện){% endif
-                                        %}</small>
-                                        {% if patient.row.ravien == 'Chuyển tuyến' or patient.row.ravien == 'Chuyển viện' %}
-                                        <span class="badge bg-danger mx-2">{{patient.row.ravien }}</span>
-                                        {% elif patient.row.ravien == 'Nhập viện'%}
-                                        <span class="badge text-bg-warning mx-2">{{ patient.row.ravien }}</span>
-                                        {% else %}
-                                        <span class="badge bg-success mx-2">{{ patient.row.ravien }}</span>
-                                        {% endif %}
-                                        <span class="badge text-bg-primary">BS.{{patient.row.TenNhanVien}}</span>
-                                    </div>
-                                    <hr class="my-2">
-                   
-                                    <p><span class="fw-bold">Chẩn đoán vào khoa: </span><span> {{patient.row.ChanDoanVaoKhoa}}</span> </p>
-                                    <p><span class="fw-bold">Chẩn đoán ra khoa: </span><span class="badge bg-primary me-1">{{patient.row.ketqua}}</span><span>
-                                        {{patient.row.ChanDoanRaVien}}
-                                    </span> </p>
-                                    <hr class="my-2">
-                                    <h6 class="fw-bold">Khám bệnh </h6>
-                                        {% if patient.khambenhs %}
-                                       <ol class="list-group list-group-numbered my-3 shadow-sm">
-                                        {% for khambenh in patient.khambenhs %}
-                                        <li class="list-group-item">
-                                   
-                                        <span class="fw-semibold">{{ khambenh.khambenh.ThoiGianKham.strftime('%H:%M %d-%m-%Y') }} </span>
-                                        <span class="badge text-bg-primary">
-                                            BS. {{ khambenh.khambenh.TenNhanVien }} </span>
-                                  
-                                     
-                                            <p class="text-danger fw-bold mt-2">
-                                         Định bệnh: {{ khambenh.khambenh.DinhBenh }}
-                                            
-                                        </p>
-                                  
-                                        <p class="">
-                                            <span class="fw-semibold">Diễn biến chi tiết: </span>
-                                                        {{ khambenh.khambenh.DienBien }} 
-                                        </p>
-                                        <p>
-                                            {% if khambenh.duocs %}<span class="fw-semibold">Dược: </span>  {% for duoc in khambenh.duocs %}<span class="me-1">{{ duoc.Tenhang }}({{duoc.SoLuong}}).</span>{%endfor%} {% endif %}
-                                        </p>
-                                </li>
-                                    {% endfor %}
-                                </ol>
-                                    {% endif %}
-                                    <h6 class="fw-bold">Chỉ định</h6> {% if patient.cls %} 
-                                        <ol class="list-group list-group-numbered my-3 shadow-sm">
-                                        {% for cls in patient.cls %}
-                                        <li class="list-group-item">
-                         
-                                                <span class="fw-semibold">
-                                                    {{ cls.NoiDungChiTiet }}{% if cls.ThoiGianThucHien %}  - {{ cls.ThoiGianThucHien.strftime("%H:%M %d-%m-%Y") }} {% endif %}
-                                                </span>
-                                            
-                                            {% if cls.TenNhanVien %}
-                                            <p>
-                                            <span class="badge text-bg-primary">BS. {{cls.TenNhanVien}}</span>
-                                            <span>{{ cls.MoTa_Text}}</span>
-                                        </p>
-                                   
-                                            <p class="fst-italic fw-semibold my-2 text-danger">Kết luận: {{ cls.KetLuan}}</p>
-                                            {% endif %}
-
-                                        </li>
-                                        
-                                        {% endfor %}
-                                    {% endif %}
-                                </ol>
-
-                                <h6 class="fw-bold">Xét nghiệm</h6>
-
-                                {% if patient.xn %}
-                            <ol class="list-group list-group-numbered">
-                                    {% for xn in patient.xn %}
-                                    <li class="list-group-item">
-                                        <span class="fw-semibold">
-                                            {% set a = xn.0 %}
-                                            {% for i in a %}
-                                            {{ i if loop.index == 2 }}
-                                            {{ i.strftime("%H:%M %d-%m-%Y") if loop.first }}
-                                            {% endfor %}
-
-                                        </span>
-                                        <hr>
-                                     
-                                        <table class="table table-sm  table-hover">
-                                            <thead>
-                                              <tr>
-                                                <th scope="col">Nội dung</th>
-                                                <th scope="col">Kết quả</th>
-                                                <th scope="col">Đơn vị tính</th>
-                                                <th scope="col">Chỉ số bình thường</th>
-                                              </tr>
-                                            </thead>
-                                            <tbody>
-                                    {% for detail in xn %}
-                                              <tr>
-                                                <th scope="row">{{detail.ServiceName}}</th>
-                                                <td class="{{ 'text-danger fw-semibold' if detail.Value < detail.MinLimited or detail.Value > detail.MaxLimited  }}">{{ detail.Value}}</td>
-                                                <td>{{ detail.Unit}}</td>
-                                                <td class="text-success fw-semibold">{{ detail.MinLimited}} - {{ detail.MaxLimited}}</td>
-                                              </tr>
-                                              {% endfor %}
-                             
-                                            </tbody>
-                                          </table>
-
-                                </li>
-                                    {% endfor %}
-                                </ol>
-                                {% endif %}
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary"
-                                        data-bs-dismiss="modal">Đóng</button>
-                                    <button type="button" onclick="printJS('printJS-form{{loop.index}}', 'html')" class="btn btn-primary">In</button>
-                                </div>
-                            </div>
-                        </form>
-                        </div>
-                    </div>
-
-
                     {% endfor %}
-
-
                     {% endif %}
                 </div>
             </div>

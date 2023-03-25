@@ -331,6 +331,19 @@ class MedicalRecord:
             examinition = Examinition(row.KhamBenh_Id, cursor)
             examinitions.append(examinition)
         self.examinitions = examinitions
+        self.medical_images = query_medical_record.medical_images(self.info.BenhAn_Id, cursor)
+        self.medical_requests = query_medical_record.medical_requests(self.info.BenhAn_Id, cursor)
+
+        labs = []
+        for row in self.medical_requests:
+            clsyeucau_id = row.CLSYeuCau_Id
+            thoigian = row.ThoiGianYeuCau
+            noidung = row.NoiDungChiTiet
+            lab_query = query_medical_record.lab(clsyeucau_id, cursor)
+            if lab_query:
+                lab = Lab(lab_query, thoigian, noidung)
+                labs.append(lab)
+        self.labs = labs
 
 
     def color_badge_trangthai(self):
@@ -341,3 +354,10 @@ class MedicalRecord:
 class Examinition:
     def __init__(self, KhamBenh_Id, cursor):
         self.examinition = query_medical_record.examinition(KhamBenh_Id, cursor)
+        self.medicines = query_medical_record.medicines(KhamBenh_Id, cursor)
+
+class Lab:
+    def __init__(self, labs,thoigian,noidung):
+        self.thoigian = thoigian
+        self.noidung = noidung
+        self.labs = labs

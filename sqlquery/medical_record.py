@@ -4,7 +4,8 @@ def info(sobenhan, cursor):
     SELECT BenhAn_Id, SoBenhAn,SoLuuTru, TenBenhNhan, benhnhan.NgaySinh, benhnhan.DiaChi,
     benhnhan.MaYTe, benhnhan.SoDienThoai, TenNhanVien, TenPhongBan, ThoiGianVaoKhoa, ThoiGianRaVien, SoNgayDieuTri,
     trangthairavien.Dictionary_Name as trangthai, ChanDoanVaoKhoa, ChanDoanRaVien, ketquaravien.Dictionary_Name as ketqua, MaGiuong, SUM(SoLuong* DonGiaDoanhThu) as doanhthu,
-    YEAR(benhnhan.NgaySinh) as tuoi
+    YEAR(benhnhan.NgaySinh) as tuoi,
+    TienSuBenh,benhnhan.GioiTinh as gioitinhbenhnhan
     FROM BenhAn
     LEFT JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_BenhNhan] as benhnhan
     ON BenhAn.BenhNhan_Id = benhnhan.BenhNhan_Id
@@ -23,7 +24,8 @@ def info(sobenhan, cursor):
 
     GROUP BY BenhAn_Id, SoBenhAn,SoLuuTru, TenBenhNhan, benhnhan.NgaySinh, benhnhan.DiaChi,benhnhan.SoDienThoai,
     benhnhan.MaYTe, TenNhanVien, TenPhongBan, ThoiGianVaoKhoa, ThoiGianRaVien, SoNgayDieuTri,
-    trangthairavien.Dictionary_Name, ChanDoanVaoKhoa, ChanDoanRaVien, ketquaravien.Dictionary_Name, MaGiuong
+    trangthairavien.Dictionary_Name, ChanDoanVaoKhoa, ChanDoanRaVien, ketquaravien.Dictionary_Name, MaGiuong,
+    TienSuBenh,benhnhan.GioiTinh
     """
     try:
         row = cursor.execute(sql, sobenhan).fetchone()
@@ -69,3 +71,77 @@ def examinitions_id(benhan_id, cursor):
         print("Lỗi query medical_record.examinitions_id")
         return None
     
+def medicines(khambenh_id, cursor):
+    sql = """SELECT SoLuong,  DonViTinh, TenDuocDayDu, Dictionary_Name as duongdung
+            FROM NoiTru_ToaThuoc
+            INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_Duoc] as duoc
+            ON NoiTru_ToaThuoc.Duoc_Id = duoc.Duoc_Id
+            INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[Lst_Dictionary] as dict
+            ON duoc.DuongDung_Id = dict.Dictionary_Id
+            WHERE KhamBenh_Id = ?
+            """
+    try:
+        rows = cursor.execute(sql, khambenh_id).fetchall()
+        for row in rows:
+            row.SoLuong = int(row.SoLuong) 
+        return rows
+    except:
+        print("Lỗi query medical_record.medicines")
+        return None
+    
+def medical_images(benhan_id, cursor):
+    sql = """SELECT ThoiGianThucHien, TenNhanVien as bacsiketluan, NoiDungChiTiet, MoTa_Text, KetLuan
+        FROM CLSYeuCau
+        INNER JOIN CLSKetQua as ketqua
+        ON CLSYeuCau.CLSYeuCau_Id = ketqua.CLSYeuCau_Id
+        INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[NhanVien] as nhanvien
+        ON ketqua.BacSiKetLuan_Id = nhanvien.NhanVien_Id
+        WHERE BenhAn_Id = ?
+        ORDER BY ThoiGianThucHien"""
+    try:
+        rows = cursor.execute(sql, benhan_id).fetchall()
+        for row in rows:
+            if row.ThoiGianThucHien: row.ThoiGianThucHien = row.ThoiGianThucHien.strftime("%H:%M %d/%m/%Y")
+        return rows
+    except:
+        print("Lỗi query medical_record.medical_images")
+        return None
+    
+
+# cls nội trú
+def lab(clsyeucau_id, cursor):
+    query = """
+    SELECT ServiceName, xetnghiem_ketqua.Unit, xetnghiem_ketqua.Value,
+    xetnghiem_ketqua.Value2, xetnghiem_ketqua.MinLimited, xetnghiem_ketqua.MaxLimited
+    FROM [eHospital_NgheAn].[dbo].[CLSYeuCau] as yeucau
+    INNER JOIN [eLab_NgheAn].[dbo].[LabResult] as xetnghiem
+    ON yeucau.CLSYeuCau_Id = xetnghiem.RequestID
+    INNER JOIN [eLab_NgheAn].[dbo].[LabResultDetail] as xetnghiem_ketqua
+    ON xetnghiem.ResultID = xetnghiem_ketqua.ResultID
+    INNER JOIN [eLab_NgheAn].[dbo].[DIC_Service] as service_dict
+    on service_dict.ServiceID = xetnghiem_ketqua.ServiceID
+    where CLSYeuCau_Id = ? AND Value IS NOT NULL
+    """
+    try:
+        q = cursor.execute(query, clsyeucau_id).fetchall()
+        return q
+    except:
+        print("Lỗi khi query patient.lab")
+        return None
+    
+def medical_requests(benhan_id, cursor):
+    query = """
+        SELECT CLSYeuCau_Id, ThoiGianYeuCau, NoiDungChiTiet, TenNhanVien as bacsi
+        FROM CLSYeuCau
+        LEFT JOIN [eHospital_NgheAn_Dictionary].[dbo].[NhanVien] as nhanvien
+        ON CLSYeuCau.BacSiChiDinh_Id = nhanvien.NhanVien_Id
+        WHERE BenhAn_Id = ?
+    """
+    try:
+        q = cursor.execute(query, benhan_id).fetchall()
+        for row in q:
+            if row.ThoiGianYeuCau: row.ThoiGianYeuCau = row.ThoiGianYeuCau.strftime("%H:%M %d/%m/%Y")
+        return q
+    except:
+        print("Lỗi khi query patient.medical_requests")
+        return None     

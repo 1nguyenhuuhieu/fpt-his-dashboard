@@ -1596,7 +1596,7 @@ def patient_hospitalized(sobenhan):
     cursor = cnxn.cursor()
     medical_record = MedicalRecord(sobenhan, cursor)
     
- 
+
     today = datetime.today().strftime('%Y-%m-%d')
     value = {
         'today': today,
