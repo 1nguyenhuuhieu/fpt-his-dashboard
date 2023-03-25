@@ -3,21 +3,36 @@
 <i class="fa-solid fa-book-medical me-2"></i>{% block title %}Hồ sơ bệnh nhân{% endblock %}
 {% endblock %}
 {% block content %}
-<h1> lịch sử khám bệnh</h1>
-<h4>{{ value.medical_record_info.BenhAn_Id}}</h4>
-{% if value.list_examinition %}
-{% set examinitions = value.list_examinition %}
-<ol>
-{% for examinition in examinitions %}
-<li> {{ examinition.khambenh.KhamBenh_Id }}
- 
-   {{examinition.toathuoc}}
 
-</li>
-{% endfor %}
-</ol>
+{% if value.info %}
+{% set info=value.info%}
+<div class="row">
+    <div class="col-lg-6">
+        <div class="card" >
+            <div class="card-body">
+              <h5 class="card-title">{{ info.TenPhongBan }} - Số bệnh án: {{ info.SoBenhAn }}</h5>
+              <hr class="my-2">
+              <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+              <a href="#" class="btn btn-primary">Go somewhere</a>
+            </div>
+          </div>
+
+    </div>
+    <div class="col-lg-6">
+
+          <div class="card shadow-sm" >
+            <div class="card-body">
+              <h5 class="card-title">{{ info.TenBenhNhan}} {{ info.tuoi }} tuổi</h5>
+              <hr class="my-2">
+              <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+              <a href="#" class="btn btn-primary">Go somewhere</a>
+            </div>
+          </div>
+    </div>
+</div>
 {% endif %}
- 
+
+
 <script>
     const urlGenerator = '/all_patients/';
     const todayURL = "{{ url_for('all_patients') }}";

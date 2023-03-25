@@ -1590,31 +1590,17 @@ def patient_detail(mayte):
 
 #Trang lịch sử nội trú điều trị
 @app.route('/medical-record/<string:sobenhan>')
+@register_breadcrumb(app, '..medical_record', 'Chi tiết bệnh án')
 def patient_hospitalized(sobenhan):
     cnxn = get_db()
     cursor = cnxn.cursor()
-    medical_record_info = cursor.execute("""
-    SELECT *
-    FROM BenhAn
-    WHERE SoBenhAn = ?
-    """, sobenhan).fetchone()
+    info = query_medical_record.info(sobenhan, cursor)
     
-    examinitions = cursor.execute("""
-    select * from NoiTru_KhamBenh where BenhAn_Id=?
-    """,medical_record_info.BenhAn_Id).fetchall()
-
-    list_examinition = []
-    for examinition in examinitions:
-        e = MedicalRecordDetail(examinition.KhamBenh_Id, cursor)
-        list_examinition.append(e)
-
-    for examinition in list_examinition:
-        print(examinition.khambenh.DinhBenh)
-
+ 
+    today = datetime.today().strftime('%Y-%m-%d')
     value = {
-        'medical_record_info': medical_record_info,
-        'list_examinition': list_examinition
-
+        'today': today,
+        'info': info
     }
     return render_template('patient/hospitalized.html', value=value)
 
