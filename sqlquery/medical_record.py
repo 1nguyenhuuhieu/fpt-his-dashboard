@@ -147,4 +147,44 @@ def medical_requests(benhan_id, cursor):
         return q
     except:
         print("Lỗi khi query patient.medical_requests")
+        return None  
+       
+def surgery_ekip(BenhAnPhauThuat_Id, cursor):
+    query = """
+    SELECT TenNhanVien as ten,
+    dict.Dictionary_Name as vaitro
+    FROM [eHospital_NgheAn].[dbo].[BenhAnPhauThuat_EKip] as ekip
+    INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[NhanVien] as nhanvien
+    ON ekip.NhanVien_Id = nhanvien.NhanVien_Id
+    INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[Lst_Dictionary] as dict
+    ON ekip.VaiTro_Id = dict.Dictionary_Id
+    WHERE BenhAnPhauThuat_Id = ?
+    """
+    try:
+        q = cursor.execute(query, BenhAnPhauThuat_Id).fetchall()
+        return q
+    except:
+        print("Lỗi khi query patient.surgery_ekip")
+        return None  
+       
+def surgeries(BenhAn_Id, cursor):
+    query = """
+SELECT BenhAnPhauThuat_Id, ThoiGianBatDau, ThoiGianKetThuc, ICD_TruocPhauThuat_MoTa, ICD_SauPhauThuat_MoTa,
+dict_ppvc.Dictionary_Name as phuongphapvocam, dict_taibien.Dictionary_Name as taibien,
+CanThiepPhauThuat
+FROM BenhAnPhauThuat
+LEFT JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_LoaiPhauThuat] as loaiphauthuat
+ON BenhAnPhauThuat.LoaiPhauThuat = loaiphauthuat.LoaiPhauThuat
+LEFT JOIN [eHospital_NgheAn_Dictionary].[dbo].[Lst_Dictionary] as dict_ppvc
+ON BenhAnPhauThuat.PhuongPhapVoCam_Id = dict_ppvc.Dictionary_Id
+LEFT JOIN [eHospital_NgheAn_Dictionary].[dbo].[Lst_Dictionary] as dict_taibien
+ON BenhAnPhauThuat.TaiBien_Id = dict_taibien.Dictionary_Id
+WHERE BenhAn_Id = ?
+
+    """
+    try:
+        q = cursor.execute(query, BenhAn_Id).fetchall()
+        return q
+    except:
+        print("Lỗi khi query patient.surgery")
         return None     

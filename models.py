@@ -346,6 +346,18 @@ class MedicalRecord:
                 labs.append(lab)
         self.labs = labs
 
+        surgeries = []
+        surgeries_query = query_medical_record.surgeries(self.info.BenhAn_Id, cursor)
+        for row in surgeries_query:
+            benhanphauthuat_id = row.BenhAnPhauThuat_Id
+
+            surgery_ekip = query_medical_record.surgery_ekip(benhanphauthuat_id, cursor)
+            surgery = Surgery(row, surgery_ekip)
+
+            surgeries.append(surgery)
+        self.surgeries = surgeries
+
+
 
     def color_badge_trangthai(self):
        if self.info.trangthai in ('Ra viện', 'Xin về', 'Bỏ về'):  return 'text-bg-success' 
@@ -363,3 +375,14 @@ class Lab:
         self.noidung = noidung
         self.labs = labs
         self.bacsichidinh = bacsichidinh
+
+class Surgery:
+    def __init__(self, row, ekip):
+        self.thoigianbatdau = row.ThoiGianBatDau
+        self.thoigianketthuc = row.ThoiGianKetThuc
+        self.motatruocphauthuat = row.ICD_TruocPhauThuat_MoTa
+        self.motasauphauthuat = row.ICD_SauPhauThuat_MoTa
+        self.phuongphapvocam = row.phuongphapvocam
+        self.taibien = row.taibien
+        self.canthiepphauthuat = row.CanThiepPhauThuat
+        self.ekip = ekip

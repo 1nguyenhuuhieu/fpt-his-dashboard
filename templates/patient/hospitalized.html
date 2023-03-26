@@ -10,85 +10,87 @@
 <div class="accordion" id="accordionExample123123">
   <div class="accordion-item">
     <h2 class="accordion-header">
-      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInfo" aria-expanded="true" aria-controls="collapseOne">
+      <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInfo"
+        aria-expanded="true" aria-controls="collapseOne">
         <h5><i class="fa-solid fa-info me-2 fa-fw"></i>Thông tin bệnh án</h5>
       </button>
     </h2>
     <div id="collapseInfo" class="accordion-collapse collapse show" data-bs-parent="#accordionExample123123">
       <div class="accordion-body">
 
-<div class="row ">
+        <div class="row ">
 
-  <div class="col-lg-7">
-        <h5>{{ info.TenPhongBan }}</h5>
-        <hr class="my-2">
-        <p class="card-text text-muted"><i class="fa-regular fa-clock me-2"></i>{{ info.ThoiGianVaoKhoa }} {% if
-          info.ThoiGianRaVien %} đến {{info.ThoiGianRaVien}} {% else %} (chưa ra viện) {% endif %} {% if
-          info.SoNgayDieuTri %} - {{ info.SoNgayDieuTri}} ngày {% endif %}
-          <span class="badge {{value.medical_record.color_badge_trangthai()}} ms-1">{{info.trangthai}}</span>
-          <span class="badge text-bg-primary ms-1">{{info.ketqua}}</span>
-        </p>
-        <table class="table table-sm">
-          <tbody>
-            <tr>
-              <th scope="row">Thông tin chung</th>
-              <td>Số bệnh án: {{ info.SoBenhAn }}; Số lưu trữ: {{ info.SoLuuTru }}; Mã giường: {{ info.MaGiuong }} </td>
-            </tr>
-            <tr>
-              <th scope="row">Bác sĩ điều trị</th>
-              <td>{{ info.TenNhanVien }}</td>
-            </tr>
-            <tr>
-              <th scope="row">Chẩn đoán vào khoa</th>
-              <td>{{ info.ChanDoanVaoKhoa }}</td>
-            </tr>
-            <tr>
-              <th scope="row">Chẩn đoán ra viện</th>
-              <td>{{ info.ChanDoanRaVien }}</td>
-            </tr>
-            <tr>
-              <th scope="row">Doanh thu</th>
-              <td>{{ info.doanhthu }} đ</td>
-            </tr>
-          </tbody>
-        </table>
-  </div>
-  <div class="col-lg-5  mt-3 mt-sm-0">
+          <div class="col-lg-7">
+            <h5>{{ info.TenPhongBan }}</h5>
+            <hr class="my-2">
+            <p class="card-text text-muted"><i class="fa-regular fa-clock me-2"></i>{{ info.ThoiGianVaoKhoa }} {% if
+              info.ThoiGianRaVien %} đến {{info.ThoiGianRaVien}} {% else %} (chưa ra viện) {% endif %} {% if
+              info.SoNgayDieuTri %} - {{ info.SoNgayDieuTri}} ngày {% endif %}
+              <span class="badge {{value.medical_record.color_badge_trangthai()}} ms-1">{{info.trangthai}}</span>
+              <span class="badge text-bg-primary ms-1">{{info.ketqua}}</span>
+            </p>
+            <table class="table table-sm">
+              <tbody>
+                <tr>
+                  <th scope="row">Thông tin chung</th>
+                  <td>Số bệnh án: {{ info.SoBenhAn }}; Số lưu trữ: {{ info.SoLuuTru }}; Mã giường: {{ info.MaGiuong }}
+                  </td>
+                </tr>
+                <tr>
+                  <th scope="row">Bác sĩ điều trị</th>
+                  <td>{{ info.TenNhanVien }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Chẩn đoán vào khoa</th>
+                  <td>{{ info.ChanDoanVaoKhoa }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Chẩn đoán ra viện</th>
+                  <td>{{ info.ChanDoanRaVien }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Doanh thu</th>
+                  <td>{{ info.doanhthu }} đ</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="col-lg-5  mt-3 mt-sm-0">
 
-    <h5>{{ info.TenBenhNhan}} {% if info.tuoi %} - {{ info.tuoi }} tuổi {% endif %}</h5>
-    <hr class="my-2">
+            <h5>{{ info.TenBenhNhan}} {% if info.tuoi %} - {{ info.tuoi }} tuổi {% endif %}</h5>
+            <hr class="my-2">
 
-    <table class="table table-sm">
+            <table class="table table-sm">
 
-      <tbody>
-        <tr>
-          <th scope="row">Giới tính</th>
-          <td>{{ info.gioitinhbenhnhan }}</td>
-        </tr>
-        <tr>
-          <th scope="row">Ngày sinh</th>
-          <td>{{ info.NgaySinh }}</td>
-        </tr>
-        <tr>
-          <th scope="row">Địa chỉ</th>
-          <td>{{ info.DiaChi }}</td>
-        </tr>
-        <tr>
-          <th scope="row">Điện thoại</th>
-          <td>{{ info.SoDienThoai }}</td>
-        </tr>
-        <tr>
-          <th scope="row">Mã Y tế</th>
-          <td>{{ info.MaYTe }}</td>
-        </tr>
-        <tr>
-          <th scope="row">Tiền sử bệnh</th>
-          <td>{{ info.TienSuBenh }}</td>
-        </tr>
-      </tbody>
-    </table>
-</div>
-</div>
+              <tbody>
+                <tr>
+                  <th scope="row">Giới tính</th>
+                  <td>{{ info.gioitinhbenhnhan }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Ngày sinh</th>
+                  <td>{{ info.NgaySinh }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Địa chỉ</th>
+                  <td>{{ info.DiaChi }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Điện thoại</th>
+                  <td>{{ info.SoDienThoai }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Mã Y tế</th>
+                  <td>{{ info.MaYTe }}</td>
+                </tr>
+                <tr>
+                  <th scope="row">Tiền sử bệnh</th>
+                  <td>{{ info.TienSuBenh }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -338,46 +340,66 @@
 {% endif %}
 
 
-{% if value.medical_record.examinitions %}
-{% set examinitions = value.medical_record.examinitions %}
 
-<div class="accordion mt-3" id="accordionExample2">
+
+<div class="accordion mt-3" id="accordionSurgery">
   <div class="accordion-item  ">
     <h2 class="accordion-header ">
-      <button class="accordion-button " type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
-        aria-expanded="true" aria-controls="collapseOne">
+      <button class="accordion-button " type="button" data-bs-toggle="collapse" data-bs-target="#collapseSurgery"
+        aria-expanded="true" aria-controls="collapseSurgery">
         <h5><i class="fa-solid fa-scissors fa-fw me-2"></i>Phẫu thuật</h5>
       </button>
     </h2>
-    <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
+    <div id="collapseSurgery" class="accordion-collapse collapse show" data-bs-parent="#accordionSurgery">
       <div class="accordion-body p-0 p-sm-2  ">
+        {% if value.medical_record.surgeries %}
+        {% set surgeries = value.medical_record.surgeries %}
 
-        {% for examinition in examinitions %}
+        {% for surgery in surgeries %}
         <div class="row ">
           <div class="col-lg-12">
             <div class="row g-0">
               <div class="col-lg-7 p-2">
 
                 <div class="d-flex justify-content-between align-items-center bg-warning-subtle p-2 mb-2  rounded">
-                  <h6 class="m-0">{{ loop.index}}. {{ examinition.examinition.ThoiGianKham }} </h6>
-                  <h6 class="m-0"><span class="badge text-bg-primary">BS. {{ examinition.examinition.TenNhanVien
-                      }}</span></h6>
+                  <h6 class="m-0">{{ loop.index}}. {{ surgery.thoigianbatdau }} đến {{ surgery.thoigianketthuc }} </h6>
                 </div>
-                <p class="card-text text-danger fw-semibold">Định bệnh:
-                  {{ examinition.examinition.DinhBenh }}</p>
-                <p class="card-text"><span class="fw-semibold">Diễn biến: </span>
-                  {{ examinition.examinition.DienBien }}</p>
+                <p class="card-text text-danger fw-semibold">Phẫu thuật:
+                  {{ surgery.canthiepphauthuat }} </p>
+                  <table class="table table-sm">
+                    <tbody>
+                      <tr>
+                        <th scope="row">Trước phẫu thuật</th>
+                        <td>{{ surgery.motatruocphauthuat }}
+                        </td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Sau phẫu thuật</th>
+                        <td>{{ surgery.motasauphauthuat }}</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Phương pháp vô cảm</th>
+                        <td>{{ surgery.phuongphapvocam }}</td>
+                      </tr>
+                      <tr>
+                        <th scope="row">Tai biển</th>
+                        <td>{{ surgery.taibien }}</td>
+                      </tr>
+                 
+                    </tbody>
+                  </table>
+
               </div>
               <div class="col-lg-5 p-2 ">
-                {% if examinition.medicines %}
-                {% set medicines = examinition.medicines %}
+                {% if surgery.ekip %}
+                {% set ekip =  surgery.ekip %}
                 <div class="table-responsive bg-warning-subtle rounded p-2">
                   <table class="table table-sm table-borderless  m-0">
                     <tbody>
-                      {% for medicine in medicines%}
-                      <tr>
-                        <td>{{ medicine.TenDuocDayDu}}({{ medicine.duongdung }})</td>
-                        <td class="fw-semibold">{{ medicine.SoLuong }}</td>
+                      {% for person in ekip %}
+                      <tr class="{{ 'fw-semibold' if person.vaitro == 'Phẫu thuật viên chính' }}">
+                        <td >{{ person.ten }}</td>
+                        <td> {{ person.vaitro }} </td>
                       </tr>
                       {% endfor %}
                     </tbody>
@@ -396,14 +418,15 @@
         </div>
 
         {% endfor %}
+        {% else %}
+        <h5>Không</h5>
+        {% endif %}
 
       </div>
     </div>
   </div>
 </div>
 
-
-{% endif %}
 
 
 
