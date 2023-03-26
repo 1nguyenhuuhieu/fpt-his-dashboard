@@ -134,6 +134,21 @@ def lab(clsyeucau_id, cursor):
     
 def medical_requests(benhan_id, cursor):
     query = """
+    SELECT NoiDungChiTiet, COUNT(NoiDungChiTiet) as count
+    FROM CLSYeuCau
+    WHERE BenhAn_Id = ? 
+    GROUP BY NoiDungChiTiet
+    ORDER BY NoiDungChiTiet
+    """
+    try:
+        q = cursor.execute(query, benhan_id).fetchall()
+        return q
+    except:
+        print("Lỗi khi query patient.medical_requests")
+        return None  
+       
+def medical_requests_id(benhan_id, cursor):
+    query = """
         SELECT CLSYeuCau_Id, ThoiGianYeuCau, NoiDungChiTiet, TenNhanVien as bacsi
         FROM CLSYeuCau
         LEFT JOIN [eHospital_NgheAn_Dictionary].[dbo].[NhanVien] as nhanvien
@@ -159,6 +174,7 @@ def surgery_ekip(BenhAnPhauThuat_Id, cursor):
     INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[Lst_Dictionary] as dict
     ON ekip.VaiTro_Id = dict.Dictionary_Id
     WHERE BenhAnPhauThuat_Id = ?
+    ORDER BY vaitro
     """
     try:
         q = cursor.execute(query, BenhAnPhauThuat_Id).fetchall()

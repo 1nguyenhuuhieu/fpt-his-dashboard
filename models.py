@@ -332,10 +332,11 @@ class MedicalRecord:
             examinitions.append(examinition)
         self.examinitions = examinitions
         self.medical_images = query_medical_record.medical_images(self.info.BenhAn_Id, cursor)
+        medical_requests = query_medical_record.medical_requests_id(self.info.BenhAn_Id, cursor)
         self.medical_requests = query_medical_record.medical_requests(self.info.BenhAn_Id, cursor)
 
         labs = []
-        for row in self.medical_requests:
+        for row in medical_requests:
             clsyeucau_id = row.CLSYeuCau_Id
             thoigian = row.ThoiGianYeuCau
             noidung = row.NoiDungChiTiet
