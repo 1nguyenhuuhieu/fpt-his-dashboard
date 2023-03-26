@@ -112,7 +112,8 @@ def medical_images(benhan_id, cursor):
 def lab(clsyeucau_id, cursor):
     query = """
     SELECT ServiceName, xetnghiem_ketqua.Unit, xetnghiem_ketqua.Value,
-    xetnghiem_ketqua.Value2, xetnghiem_ketqua.MinLimited, xetnghiem_ketqua.MaxLimited
+    xetnghiem_ketqua.Value2, xetnghiem_ketqua.MinLimited, xetnghiem_ketqua.MaxLimited,
+    TenNhanVien as bacsi
     FROM [eHospital_NgheAn].[dbo].[CLSYeuCau] as yeucau
     INNER JOIN [eLab_NgheAn].[dbo].[LabResult] as xetnghiem
     ON yeucau.CLSYeuCau_Id = xetnghiem.RequestID
@@ -120,6 +121,8 @@ def lab(clsyeucau_id, cursor):
     ON xetnghiem.ResultID = xetnghiem_ketqua.ResultID
     INNER JOIN [eLab_NgheAn].[dbo].[DIC_Service] as service_dict
     on service_dict.ServiceID = xetnghiem_ketqua.ServiceID
+    LEFT JOIN [eHospital_NgheAn_Dictionary].[dbo].[NhanVien] as nhanvien
+    ON yeucau.BacSiChiDinh_Id = nhanvien.NhanVien_Id
     where CLSYeuCau_Id = ? AND Value IS NOT NULL
     """
     try:

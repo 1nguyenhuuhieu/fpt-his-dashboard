@@ -341,7 +341,8 @@ class MedicalRecord:
             noidung = row.NoiDungChiTiet
             lab_query = query_medical_record.lab(clsyeucau_id, cursor)
             if lab_query:
-                lab = Lab(lab_query, thoigian, noidung)
+                bacsichidinh = row.bacsi
+                lab = Lab(lab_query, thoigian, noidung, bacsichidinh)
                 labs.append(lab)
         self.labs = labs
 
@@ -357,7 +358,8 @@ class Examinition:
         self.medicines = query_medical_record.medicines(KhamBenh_Id, cursor)
 
 class Lab:
-    def __init__(self, labs,thoigian,noidung):
+    def __init__(self, labs,thoigian,noidung, bacsichidinh):
         self.thoigian = thoigian
         self.noidung = noidung
         self.labs = labs
+        self.bacsichidinh = bacsichidinh
