@@ -1502,6 +1502,13 @@ def all_patients():
     # kết nối database sql server
     cnxn = get_db()
     cursor = cnxn.cursor()
+    
+    con = sqlite3.connect("medical_record_pinned.db")
+    cursor_sqlite = con.cursor()
+    cursor_sqlite.row_factory = sqlite3.Row
+
+    pinneds = cursor_sqlite.execute("""SELECT * FROM pinned""").fetchall()
+
 
     # lấy ngày xem dashboard
 
@@ -1531,8 +1538,12 @@ def all_patients():
         'today': today,
         'list': list_patients,
         'table_column_title': table_column_title,
-        'search_input': search_input
+        'search_input': search_input,
+        'pinneds': pinneds
     }
+
+    con.close()
+
     close_db()
     return render_template('patient/index.html', value=context, active='patient')
 
@@ -1588,19 +1599,52 @@ def patient_detail(mayte):
 
 
 #Trang lịch sử nội trú điều trị
-@app.route('/medical-record/<string:sobenhan>')
+@app.route('/medical-record/<string:sobenhan>',methods=['GET', 'POST'])
 @register_breadcrumb(app, '..medical_record', 'Chi tiết bệnh án')
 def patient_hospitalized(sobenhan):
     cnxn = get_db()
     cursor = cnxn.cursor()
+
+    con = sqlite3.connect("medical_record_pinned.db")
+    cursor_sqlite = con.cursor()
+    cursor_sqlite.row_factory = sqlite3.Row
     medical_record = MedicalRecord(sobenhan, cursor)
+    
+    if request.method == "POST" and 'pinned' in request.form:
+        benhan_id_input = request.form['benhan_id']
+        tenbenhnhan = request.form['tenbenhnhan']
+        is_pinned_form = request.form['pinned']
+        if is_pinned_form == "False":
+            time_created = datetime.now()
+            sql = """
+            INSERT INTO pinned(sobenhan, time_created, note)
+            VALUES(?,?,?)
+            """
+            cursor_sqlite.execute(sql, (benhan_id_input, time_created, tenbenhnhan))
+        else:
+            sql = """
+            DELETE FROM pinned
+            WHERE sobenhan = ?
+            """
+            cursor_sqlite.execute(sql, (benhan_id_input,))
+        con.commit()
+
+    sql = """SELECT id FROM pinned WHERE sobenhan = ?"""
+    q = cursor_sqlite.execute(sql, (medical_record.info.SoBenhAn,)).fetchone()
+    
+    if q:
+        is_pinned = True
+    else:
+        is_pinned = False
     
 
     today = datetime.today().strftime('%Y-%m-%d')
     value = {
         'today': today,
-        'medical_record': medical_record
+        'medical_record': medical_record,
+        'is_pinned': is_pinned
     }
+    con.close()
     return render_template('patient/hospitalized.html', value=value)
 
 # Trang danh sách báo cáo

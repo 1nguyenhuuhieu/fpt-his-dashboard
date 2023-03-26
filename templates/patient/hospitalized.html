@@ -6,11 +6,22 @@
 {% if value.medical_record %}
 {% set info=value.medical_record.info %}
 <div class="d-flex justify-content-between align-items-center">
-  <div> <button class="btn-danger btn btn-sm"><i class="fa-solid fa-star me-1"></i> Đã ghim</button> </div>
+ 
+  <div>
+    {% if value.is_pinned %}
+    <button class="btn-danger btn btn-sm"><i class="fa-solid fa-star me-1"></i> Đã ghim</button>
+    {% endif %}
+  </div>
+ 
+
   <div class="d-flex justify-content-end">
-    <button type="button" class="btn btn-outline-primary btn-sm me-2">
-      <i class="fa-solid fa-thumbtack me-2"></i>Ghim
+    <form method="post">
+      <input type="hidden" name="benhan_id" value="{{info.SoBenhAn}}">
+      <input type="hidden" name="tenbenhnhan" value="{{info.TenBenhNhan}}">
+    <button type="submit" class="btn btn-outline-primary btn-sm me-2" name="pinned" value="{{value.is_pinned}}">
+      <i class="fa-solid fa-thumbtack me-2"></i>{{ 'Bỏ ghim' if value.is_pinned else 'Ghim' }}
     </button>
+  </form>
     <div class="dropdown">
       <button class="btn btn-outline-primary btn-sm me-2 " type="button" data-bs-toggle="dropdown" aria-expanded="false">
         <i class="fa-solid fa-share me-2"></i>Chia sẻ

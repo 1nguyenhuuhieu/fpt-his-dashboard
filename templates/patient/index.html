@@ -4,13 +4,42 @@
 {% endblock %}
 {% block content %}
 <div class="row mb-4">
-    <div class="col-lg-4">
+    <div class="col-lg-5">
      <form method="get">
         <div class="input-group">
             <input type="search" required class="form-control form-control-lg" id="inputGroupFile04" aria-describedby="inputGroupFileAddon04" aria-label="Upload" placeholder="Tên hoặc mã y tế" name="search">
             <button class="btn btn-primary" type="submit" id="inputGroupFileAddon04" >Tìm kiếm <i class="fa-solid fa-magnifying-glass ms-2"></i></button>
           </div>
         </form>
+</div>
+<div class="col-lg-7">
+  <div class="table-responsive">
+    <table class="table table-sm caption-top">
+      <caption>Bệnh án đã ghim</caption>
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Thời gian ghim</th>
+          <th scope="col">Số bệnh án</th>
+          <th scope="col">Ghi chú</th>
+        </tr>
+      </thead>
+      <tbody>
+        {%if value.pinneds %}
+        {% for pin in value.pinneds %}
+        <tr>
+          <th scope="row">{{loop.index}}</th>
+          <td>{{ pin.time_created }}</td>
+          <td> <a href="{{ url_for('patient_hospitalized', sobenhan=pin.sobenhan)}}" class="text-decoration-none">{{ pin.sobenhan }}</a></td>
+          <td>{{ pin.note }}</td>
+        </tr>
+        {% endfor %}
+        {% else %}
+        <span class="text-danger">Không có bệnh án nào được ghim</span> 
+        {% endif %}
+      </tbody>
+    </table>
+  </div>
 </div>
 </div>
 
