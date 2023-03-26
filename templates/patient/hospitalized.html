@@ -190,7 +190,7 @@
                   </table>
                 </div>
                 {% else %}
-                <h5>Không</h5>
+                <h5>Dược: Không</h5>
                 {% endif %}
               </div>
             </div>
@@ -211,7 +211,7 @@
 
 {% endif %}
 
-<div class="row g-2 mt-2">
+<div class="row mt-3">
 
   <div class="col-lg-7">
     <div class="accordion" id="accordionExample">
@@ -284,7 +284,7 @@
 
   </div>
 
-  <div class="col-lg-5 mt-3 mt-sm-2">
+  <div class="col-lg-5 mt-3 mt-sm-0">
 
     <div class="accordion" id="accordion2222">
       <div class="accordion-item">
@@ -336,6 +336,75 @@
 </div>
 
 {% endif %}
+
+
+{% if value.medical_record.examinitions %}
+{% set examinitions = value.medical_record.examinitions %}
+
+<div class="accordion mt-3" id="accordionExample2">
+  <div class="accordion-item  ">
+    <h2 class="accordion-header ">
+      <button class="accordion-button " type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
+        aria-expanded="true" aria-controls="collapseOne">
+        <h5><i class="fa-solid fa-scissors fa-fw me-2"></i>Phẫu thuật</h5>
+      </button>
+    </h2>
+    <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
+      <div class="accordion-body p-0 p-sm-2  ">
+
+        {% for examinition in examinitions %}
+        <div class="row ">
+          <div class="col-lg-12">
+            <div class="row g-0">
+              <div class="col-lg-7 p-2">
+
+                <div class="d-flex justify-content-between align-items-center bg-warning-subtle p-2 mb-2  rounded">
+                  <h6 class="m-0">{{ loop.index}}. {{ examinition.examinition.ThoiGianKham }} </h6>
+                  <h6 class="m-0"><span class="badge text-bg-primary">BS. {{ examinition.examinition.TenNhanVien
+                      }}</span></h6>
+                </div>
+                <p class="card-text text-danger fw-semibold">Định bệnh:
+                  {{ examinition.examinition.DinhBenh }}</p>
+                <p class="card-text"><span class="fw-semibold">Diễn biến: </span>
+                  {{ examinition.examinition.DienBien }}</p>
+              </div>
+              <div class="col-lg-5 p-2 ">
+                {% if examinition.medicines %}
+                {% set medicines = examinition.medicines %}
+                <div class="table-responsive bg-warning-subtle rounded p-2">
+                  <table class="table table-sm table-borderless  m-0">
+                    <tbody>
+                      {% for medicine in medicines%}
+                      <tr>
+                        <td>{{ medicine.TenDuocDayDu}}({{ medicine.duongdung }})</td>
+                        <td class="fw-semibold">{{ medicine.SoLuong }}</td>
+                      </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+                {% else %}
+                <h5>Dược: Không</h5>
+                {% endif %}
+              </div>
+            </div>
+            {% if not loop.last %}
+            <hr class="my-2">
+            {% endif %}
+
+          </div>
+        </div>
+
+        {% endfor %}
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{% endif %}
+
 
 
 <script>

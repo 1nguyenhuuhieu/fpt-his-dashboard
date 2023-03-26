@@ -70,7 +70,7 @@ def list_between(startday,endday, cursor):
     N'Đỡ đẻ thường ngôi chỏm',
     N'Đỡ đẻ thường ngôi chỏm; bóc rau'
     )
-    AND NgayThucHien BETWEEN ? AND ?
+    AND ThoiGianKetThuc BETWEEN ? AND ?
     GROUP BY ThoiGianKetThuc,MaYTe, TenBenhNhan, CanThiepPhauThuat,ICD_SauPhauThuat_MoTa
     """
     try:
