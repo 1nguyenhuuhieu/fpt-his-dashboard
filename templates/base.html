@@ -22,6 +22,7 @@
   <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.10/dist/clipboard.min.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/list.js/2.3.1/list.min.js"></script>
   <script src="https://printjs-4de6.kxcdn.com/print.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sharer.js@latest/sharer.min.js"></script>
   <link rel="stylesheet" href="https://printjs-4de6.kxcdn.com/print.min.css">
 </head>
 <body class="bg-light" style="font-family: Sans-serif;">
@@ -171,6 +172,7 @@
 
   {% if value.today %}
   <script>
+    new ClipboardJS('.btnClipboard');
     const dateToday = document.getElementById('date_today');
     const today = {{ value.today| tojson }};
     const event = new Date(today);
