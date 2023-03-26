@@ -7,13 +7,20 @@
 {% if value.medical_record %}
 {% set info=value.medical_record.info %}
 <div class="d-flex justify-content-end">
-  <button type="button"  class="btn btn-outline-primary me-2">
+  <button type="button"  class="btn btn-outline-primary btn-sm me-2">
     <i class="fa-solid fa-thumbtack me-2"></i>Ghim
   </button>
-  <button type="button"  class="btn btn-outline-primary me-2">
-    <i class="fa-solid fa-share me-2"></i>Chia sẻ
-  </button>
-  <button type="button"  class="btn btn-primary" onclick="printJS('printJS-form', 'html')">
+  <div class="dropdown">
+    <button class="btn btn-outline-primary btn-sm me-2 " type="button" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="fa-solid fa-share me-2"></i>Chia sẻ
+    </button>
+    <ul class="dropdown-menu">
+      <li><a class="dropdown-item" href="#"><i class="fa-solid fa-envelope me-2"></i>Gửi Email</a></li>
+      <li><a class="dropdown-item" href="#">Another action</a></li>
+      <li><a class="dropdown-item" href="#">Something else here</a></li>
+    </ul>
+  </div>
+  <button type="button"  class="btn btn-primary btn-sm" onclick="printJS('printJS-form', 'html')">
     <i class="fa-solid fa-print me-2"></i>In bệnh án
   </button>
 </div>
