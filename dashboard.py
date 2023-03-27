@@ -21,6 +21,7 @@ from sqlquery import patient as query_patient
 from sqlquery import report as query_report
 from sqlquery import user as query_user
 from sqlquery import medical_record as query_medical_record
+from sqlquery import home as query_home
 
 from db import *
 from flask_breadcrumbs import Breadcrumbs, register_breadcrumb

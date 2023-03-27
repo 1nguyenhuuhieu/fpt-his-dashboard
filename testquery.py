@@ -9,19 +9,14 @@ password = 'ttytanhson@2023'
 cnxn = pyodbc.connect('DRIVER={SQL Server Native Client 11.0};SERVER=' +
                     server+';DATABASE='+database+';UID='+username+';PWD=' + password)
 cursor = cnxn.cursor()
-def phannhom_money():
+def test():
     query = """
-SELECT xetnghiem.ResultDateTime, NoiDungChiTiet, ServiceName,
-    xetnghiem_ketqua.Unit, xetnghiem_ketqua.Value,
-    xetnghiem_ketqua.Value2, xetnghiem_ketqua.MinLimited, xetnghiem_ketqua.MaxLimited
-    FROM [eHospital_NgheAn].[dbo].[CLSYeuCau] as yeucau
-    INNER JOIN [eLab_NgheAn].[dbo].[LabResult] as xetnghiem
-    ON yeucau.CLSYeuCau_Id = xetnghiem.RequestID
-    INNER JOIN [eLab_NgheAn].[dbo].[LabResultDetail] as xetnghiem_ketqua
-    ON xetnghiem.ResultID = xetnghiem_ketqua.ResultID
-    INNER JOIN [eLab_NgheAn].[dbo].[DIC_Service] as service_dict
-    on service_dict.ServiceID = xetnghiem_ketqua.ServiceID
-    where CLSYeuCau_Id = 271482 AND AssayCode IS NOT NULL
+    SELECT
+    SUM(SoLuong*DonGiaDoanhThu)
+    FROM XacNhanChiPhi
+    INNER JOIN XacNhanChiPhiChiTiet
+    ON XacNhanChiPhi.XacNhanChiPhi_Id=XacNhanChiPhiChiTiet.XacNhanChiPhi_Id
+    WHERE ThoiGianXacNhan BETWEEN '2022-01-01' AND '2023-01-01'
     """
     try:
         q = cursor.execute(query).fetchall()
@@ -31,9 +26,17 @@ SELECT xetnghiem.ResultDateTime, NoiDungChiTiet, ServiceName,
         return 0    
 
 total = 0
+min = -100000
+max = 100000
 for i in range(10):
     start_time = time.time()
+    test()
+    q_time = time.time() - start_time
+    if min < q_time:
+        min = q_time
+    if max > q_time:
+        max = q_time
 
-    t = phannhom_money()
-    total += time.time() - start_time
-    print("--- %s seconds ---" % (total))
+    total += q_time
+
+print(f'min q time: {max}; max q time {min}; average time: {total/10}')

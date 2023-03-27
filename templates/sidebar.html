@@ -2,25 +2,37 @@
     <div class="position-sticky sidebar-sticky">
       <ul class="nav flex-column" id="ulSidebar">
         <li class="nav-item">
-          <a class="nav-link {{ 'active' if active=='home'}}" href="{{ url_for('home', day_query=value.today) }}">
+          <a class="nav-link {{ 'active' if active=='home'}}" href="{{ url_for('home', day_query=value.today
+          ,time = request.args.get('time'),
+          start = request.args.get('start'),
+          end = request.args.get('end')) }}">
             <i class="fa-solid fa-chart-simple" style="width: 22px;"></i>
             Trang chủ
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link {{ 'active' if active=='revenue'}}" href="{{ url_for('revenue', day_query=value.today) }}">
+          <a class="nav-link {{ 'active' if active=='revenue'}}" href="{{ url_for('revenue', day_query=value.today
+          ,time = request.args.get('time'),
+          start = request.args.get('start'),
+          end = request.args.get('end')) }}">
             <i class="fa-solid fa-file-invoice" style="width: 22px;"></i>
             Doanh thu
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link {{ 'active' if active=='visited'}} " href="{{ url_for('visited', day_query=value.today) }}">
+          <a class="nav-link {{ 'active' if active=='visited'}} " href="{{ url_for('visited', day_query=value.today
+          ,time = request.args.get('time'),
+          start = request.args.get('start'),
+          end = request.args.get('end')) }}">
             <i class="fa-solid fa-hospital-user"  style="width: 22px;"></i>
             Khám bệnh
           </a>
         </li>
         <li class="nav-item">
-          <a class="nav-link {{ 'active' if active=='hospitalized'}}"  href="{{ url_for('hospitalized', day_query=value.today) }}">
+          <a class="nav-link {{ 'active' if active=='hospitalized'}}"  href="{{ url_for('hospitalized', day_query=value.today
+          ,time = request.args.get('time'),
+          start = request.args.get('start'),
+          end = request.args.get('end')) }}">
             <i class="fa-solid fa-bed-pulse"  style="width: 22px;"></i>
             Nội trú
           </a>

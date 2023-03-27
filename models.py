@@ -45,32 +45,34 @@ class DayQuery:
             end = today + timedelta(days=1)
             previous_start = start + timedelta(days=-1)
             previous_end = start
-        elif time_filter == 'week':
-            mon_day = self.today - timedelta(days=self.today.weekday())
-            start = mon_day
-            end = mon_day + timedelta(days=7)
-            previous_start = start + timedelta(days=-7)
-            previous_end = start
-        elif time_filter == 'month':
-            first_day_month = self.today.replace(day=1)
-            start = first_day_month
-            end = first_day_month + relativedelta(months=1)
-            previous_start = start + relativedelta(months=-1)
-            previous_end = start
-        elif time_filter == 'year':
-            first_day_year = self.today.replace(day=1, month=1)
-            start = first_day_year
-            end = start + relativedelta(years=1)
-            previous_start = start + relativedelta(years=-1)
-            previous_end = start
-        elif time_filter == 'custom_filter':
-            start =  request_start
-            start = datetime.strptime(start, '%Y-%m-%dT%H:%M')
-            end = request_end
-            end = datetime.strptime(end, '%Y-%m-%dT%H:%M')
-            diff = (end - start).days
-            previous_start = start - timedelta(days=diff)
-            previous_end = end - timedelta(days=diff)
+        else:
+            if time_filter == 'week':
+                mon_day = self.today - timedelta(days=self.today.weekday())
+                start = mon_day
+                end = mon_day + timedelta(days=7)
+                previous_start = start + timedelta(days=-7)
+                previous_end = start
+            elif time_filter == 'month':
+                first_day_month = self.today.replace(day=1)
+                start = first_day_month
+                end = first_day_month + relativedelta(months=1)
+                previous_start = start + relativedelta(months=-1)
+                previous_end = start
+            elif time_filter == 'year':
+                first_day_year = self.today.replace(day=1, month=1)
+                start = first_day_year
+                end = start + relativedelta(years=1)
+                previous_start = start + relativedelta(years=-1)
+                previous_end = start
+            elif time_filter == 'custom_filter':
+                start =  request_start
+                start = datetime.strptime(start, '%Y-%m-%dT%H:%M')
+                end = request_end
+                end = datetime.strptime(end, '%Y-%m-%dT%H:%M')
+                diff = (end - start).days
+                previous_start = start - timedelta(days=diff)
+                previous_end = end - timedelta(days=diff)
+
 
         self.start = start
         self.end = end

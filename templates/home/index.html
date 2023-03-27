@@ -5,6 +5,9 @@
 {% block content %}
 {% include 'home/chartjs.html' %}
 <div class="row">
+
+
+
   <div class="col-lg-6">
     <div class="row g-2">
       <div class="col-12">
@@ -16,9 +19,8 @@
               <div class="card-body">
                 <h6 class="card-subtitle mb-2 d-flex justify-content-between align-items-center">
                   <div>
-                    <i class="{{value.money_card.icon }} me-2"></i> <a href="{{ url_for('revenue', day_query=value.today)}}"
-                      class="text-reset text-decoration-none stretched-link">{{
-                      value.money_card.title }}</a>
+                    <i class="{{value.money_card.icon }} me-2"></i>{{
+                      value.money_card.title }}
                   </div>
                 </h6>
                 <hr class="my-2">
@@ -45,7 +47,10 @@
                   <span class="text-muted"> <small>{{ value.money_card.previous_format() }}</small> </span>
 
                   <div class="text-end mt-1">
-                    <a href="{{ url_for(value.money_card.link, day_query=value.today) }}"
+                    <a href="{{ url_for(value.money_card.link, day_query=value.today
+                      ,time = request.args.get('time'),
+                      start = request.args.get('start'),
+                      end = request.args.get('end')) }}"
                     class="text-decoration-none text-end stretched-link btn btn-sm rounded-pill btn-light mt-1">Chi tiết<i
                       class="fa-solid fa-arrow-right ms-1"></i></a>
 
@@ -65,7 +70,10 @@
                 {% for card in value.all_service_card %}
                 <div class="{{ 'mb-3' if loop.first }}">
                   <p class="mt-0 mb-2 d-flex justify-content-between">
-                    <a href="{{ url_for(card.link,day_query=value.today)}}"
+                    <a href="{{ url_for(card.link,day_query=value.today
+                      ,time = request.args.get('time'),
+                      start = request.args.get('start'),
+                      end = request.args.get('end'))}}"
                       class="fw-bolder text-decoration-none link-dark"><i
                         class="{{card.icon}} me-1 fa-fw"></i>{{ card.title }}</a>
                     <span class="fw-bolder">{{ card.current_format()}}</span>
@@ -80,7 +88,10 @@
 
 
                 <div class="d-flex justify-content-end ">
-                  <a href="{{ url_for('list_revenue', day_query=value.today) }}"
+                  <a href="{{ url_for('list_revenue', day_query=value.today
+                  ,time = request.args.get('time'),
+                  start = request.args.get('start'),
+                  end = request.args.get('end')) }}"
                     class="text-decoration-none text-end  btn btn-sm rounded-pill btn-light mt-3">Chi tiết<i class="fa-solid fa-arrow-right ms-1"></i></a>
                 </div>
 
@@ -131,7 +142,11 @@
 
               </div>
               <div class="text-end mt-3">
-                <a href="{{ url_for(card.link, day_query=value.today) }}"
+                <a href="{{ url_for(card.link, day_query=value.today
+                  ,time = request.args.get('time'),
+                  start = request.args.get('start'),
+                  end = request.args.get('end')
+                  ) }}"
                 class="text-decoration-none text-end stretched-link btn btn-sm btn-light rounded-pill border shadow-sm">Chi tiết<i
                   class="fa-solid fa-arrow-right ms-1"></i></a>
 

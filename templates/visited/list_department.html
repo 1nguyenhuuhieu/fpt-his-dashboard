@@ -5,14 +5,20 @@
             <h6 class="">Khám bệnh</h6>
         </div>
         <div>
-            <a href="{{ url_for('visited_patients', day_query=value.today)}}" class="text-decoration-none">Xem tất cả<i
+            <a href="{{ url_for('visited_patients', day_query=value.today
+            ,time = request.args.get('time'),
+            start = request.args.get('start'),
+            end = request.args.get('end'))}}" class="text-decoration-none">Xem tất cả<i
                     class="fa-solid fa-up-right-from-square ms-2"></i></a>
         </div>
     </div>
     </div>
     <ul class="list-group list-group-flush">
       {% for department in value.visited_in_department %}
-      <a href="{{ url_for('visited_department', department_id=department[2], day_query=value.today)}}"
+      <a href="{{ url_for('visited_department', department_id=department[2], day_query=value.today
+      ,time = request.args.get('time'),
+      start = request.args.get('start'),
+      end = request.args.get('end'))}}"
         class="list-group-item list-group-item-action d-flex justify-content-between align-items-start">
         {{ department[0] }}
         <span class="fw-bold ms-2">{{ department[1]}}</span>
