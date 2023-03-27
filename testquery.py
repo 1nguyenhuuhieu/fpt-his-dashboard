@@ -9,14 +9,25 @@ password = 'ttytanhson@2023'
 cnxn = pyodbc.connect('DRIVER={SQL Server Native Client 11.0};SERVER=' +
                     server+';DATABASE='+database+';UID='+username+';PWD=' + password)
 cursor = cnxn.cursor()
+
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
 def test():
     query = """
     SELECT
-    SUM(SoLuong*DonGiaDoanhThu)
-    FROM XacNhanChiPhi
-    INNER JOIN XacNhanChiPhiChiTiet
-    ON XacNhanChiPhi.XacNhanChiPhi_Id=XacNhanChiPhiChiTiet.XacNhanChiPhi_Id
-    WHERE ThoiGianXacNhan BETWEEN '2022-01-01' AND '2023-01-01'
+    SUM(t1.SoLuong*t1.DonGiaDoanhThu) as total
+    FROM XacNhanChiPhiChiTiet as t1
+    INNER JOIN XacNhanChiPhi as t2
+    ON t1.XacNhanChiPhi_Id=t2.XacNhanChiPhi_Id AND (t2.ThoiGianXacNhan BETWEEN '2022-01-01' AND '2023-01-01')
     """
     try:
         q = cursor.execute(query).fetchall()
@@ -30,7 +41,7 @@ min = -100000
 max = 100000
 for i in range(10):
     start_time = time.time()
-    test()
+    t = test()
     q_time = time.time() - start_time
     if min < q_time:
         min = q_time
@@ -39,4 +50,4 @@ for i in range(10):
 
     total += q_time
 
-print(f'min q time: {max}; max q time {min}; average time: {total/10}')
+print(f'{bcolors.OKGREEN}min q time: {max}; {bcolors.FAIL}max q time {min}; {bcolors.OKBLUE}average time: {total/10}')
