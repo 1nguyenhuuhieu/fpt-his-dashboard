@@ -379,6 +379,7 @@ class Lab:
         self.labs = labs
         self.bacsichidinh = bacsichidinh
 
+
 class Surgery:
     def __init__(self, row, ekip):
         self.thoigianbatdau = row.ThoiGianBatDau

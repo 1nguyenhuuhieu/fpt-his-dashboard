@@ -251,7 +251,7 @@
                     {% for info in lab.labs %}
                     <tr>
                       <td>{{ info.ServiceName}}</td>
-                      <td class="fw-semibold">
+                      <td class="fw-semibold {{info.color}} ">
                         {{ info.Value }}
                         {% if info.Value2 %}; {{ info.Value2 }} {% endif %} <small class="fw-normal text-muted">{{
                           info.Unit }}</small> </td>
@@ -384,7 +384,7 @@
           </div>
           {% endfor %}
           {% else %}
-          <h5>Không</h5>
+          <h5 class="m-3">Không</h5>
           {% endif %}
         </div>
       </div>

@@ -113,7 +113,8 @@ def lab(clsyeucau_id, cursor):
     query = """
     SELECT ServiceName, xetnghiem_ketqua.Unit, xetnghiem_ketqua.Value,
     xetnghiem_ketqua.Value2, xetnghiem_ketqua.MinLimited, xetnghiem_ketqua.MaxLimited,
-    TenNhanVien as bacsi
+    TenNhanVien as bacsi,
+	'text-dark' as color
     FROM [eHospital_NgheAn].[dbo].[CLSYeuCau] as yeucau
     INNER JOIN [eLab_NgheAn].[dbo].[LabResult] as xetnghiem
     ON yeucau.CLSYeuCau_Id = xetnghiem.RequestID
@@ -127,6 +128,31 @@ def lab(clsyeucau_id, cursor):
     """
     try:
         q = cursor.execute(query, clsyeucau_id).fetchall()
+        for row in q:
+            try:
+                row.Value = float(row.Value)
+                row.MinLimited = float(row.MinLimited)
+                if row.Value < row.MinLimited:
+                    row.color = 'text-danger'
+                else:
+                    row.color = 'text-success'
+                try:
+                    row.MaxLimited = float(row.MaxLimited)
+                    if row.Value > row.MaxLimited:
+                        row.color = 'text-danger'
+                except:
+                    pass
+            except:
+                pass
+
+
+
+            if row.Value == 'Negative':
+                row.color = 'text-success'
+        
+
+            
+
         return q
     except:
         print("Lỗi khi query patient.lab")
