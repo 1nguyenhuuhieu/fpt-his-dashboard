@@ -176,7 +176,7 @@
           <div class="row ">
             <div class="col-lg-12">
               <div class="row g-0">
-                <div class="col-lg-7 p-2">
+                <div class="col-lg-6 p-2">
                   <div class="d-flex justify-content-between align-items-center bg-warning-subtle p-2 mb-2  rounded">
                     <h6 class="m-0">{{ loop.index}}. {{ examinition.examinition.ThoiGianKham }} </h6>
                     <h6 class="m-0"><span class="badge text-bg-primary">BS. {{ examinition.examinition.TenNhanVien
@@ -187,7 +187,7 @@
                   <p class="card-text"><span class="fw-semibold">Diễn biến: </span>
                     {{ examinition.examinition.DienBien }}</p>
                 </div>
-                <div class="col-lg-5 p-2 ">
+                <div class="col-lg-6 p-2 ">
                   {% if examinition.medicines %}
                   {% set medicines = examinition.medicines %}
                   <div class="table-responsive bg-primary-subtle rounded p-2">
