@@ -123,7 +123,7 @@
       </div>
     </div>
     <div class="col-lg-6 ">
-      <div class="accordion " id="accordionExample">
+      <div class="accordion " id="chidinhAccordion">
         <div class="accordion-item ">
           <h2 class="accordion-header">
             <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo"
@@ -131,7 +131,7 @@
               <h5><i class="fa-solid fa-list me-2 fa-fw"></i>Chỉ định</h5>
             </button>
           </h2>
-          <div id="collapseTwo" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
+          <div id="collapseTwo" class="accordion-collapse collapse show" data-bs-parent="#chidinhAccordion">
             <div class="accordion-body ">
               {% if value.medical_record.medical_requests %}
               {% set requests = value.medical_record.medical_requests %}
@@ -272,6 +272,9 @@
                     {% endfor %}
                   </tbody>
                 </table>
+                <div class="text-end mb-2">
+                <a href="#chidinhAccordion" class="text-decoration-none">Về đầu trang<i class="fa-solid fa-chevron-up ms-2"></i></a>
+                </div>
               </div>
               {% if not loop.last %}
               <hr>
@@ -308,6 +311,9 @@
                 {{ medical_image.KetLuan }}</p>
               <p class="card-text"><span class="fw-semibold">Mô tả: </span>
                 {{ medical_image.MoTa_Text }}</p>
+                <div class="text-end mb-2">
+                  <a href="#chidinhAccordion" class="text-decoration-none">Về đầu trang<i class="fa-solid fa-chevron-up ms-2"></i></a>
+                  </div>
               {% if not loop.last %}
               <hr>
               {% endif%}
@@ -397,6 +403,9 @@
           {% else %}
           <h5 class="m-3">Không</h5>
           {% endif %}
+          <div class="text-end mb-2">
+            <a href="#chidinhAccordion" class="text-decoration-none">Về đầu trang<i class="fa-solid fa-chevron-up ms-2"></i></a>
+            </div>
         </div>
       </div>
     </div>
