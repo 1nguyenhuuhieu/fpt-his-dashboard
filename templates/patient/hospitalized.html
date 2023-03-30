@@ -193,11 +193,23 @@
                   <div class="table-responsive bg-primary-subtle rounded p-2">
                     <table class="table table-sm table-borderless  m-0 caption-top">
                       <caption class="h5">Dược</caption>
+                      <thead>
+                        <tr>
+                          <th scope="col">Tên</th>
+                          <th scope="col">Sáng</th>
+                          <th scope="col">Trưa</th>
+                          <th scope="col">Chiều</th>
+                          <th scope="col">Tối</th>
+                        </tr>
+                      </thead>
                       <tbody>
                         {% for medicine in medicines%}
                         <tr>
-                          <td>{{ medicine.TenDuocDayDu}}({{ medicine.duongdung }})</td>
-                          <td class="fw-semibold">{{ medicine.SoLuong }}</td>
+                          <td>{{ medicine.TenDuocDayDu}} <small class="text-muted fst-italic">({{ medicine.duongdung }}, {{ medicine.SoLuong}} {{ medicine.DonViTinh}}/{{ medicine.SoNgay}} ngày)</small> </td>
+                          <td  >{{ medicine.SoLuong_BuoiSang if medicine.SoLuong_BuoiSang else '-'  }}</td>
+                          <td >{{ medicine.SoLuong_BuoiTrua if medicine.SoLuong_BuoiTrua else '-' }}</td>
+                          <td >{{ medicine.SoLuong_BuoiChieu if medicine.SoLuong_BuoiChieu else '-' }}</td>
+                          <td >{{ medicine.SoLuong_BuoiToi if medicine.SoLuong_BuoiToi else '-' }}</td>
                         </tr>
                         {% endfor %}
                       </tbody>

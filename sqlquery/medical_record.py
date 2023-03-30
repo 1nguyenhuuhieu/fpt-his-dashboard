@@ -72,7 +72,7 @@ def examinitions_id(benhan_id, cursor):
         return None
     
 def medicines(khambenh_id, cursor):
-    sql = """SELECT SoLuong,  DonViTinh, TenDuocDayDu, Dictionary_Name as duongdung
+    sql = """SELECT SoLuong,SoLuongTrenLan, SoLanTrenNgay, SoLuong_BuoiSang,SoLuong_BuoiTrua,SoLuong_BuoiChieu,SoLuong_BuoiToi,SoNgay, DonViTinh, TenDuocDayDu, Dictionary_Name as duongdung
             FROM NoiTru_ToaThuoc
             INNER JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_Duoc] as duoc
             ON NoiTru_ToaThuoc.Duoc_Id = duoc.Duoc_Id
@@ -84,6 +84,11 @@ def medicines(khambenh_id, cursor):
         rows = cursor.execute(sql, khambenh_id).fetchall()
         for row in rows:
             row.SoLuong = int(row.SoLuong) 
+            row.SoLuongTrenLan = int(row.SoLuongTrenLan) 
+            if row.SoLuong_BuoiSang: row.SoLuong_BuoiSang = int(row.SoLuong_BuoiSang)
+            if row.SoLuong_BuoiTrua: row.SoLuong_BuoiTrua = int(row.SoLuong_BuoiTrua) 
+            if row.SoLuong_BuoiChieu: row.SoLuong_BuoiChieu = int(row.SoLuong_BuoiChieu) 
+            if row.SoLuong_BuoiToi: row.SoLuong_BuoiToi = int(row.SoLuong_BuoiToi) 
         return rows
     except:
         print("Lỗi query medical_record.medicines")
