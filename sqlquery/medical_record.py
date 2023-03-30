@@ -1,4 +1,5 @@
 import datetime
+from slugify import slugify
 def info(sobenhan, cursor):
     sql = """
     SELECT BenhAn_Id, SoBenhAn,SoLuuTru, TenBenhNhan, benhnhan.NgaySinh, benhnhan.DiaChi,
@@ -165,7 +166,7 @@ def lab(clsyeucau_id, cursor):
     
 def medical_requests(benhan_id, cursor):
     query = """
-    SELECT NoiDungChiTiet, COUNT(NoiDungChiTiet) as count
+    SELECT NoiDungChiTiet, COUNT(NoiDungChiTiet) as count, 'name' as id
     FROM CLSYeuCau
     WHERE BenhAn_Id = ? 
     GROUP BY NoiDungChiTiet
@@ -173,6 +174,8 @@ def medical_requests(benhan_id, cursor):
     """
     try:
         q = cursor.execute(query, benhan_id).fetchall()
+        for row in q:
+            row.id = row.NoiDungChiTiet
         return q
     except:
         print("Lỗi khi query patient.medical_requests")

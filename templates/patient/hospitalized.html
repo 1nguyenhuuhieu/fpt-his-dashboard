@@ -147,7 +147,7 @@
                   {% for request in requests %}
                   <tr>
                     <th scope="row">{{ loop.index }}</th>
-                    <td> <a href="#">{{ request.NoiDungChiTiet }}</a></td>
+                    <td> <a href="#{{request.id}}" class="text-decoration-none">{{ request.NoiDungChiTiet }}</a></td>
                     <td>{{ request.count }}</td>
                   </tr>
                   {% endfor %}
@@ -245,7 +245,7 @@
               {% if value.medical_record.labs %}
               {% set labs = value.medical_record.labs %}
               {% for lab in labs %}
-              <div class="d-flex justify-content-between align-items-center bg-warning-subtle p-2 mb-2  rounded">
+              <div class="d-flex justify-content-between align-items-center bg-warning-subtle p-2 mb-2  rounded" id="{{lab.noidung}}">
                 <h6 class="m-0">{{ loop.index}}. {{ lab.thoigian }} </h6>
                 <h6 class="m-0"><span class="badge text-bg-primary">BS. {{ lab.bacsichidinh }}</span></h6>
               </div>
@@ -299,7 +299,7 @@
               {% if value.medical_record.medical_images %}
               {% set medical_images = value.medical_record.medical_images %}
               {% for medical_image in medical_images %}
-              <div class="d-flex justify-content-between align-items-center bg-warning-subtle p-2 mb-2  rounded">
+              <div class="d-flex justify-content-between align-items-center bg-warning-subtle p-2 mb-2  rounded" id="{{ medical_image.NoiDungChiTiet }}">
                 <h6 class="m-0">{{ loop.index}}. {{ medical_image.ThoiGianThucHien }} </h6>
                 <h6 class="m-0"><span class="badge text-bg-primary">BS. {{ medical_image.bacsiketluan }}</span></h6>
               </div>
@@ -339,7 +339,7 @@
             <div class="col-lg-12">
               <div class="row g-0">
                 <div class="col-lg-7 p-2">
-                  <div class="d-flex justify-content-between align-items-center bg-warning-subtle p-2 mb-2  rounded">
+                  <div class="d-flex justify-content-between align-items-center bg-warning-subtle p-2 mb-2  rounded" id="{{ surgery.canthiepphauthuat }}">
                     <h6 class="m-0">{{ loop.index}}. {{ surgery.thoigianbatdau }} đến {{ surgery.thoigianketthuc }}
                     </h6>
                   </div>
