@@ -2207,6 +2207,50 @@ def search():
     }
     return render_template('patient/search.html', value=context, active='schedule')
 
+# Trang doanh thu theo từng khoa phòng/bác sĩ
+@app.route('/revenue/doctor/<string:day_query>')
+@app.route('/revenue/doctor')
+@register_breadcrumb(app, '..revenue.doctor', 'Doanh thu theo bác sĩ/khoa')
+def revenue_doctor(day_query=None):
+
+    # kết nối database sql server
+    cnxn = get_db()
+    cursor = cnxn.cursor()
+
+    # ngày bắt đầu và kết thúc truy vấn dữ liệu
+    time_filter = request.args.get('time')
+    start_get = request.args.get('start')
+    end_get = request.args.get('end')
+
+    # lấy ngày xem dashboard
+    day_class = DayQuery(day_query, time_filter, start_get, end_get)
+    today = day_class.today
+    start = day_class.start
+    end = day_class.end
+
+    previous_start = day_class.previous_start
+    previous_end = day_class.previous_end
+
+    diff = diff_days(start, end)
+
+
+
+    table_column_title = ['Nơi yêu cầu', 'Người chỉ định', 'Nơi thực hiện', 'Tên nhóm DV', 'Dịch vụ', 'Đơn giá', 'Số lượt', 'Doanh thu']
+    list_data = query_revenue.doctor_department(start, end, cursor)
+    today = today.strftime("%Y-%m-%d")
+
+    context = {
+        'today': today,
+        'start': start,
+        'end': end,
+        'diff': diff,
+        'table_column_title': table_column_title,
+        'list': list_data
+    }
+    close_db()
+
+    return render_template('revenue/doctor.html', value=context, active='revenue', not_patient_btn=True)
+
 
 # API Thông tin của bệnh nhân
 @app.route('/patient-api/<string:mayte>')

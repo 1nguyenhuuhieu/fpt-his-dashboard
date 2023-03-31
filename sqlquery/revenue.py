@@ -962,3 +962,38 @@ def revenue_department(start, end,name, cursor):
     except:
         print("Lỗi query revenue.list_department")
         return None
+
+def doctor_department(start, end, cursor):
+    sql = """
+        SELECT dm_noiyeucau.TenPhongBan as noiyeucau, dm_bacsichidinh.TenNhanVien as bacsichidinh,
+        dm_noithuchien.TenPhongBan as noithuchien, dm_nhomdichvu.TenNhomDichVu, NoiDungChiTiet,
+        yeucauchitiet.DonGiaDoanhThu as dongia,
+        count(NoiDungChiTiet) as soluot, count(NoiDungChiTiet)*yeucauchitiet.DonGiaDoanhThu as tongdoanhthu
+        FROM CLSYeuCau as yeucau
+        INNER JOIN CLSYeuCauChiTiet as yeucauchitiet
+        ON yeucau.CLSYeuCau_Id = yeucauchitiet.CLSYeuCau_Id
+        INNER JOIN eHospital_NgheAn_Dictionary.dbo.DM_PhongBan as dm_noiyeucau
+        ON yeucau.NoiYeuCau_Id = dm_noiyeucau.PhongBan_Id
+        INNER JOIN eHospital_NgheAn_Dictionary.dbo.NhanVien as dm_bacsichidinh
+        ON yeucau.BacSiChiDinh_Id = dm_bacsichidinh.NhanVien_Id
+        INNER JOIN eHospital_NgheAn_Dictionary.dbo.DM_PhongBan as dm_noithuchien
+        ON yeucau.NoiThucHien_Id = dm_noithuchien.PhongBan_Id
+        INNER JOIN eHospital_NgheAn_Dictionary.dbo.DM_NhomDichVu as dm_nhomdichvu
+        ON yeucau.NhomDichVu_Id = dm_nhomdichvu.NhomDichVu_Id
+        WHERE yeucau.ThoiGianYeuCau BETWEEN ? AND ?
+
+        GROUP BY dm_noiyeucau.TenPhongBan, dm_bacsichidinh.TenNhanVien,
+        dm_noithuchien.TenPhongBan, dm_nhomdichvu.TenNhomDichVu, NoiDungChiTiet,
+        yeucauchitiet.DonGiaDoanhThu
+
+        """
+    try:
+        rows = cursor.execute(sql, start, end).fetchall()
+        for row in rows:
+            row.dongia = f'{int(row.dongia):,}'
+            row.tongdoanhthu = f'{int(row.tongdoanhthu):,}'
+        return rows
+    except:
+        print("Lỗi query revenue.doctor_department")
+        return None
+ 
