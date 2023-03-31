@@ -2249,7 +2249,7 @@ def revenue_doctor(day_query=None):
     }
     close_db()
 
-    return render_template('revenue/doctor.html', value=context, active='revenue', not_patient_btn=True)
+    return render_template('revenue/doctor.html', value=context, active='revenue', not_patient_btn=True,order_column=8)
 
 
 # API Thông tin của bệnh nhân
