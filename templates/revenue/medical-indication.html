@@ -46,6 +46,12 @@
   <div id="piechart1"></div>
 </div>
   </div>
+
+    <div class="col-lg-6">
+<div class="p-2 border bg-white rounded shadow-sm">
+  <div id="columnchart1"></div>
+</div>
+  </div>
 </div>
 
 <div class="row mb-4">
@@ -296,13 +302,42 @@
     var data = google.visualization.arrayToDataTable(data_chart);
 
     var options = {
-      title: 'My Daily Activities'
+      title: 'Thống kê doanh thu theo nhóm dịch vụ'
     };
 
     var chart = new google.visualization.PieChart(document.getElementById('piechart1'));
 
     chart.draw(data, options);
   }
+</script>
+
+<script>
+  google.charts.load('current', {packages: ['corechart', 'bar']});
+google.charts.setOnLoadCallback(drawBasic);
+
+function drawBasic() {
+
+  {% if value.nhomdichvu_chart_column %}
+    const data_chart = {{ value.nhomdichvu_chart_column|tojson }}
+    {% endif %}
+
+
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'Nhóm dịch vụ');
+      data.addColumn('number', 'Doanh thu');
+
+      data.addRows(data_chart);
+
+      var options = {
+        title: 'Thống kê doanh thu theo nhóm dịch vụ',
+
+      };
+
+      var chart = new google.visualization.ColumnChart(
+        document.getElementById('columnchart1'));
+
+      chart.draw(data, options);
+    }
 </script>
 
 {% endblock %}

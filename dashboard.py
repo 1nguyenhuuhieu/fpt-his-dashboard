@@ -2239,6 +2239,7 @@ def revenue_medical_indication(day_query=None):
     top_nhomdichvu = query_revenue.nhomdichvu_clsyeucau(start,end, cursor)
     top_department_nhomdichvu_clsyeucau = query_revenue.department_nhomdichvu_clsyeucau(start,end, cursor)
     nhomdichvu_clsyeucau = query_revenue.nhomdichvu_doanhthu(start,end, cursor)
+    nhomdichvu_chart_column = convert_to_chart(nhomdichvu_clsyeucau)
     nhomdichvu_chart = convert_to_chart(nhomdichvu_clsyeucau)
     nhomdichvu_chart.insert(0, ['Nội dung', 'Doanh thu'])
 
@@ -2260,7 +2261,8 @@ def revenue_medical_indication(day_query=None):
         'top_noithuchien': top_noithuchien,
         'top_nhomdichvu': top_nhomdichvu,
         'top_department_nhomdichvu_clsyeucau': top_department_nhomdichvu_clsyeucau,
-        'nhomdichvu_chart': nhomdichvu_chart
+        'nhomdichvu_chart': nhomdichvu_chart,
+        'nhomdichvu_chart_column': nhomdichvu_chart_column
     }
     close_db()
 
