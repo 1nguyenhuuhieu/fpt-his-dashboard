@@ -1,0 +1,308 @@
+{% extends 'base.html' %}
+{% block header %}
+<i class="fa-solid fa-arrow-up-wide-short me-2"></i>{% block title %}Thống kê chỉ định{% endblock %}
+{% endblock %}
+{% block content %}
+
+<style>
+  .pagination {
+    display: inline-block;
+    margin-left: 15px;
+  }
+
+  .pagination li {
+    display: inline-block;
+  }
+
+  .pagination a {
+    color: black;
+    float: left;
+    padding: 5px 15px;
+    margin-top: 10px;
+    text-decoration: none;
+    border: solid 1px gainsboro;
+  }
+
+  .pagination a.active {
+    background-color: #4CAF50;
+    color: white;
+  }
+
+  .pagination a:hover:not(.active) {
+    background-color: #ddd;
+  }
+</style>
+
+
+<div class="mb-3">
+  <span class="text-muted fst-italic small"><i class="fa-solid fa-circle-info me-2"></i>Số liệu này được tính theo chỉ
+    định của các nhân viên trong phần mềm FPT, bao gồm cả các hồ sơ chưa xác nhận thanh toán nên có thể sẽ có chênh
+    lệch(không đáng kể) với tổng doanh thu tại các thống kê khác trong cùng một khoảng thời gian.</span>
+
+</div>
+<div class="row mb-4">
+  <div class="col-lg-6">
+<div class="p-2 border bg-white rounded shadow-sm">
+  <div id="piechart1"></div>
+</div>
+  </div>
+</div>
+
+<div class="row mb-4">
+  <div class="col-lg-4">
+    {% if value.top_department %}
+    <div class="card shadow-sm h-100" id="department-list">
+      <div class="card-header text-bg-warning">
+        <div class="d-flex gap-2 w-100 justify-content-between align-items-center">
+          <div>
+            <h6 class="m-0">Nơi yêu cầu</h6>
+          </div>
+          <div>
+            <button class="btn btn-sm btn-outline-dark sort" data-sort="total">Doanh thu<i
+                class="fa-solid fa-sort ms-2"></i></button>
+
+          </div>
+        </div>
+      </div>
+
+      <ul class="list list-group list-group-flush">
+
+        {% for department in value.top_department %}
+        <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-start ">
+          <span class="name">{{ department.noiyeucau }} <small class="text-muted ms-2 ">{{ department.soluot }}</small> </span>
+          <span class="fw-bold ms-2"><span class="total d-none">{{ department.tongdoanhthu }}</span></span>
+          <span class="fw-bold ms-2"><span class="">{{ "{:,}".format(department.tongdoanhthu) }}</span></span>
+        </a>
+        {% endfor %}
+      </ul>
+      <nav>
+        <ul class="pagination"></ul>
+      </nav>
+    </div>
+    {% endif %}
+  </div>
+  <div class="col-lg-4">
+    {% if value.top_noithuchien %}
+    <div class="card shadow-sm h-100" id="noithuchien-list">
+      <div class="card-header text-bg-warning">
+        <div class="d-flex gap-2 w-100 justify-content-between align-items-center">
+          <div>
+            <h6 class="m-0">Nơi thực hiện</h6>
+          </div>
+          <div>
+            <button class="btn btn-sm btn-outline-dark sort" data-sort="total">Doanh thu<i
+                class="fa-solid fa-sort ms-2"></i></button>
+
+          </div>
+        </div>
+      </div>
+
+      <ul class="list list-group list-group-flush">
+
+        {% for department in value.top_noithuchien %}
+        <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-start ">
+          <span class="name">{{ department.noithuchien }}<small class="text-muted ms-2">{{ department.soluot }}</small></span>
+
+          <span class="fw-bold ms-2"><span class="total d-none ">{{ department.tongdoanhthu }}</span></span>
+          <span class="fw-bold ms-2"><span class="">{{ "{:,}".format(department.tongdoanhthu) }}</span></span>
+
+        </a>
+        {% endfor %}
+      </ul>
+      <nav>
+
+        <ul class="pagination"></ul>
+      </nav>
+
+    </div>
+    {% endif %}
+
+  </div>
+  <div class="col-lg-4">
+    {% if value.top_doctor %}
+    <div class="card shadow-sm h-100" id="doctor-list">
+      <div class="card-header text-bg-warning">
+        <div class="d-flex gap-2 w-100 justify-content-between align-items-center">
+          <div>
+            <h6 class="m-0">Người chỉ định</h6>
+          </div>
+          <div>
+            <button class="btn btn-sm btn-outline-dark sort" data-sort="total">Doanh thu<i
+                class="fa-solid fa-sort ms-2"></i></button>
+
+          </div>
+        </div>
+      </div>
+
+      <ul class="list list-group list-group-flush">
+
+        {% for doctor in value.top_doctor %}
+        <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-start ">
+          <span class="name">{{ doctor.bacsi }}<small class="text-muted ms-2">{{ doctor.soluot }}</small></span>
+
+          <span class="fw-bold ms-2"><span class="total d-none ">{{ doctor.tongdoanhthu }}</span></span>
+          <span class="fw-bold ms-2"><span class="">{{ "{:,}".format(doctor.tongdoanhthu) }}</span></span>
+
+        </a>
+        {% endfor %}
+      </ul>
+      <nav>
+
+        <ul class="pagination"></ul>
+      </nav>
+
+    </div>
+    {% endif %}
+
+  </div>
+
+
+</div>
+
+<div class="row mb-3">
+  <div class="col-lg-4">
+    {% if value.top_nhomdichvu %}
+    <div class="card shadow-sm h-100" id="nhomdichvu-list">
+      <div class="card-header text-bg-warning">
+        <div class="d-flex gap-2 w-100 justify-content-between align-items-center">
+          <div>
+            <h6 class="m-0">Nhóm dịch vụ</h6>
+          </div>
+          <div>
+            <button class="btn btn-sm btn-outline-dark sort" data-sort="total">Doanh thu<i
+                class="fa-solid fa-sort ms-2"></i></button>
+
+          </div>
+        </div>
+      </div>
+
+      <ul class="list list-group list-group-flush">
+        {% for dichvu in value.top_nhomdichvu %}
+        <a href="#" class="list-group-item list-group-item-action d-flex justify-content-between align-items-start ">
+          <span class="name">{{ dichvu.nhomdichvu }}<small class="text-muted ms-2">{{ dichvu.soluot }}</small></span>
+          <span class="fw-bold ms-2"><span class="total d-none ">{{ dichvu.tongdoanhthu }}</span></span>
+          <span class="fw-bold ms-2"><span class="">{{ "{:,}".format(dichvu.tongdoanhthu) }}</span></span>
+        </a>
+        {% endfor %}
+      </ul>
+      <nav>
+        <ul class="pagination"></ul>
+      </nav>
+    </div>
+    {% endif %}
+
+  </div>
+
+  <div class="col-lg-8">
+    <div class="p-3 border rounded bg-white shadow-sm table-responsive  ">
+
+      <table id="myTable100" class="table table-striped bg-white caption-top" style="width:100%">
+        <caption>Bảng chi tiết</caption>
+          <thead>
+              <tr>
+                  <th>Nơi yêu cầu</th>
+                  <th>Nhóm dịch vụ</th>
+                  <th>Số lượt</th>
+                  <th>Doanh thu</th>
+              </tr>
+          </thead>
+          <tbody>
+              {% for row in value.top_department_nhomdichvu_clsyeucau %}
+              <tr>
+                  {% for col in row %}
+                  <td>{{ col }}</td>
+                  {% endfor %}
+              </tr>
+              {% endfor %}
+          </tbody>
+      </table>
+  </div>
+  </div>
+
+
+</div>
+
+{% include 'include/table.html' %}
+
+<script>
+  const urlGenerator = '/revenue/medical-indication/';
+  const todayURL = "{{ url_for('revenue_medical_indication') }}";
+</script>
+
+<!-- list js -->
+<script>
+  var doctorList = new List('department-list', {
+    valueNames: ['name', 'total'],
+    page: 10,
+    pagination: true,
+  });
+
+</script>
+<script>
+  var doctorList = new List('doctor-list', {
+    valueNames: ['name', 'total'],
+    page: 10,
+    pagination: true,
+  });
+
+</script>
+<script>
+  var doctorList = new List('noithuchien-list', {
+    valueNames: ['name', 'total'],
+    page: 10,
+    pagination: true,
+  });
+
+</script>
+<script>
+  var doctorList = new List('nhomdichvu-list', {
+    valueNames: ['name', 'total'],
+    page: 10,
+    pagination: true,
+  });
+
+</script>
+
+
+<script>
+
+  $(document).ready(function () {
+    // Create DataTable
+    var table100 = $('#myTable100').DataTable({
+        dom: 'Bfrtip',
+        order: [[1, 'asc'],[2, 'desc'], [0, 'asc']],
+        pagingType: 'full_numbers',
+        
+        buttons: [
+        'searchPanes','copy', 'csv', 'excel', 'pdf', 'print'
+        ],
+
+    });
+    
+
+    });
+</script>
+
+
+<script type="text/javascript">
+  google.charts.load('current', {'packages':['corechart']});
+  google.charts.setOnLoadCallback(drawChart);
+
+  function drawChart() {
+    {% if value.nhomdichvu_chart %}
+    const data_chart = {{ value.nhomdichvu_chart|tojson }}
+    {% endif %}
+
+    var data = google.visualization.arrayToDataTable(data_chart);
+
+    var options = {
+      title: 'My Daily Activities'
+    };
+
+    var chart = new google.visualization.PieChart(document.getElementById('piechart1'));
+
+    chart.draw(data, options);
+  }
+</script>
+
+{% endblock %}

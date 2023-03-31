@@ -996,4 +996,157 @@ def doctor_department(start, end, cursor):
     except:
         print("Lỗi query revenue.doctor_department")
         return None
- 
+
+
+def department_clsyeucau(start, end, cursor):
+    sql = """
+        SELECT dm_noiyeucau.TenPhongBan as noiyeucau,
+        COUNT(yeucau.CLSYeuCau_Id) as soluot,
+        SUM(yeucauchitiet.DonGiaDoanhThu) as tongdoanhthu
+        FROM CLSYeuCau as yeucau
+        INNER JOIN CLSYeuCauChiTiet as yeucauchitiet
+        ON yeucau.CLSYeuCau_Id = yeucauchitiet.CLSYeuCau_Id
+        INNER JOIN eHospital_NgheAn_Dictionary.dbo.DM_PhongBan as dm_noiyeucau
+        ON yeucau.NoiYeuCau_Id = dm_noiyeucau.PhongBan_Id
+        WHERE yeucau.ThoiGianYeuCau BETWEEN ? AND ?
+
+        GROUP BY dm_noiyeucau.TenPhongBan
+        ORDER BY tongdoanhthu DESC
+        """
+    try:
+        rows = cursor.execute(sql, start, end).fetchall()
+        for row in rows:
+            row.tongdoanhthu = round(int(row.tongdoanhthu)/1000) * 1000
+        return rows
+    except:
+        print("Lỗi query revenue.department_clsyeucau")
+        return None
+
+def doctor_clsyeucau(start, end, cursor):
+    sql = """
+    SELECT dm_bacsichidinh.TenNhanVien as bacsi,
+    COUNT(yeucau.CLSYeuCau_Id) as soluot,
+    SUM(yeucauchitiet.DonGiaDoanhThu) as tongdoanhthu
+    FROM CLSYeuCau as yeucau
+    INNER JOIN CLSYeuCauChiTiet as yeucauchitiet
+    ON yeucau.CLSYeuCau_Id = yeucauchitiet.CLSYeuCau_Id
+    INNER JOIN eHospital_NgheAn_Dictionary.dbo.NhanVien as dm_bacsichidinh
+    ON yeucau.BacSiChiDinh_Id = dm_bacsichidinh.NhanVien_Id
+    WHERE yeucau.ThoiGianYeuCau BETWEEN ? AND ?
+
+    GROUP BY dm_bacsichidinh.TenNhanVien
+    ORDER BY tongdoanhthu DESC
+        """
+    try:
+        rows = cursor.execute(sql, start, end).fetchall()
+        for row in rows:
+            row.tongdoanhthu = round(int(row.tongdoanhthu)/1000) * 1000
+        return rows
+    except:
+        print("Lỗi query revenue.doctor_clsyeucau")
+        return None
+
+def thuchien_clsyeucau(start, end, cursor):
+    sql = """
+        SELECT 
+        dm_noithuchien.TenPhongBan as noithuchien, 
+        COUNT(yeucau.CLSYeuCau_Id) as soluot,
+        SUM(DonGiaDoanhThu) as tongdoanhthu
+        FROM CLSYeuCau as yeucau
+        INNER JOIN eHospital_NgheAn_Dictionary.dbo.DM_PhongBan as dm_noithuchien
+        ON yeucau.NoiThucHien_Id = dm_noithuchien.PhongBan_Id
+        INNER JOIN CLSYeuCauChiTiet as yeucauchitiet
+        ON yeucau.CLSYeuCau_Id = yeucauchitiet.CLSYeuCau_Id
+        WHERE yeucau.ThoiGianYeuCau BETWEEN ? AND ?
+
+        GROUP BY dm_noithuchien.TenPhongBan
+        ORDER BY tongdoanhthu DESC
+        """
+    try:
+        rows = cursor.execute(sql, start, end).fetchall()
+        for row in rows:
+            row.tongdoanhthu = round(int(row.tongdoanhthu)/1000) * 1000
+        return rows
+    except:
+        print("Lỗi query revenue.thuchien_clsyeucau")
+        return None
+
+def nhomdichvu_clsyeucau(start, end, cursor):
+    sql = """
+        SELECT dm_nhomdichvu.TenNhomDichVu as nhomdichvu,
+        COUNT(yeucau.CLSYeuCau_Id) as soluot,
+        SUM(DonGiaDoanhThu) as tongdoanhthu
+        FROM CLSYeuCau as yeucau
+        INNER JOIN CLSYeuCauChiTiet as yeucauchitiet
+        ON yeucau.CLSYeuCau_Id = yeucauchitiet.CLSYeuCau_Id
+        INNER JOIN eHospital_NgheAn_Dictionary.dbo.DM_NhomDichVu as dm_nhomdichvu
+        ON yeucau.NhomDichVu_Id = dm_nhomdichvu.NhomDichVu_Id
+        WHERE yeucau.ThoiGianYeuCau BETWEEN ? AND ?
+        GROUP BY dm_nhomdichvu.TenNhomDichVu 
+        ORDER BY tongdoanhthu DESC
+        """
+    try:
+        rows = cursor.execute(sql, start, end).fetchall()
+        for row in rows:
+            row.tongdoanhthu = round(int(row.tongdoanhthu)/1000) * 1000
+        return rows
+    except:
+        print("Lỗi query revenue.nhomdichvu_clsyeucau")
+        return None
+
+def department_nhomdichvu_clsyeucau(start, end, cursor):
+    sql = """
+        SELECT dm_noiyeucau.TenPhongBan as noiyeucau, dm_nhomdichvu.TenNhomDichVu,
+        COUNT(dm_nhomdichvu.TenNhomDichVu) as soluot,
+        SUM(DonGiaDoanhThu) as tongdoanhthu
+        FROM CLSYeuCau as yeucau
+        INNER JOIN CLSYeuCauChiTiet as yeucauchitiet
+        ON yeucau.CLSYeuCau_Id = yeucauchitiet.CLSYeuCau_Id
+        INNER JOIN eHospital_NgheAn_Dictionary.dbo.DM_PhongBan as dm_noiyeucau
+        ON yeucau.NoiYeuCau_Id = dm_noiyeucau.PhongBan_Id
+        INNER JOIN eHospital_NgheAn_Dictionary.dbo.NhanVien as dm_bacsichidinh
+        ON yeucau.BacSiChiDinh_Id = dm_bacsichidinh.NhanVien_Id
+        INNER JOIN eHospital_NgheAn_Dictionary.dbo.DM_PhongBan as dm_noithuchien
+        ON yeucau.NoiThucHien_Id = dm_noithuchien.PhongBan_Id
+        INNER JOIN eHospital_NgheAn_Dictionary.dbo.DM_NhomDichVu as dm_nhomdichvu
+        ON yeucau.NhomDichVu_Id = dm_nhomdichvu.NhomDichVu_Id
+        WHERE yeucau.ThoiGianYeuCau BETWEEN ? AND ?
+
+        GROUP BY dm_noiyeucau.TenPhongBan, dm_nhomdichvu.TenNhomDichVu
+
+        ORDER BY TenNhomDichVu, soluot DESC 
+
+        """
+    try:
+        rows = cursor.execute(sql, start, end).fetchall()
+        for row in rows:
+            row.tongdoanhthu = round(int(row.tongdoanhthu)/1000) * 1000
+        return rows
+    except:
+        print("Lỗi query revenue.department_nhomdichvu_clsyeucau")
+        return None
+
+def nhomdichvu_doanhthu(start, end, cursor):
+    sql = """
+
+        SELECT dm_nhomdichvu.TenNhomDichVu,
+        SUM(DonGiaDoanhThu) as tongdoanhthu
+        FROM CLSYeuCau as yeucau
+        INNER JOIN CLSYeuCauChiTiet as yeucauchitiet
+        ON yeucau.CLSYeuCau_Id = yeucauchitiet.CLSYeuCau_Id
+        INNER JOIN eHospital_NgheAn_Dictionary.dbo.DM_NhomDichVu as dm_nhomdichvu
+        ON yeucau.NhomDichVu_Id = dm_nhomdichvu.NhomDichVu_Id
+        WHERE yeucau.ThoiGianYeuCau BETWEEN ? AND ?
+        GROUP BY dm_nhomdichvu.TenNhomDichVu
+        ORDER BY tongdoanhthu DESC 
+
+        """
+    try:
+        rows = cursor.execute(sql, start, end).fetchall()
+        for row in rows:
+            row.tongdoanhthu = round(int(row.tongdoanhthu)/1000) * 1000
+        return rows
+    except:
+        print("Lỗi query revenue.nhomdichvu_doanhthu")
+        return None
+

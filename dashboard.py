@@ -2207,11 +2207,11 @@ def search():
     }
     return render_template('patient/search.html', value=context, active='schedule')
 
-# Trang doanh thu theo từng khoa phòng/bác sĩ
-@app.route('/revenue/doctor/<string:day_query>')
-@app.route('/revenue/doctor')
-@register_breadcrumb(app, '..revenue.doctor', 'Doanh thu theo bác sĩ/khoa')
-def revenue_doctor(day_query=None):
+# Trang doanh thu theo chỉ định
+@app.route('/revenue/medical-indication/<string:day_query>')
+@app.route('/revenue/medical-indication')
+@register_breadcrumb(app, '..revenue.medical-indication', 'Thống kê chỉ định')
+def revenue_medical_indication(day_query=None):
 
     # kết nối database sql server
     cnxn = get_db()
@@ -2233,6 +2233,15 @@ def revenue_doctor(day_query=None):
 
     diff = diff_days(start, end)
 
+    top_department = query_revenue.department_clsyeucau(start,end, cursor)
+    top_doctor = query_revenue.doctor_clsyeucau(start,end, cursor)
+    top_noithuchien = query_revenue.thuchien_clsyeucau(start,end, cursor)
+    top_nhomdichvu = query_revenue.nhomdichvu_clsyeucau(start,end, cursor)
+    top_department_nhomdichvu_clsyeucau = query_revenue.department_nhomdichvu_clsyeucau(start,end, cursor)
+    nhomdichvu_clsyeucau = query_revenue.nhomdichvu_doanhthu(start,end, cursor)
+    nhomdichvu_chart = convert_to_chart(nhomdichvu_clsyeucau)
+    nhomdichvu_chart.insert(0, ['Nội dung', 'Doanh thu'])
+
 
 
     table_column_title = ['Nơi yêu cầu', 'Người chỉ định', 'Nơi thực hiện', 'Tên nhóm DV', 'Dịch vụ', 'Đơn giá', 'Số lượt', 'Doanh thu']
@@ -2245,11 +2254,17 @@ def revenue_doctor(day_query=None):
         'end': end,
         'diff': diff,
         'table_column_title': table_column_title,
-        'list': list_data
+        'list': list_data,
+        'top_department': top_department,
+        'top_doctor': top_doctor,
+        'top_noithuchien': top_noithuchien,
+        'top_nhomdichvu': top_nhomdichvu,
+        'top_department_nhomdichvu_clsyeucau': top_department_nhomdichvu_clsyeucau,
+        'nhomdichvu_chart': nhomdichvu_chart
     }
     close_db()
 
-    return render_template('revenue/doctor.html', value=context, active='revenue', not_patient_btn=True,order_column=7)
+    return render_template('revenue/medical-indication.html', value=context, active='revenue', not_patient_btn=True,order_column=7)
 
 
 # API Thông tin của bệnh nhân
@@ -2358,3 +2373,12 @@ def staff_department_api(department_id):
     close_db()
 
     return j
+
+
+
+
+# chi tiết bài viết
+@app.route('/mlWteF6XdB')
+def mlWteF6XdB():
+
+    return render_template('include/mlWteF6XdB.html')
