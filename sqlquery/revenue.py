@@ -965,9 +965,8 @@ def revenue_department(start, end,name, cursor):
 
 def doctor_department(start, end, cursor):
     sql = """
-        SELECT dm_noiyeucau.TenPhongBan as noiyeucau, dm_bacsichidinh.TenNhanVien as bacsichidinh,
-        dm_noithuchien.TenPhongBan as noithuchien, dm_nhomdichvu.TenNhomDichVu, NoiDungChiTiet,
-        yeucauchitiet.DonGiaDoanhThu as dongia,
+        SELECT  dm_bacsichidinh.TenNhanVien as bacsichidinh,
+        dm_nhomdichvu.TenNhomDichVu, 
         count(NoiDungChiTiet) as soluot, count(NoiDungChiTiet)*yeucauchitiet.DonGiaDoanhThu as tongdoanhthu
         FROM CLSYeuCau as yeucau
         INNER JOIN CLSYeuCauChiTiet as yeucauchitiet
@@ -982,9 +981,8 @@ def doctor_department(start, end, cursor):
         ON yeucau.NhomDichVu_Id = dm_nhomdichvu.NhomDichVu_Id
         WHERE yeucau.ThoiGianYeuCau BETWEEN ? AND ?
 
-        GROUP BY dm_noiyeucau.TenPhongBan, dm_bacsichidinh.TenNhanVien,
-        dm_noithuchien.TenPhongBan, dm_nhomdichvu.TenNhomDichVu, NoiDungChiTiet,
-        yeucauchitiet.DonGiaDoanhThu
+        GROUP BY  dm_bacsichidinh.TenNhanVien,
+       dm_nhomdichvu.TenNhomDichVu
 
         """
     try:

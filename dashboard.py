@@ -2245,7 +2245,7 @@ def revenue_medical_indication(day_query=None):
 
 
 
-    table_column_title = ['Nơi yêu cầu', 'Người chỉ định', 'Nơi thực hiện', 'Tên nhóm DV', 'Dịch vụ', 'Đơn giá', 'Số lượt', 'Doanh thu']
+    table_column_title = ['Người chỉ định', 'Tên nhóm DV', 'Số lượt', 'Doanh thu']
     list_data = query_revenue.doctor_department(start, end, cursor)
     today = today.strftime("%Y-%m-%d")
 
