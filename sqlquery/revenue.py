@@ -967,7 +967,7 @@ def doctor_department(start, end, cursor):
     sql = """
         SELECT  dm_bacsichidinh.TenNhanVien as bacsichidinh,
         dm_nhomdichvu.TenNhomDichVu, 
-        count(NoiDungChiTiet) as soluot, count(NoiDungChiTiet)*yeucauchitiet.DonGiaDoanhThu as tongdoanhthu
+        count(dm_nhomdichvu.TenNhomDichVu) as soluot, SUM(DonGiaDoanhThu) as tongdoanhthu
         FROM CLSYeuCau as yeucau
         INNER JOIN CLSYeuCauChiTiet as yeucauchitiet
         ON yeucau.CLSYeuCau_Id = yeucauchitiet.CLSYeuCau_Id
@@ -982,13 +982,13 @@ def doctor_department(start, end, cursor):
         WHERE yeucau.ThoiGianYeuCau BETWEEN ? AND ?
 
         GROUP BY  dm_bacsichidinh.TenNhanVien,
-       dm_nhomdichvu.TenNhomDichVu
+        dm_nhomdichvu.TenNhomDichVu
+		ORDER BY tongdoanhthu DESC, soluot DESC
 
         """
     try:
         rows = cursor.execute(sql, start, end).fetchall()
         for row in rows:
-            row.dongia = f'{int(row.dongia):,}'
             row.tongdoanhthu = f'{int(row.tongdoanhthu):,}'
         return rows
     except:

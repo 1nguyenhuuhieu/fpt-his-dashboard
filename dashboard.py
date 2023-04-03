@@ -2266,7 +2266,7 @@ def revenue_medical_indication(day_query=None):
     }
     close_db()
 
-    return render_template('revenue/medical-indication.html', value=context, active='revenue', not_patient_btn=True,order_column=7)
+    return render_template('revenue/medical-indication.html', value=context, active='revenue', not_patient_btn=True,order_column=3)
 
 
 # API Thông tin của bệnh nhân
