@@ -2243,8 +2243,6 @@ def revenue_medical_indication(day_query=None):
     nhomdichvu_chart = convert_to_chart(nhomdichvu_clsyeucau)
     nhomdichvu_chart.insert(0, ['Nội dung', 'Doanh thu'])
 
-
-
     table_column_title = ['Người chỉ định', 'Tên nhóm DV', 'Số lượt', 'Doanh thu']
     list_data = query_revenue.doctor_department(start, end, cursor)
     today = today.strftime("%Y-%m-%d")

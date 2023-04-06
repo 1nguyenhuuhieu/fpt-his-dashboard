@@ -219,17 +219,17 @@ def surgery_ekip(BenhAnPhauThuat_Id, cursor):
        
 def surgeries(BenhAn_Id, cursor):
     query = """
-SELECT BenhAnPhauThuat_Id, ThoiGianBatDau, ThoiGianKetThuc, ICD_TruocPhauThuat_MoTa, ICD_SauPhauThuat_MoTa,
-dict_ppvc.Dictionary_Name as phuongphapvocam, dict_taibien.Dictionary_Name as taibien,
-CanThiepPhauThuat
-FROM BenhAnPhauThuat
-LEFT JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_LoaiPhauThuat] as loaiphauthuat
-ON BenhAnPhauThuat.LoaiPhauThuat = loaiphauthuat.LoaiPhauThuat
-LEFT JOIN [eHospital_NgheAn_Dictionary].[dbo].[Lst_Dictionary] as dict_ppvc
-ON BenhAnPhauThuat.PhuongPhapVoCam_Id = dict_ppvc.Dictionary_Id
-LEFT JOIN [eHospital_NgheAn_Dictionary].[dbo].[Lst_Dictionary] as dict_taibien
-ON BenhAnPhauThuat.TaiBien_Id = dict_taibien.Dictionary_Id
-WHERE BenhAn_Id = ?
+    SELECT BenhAnPhauThuat_Id, ThoiGianBatDau, ThoiGianKetThuc, ICD_TruocPhauThuat_MoTa, ICD_SauPhauThuat_MoTa,
+    dict_ppvc.Dictionary_Name as phuongphapvocam, dict_taibien.Dictionary_Name as taibien,
+    CanThiepPhauThuat
+    FROM BenhAnPhauThuat
+    LEFT JOIN [eHospital_NgheAn_Dictionary].[dbo].[DM_LoaiPhauThuat] as loaiphauthuat
+    ON BenhAnPhauThuat.LoaiPhauThuat = loaiphauthuat.LoaiPhauThuat
+    LEFT JOIN [eHospital_NgheAn_Dictionary].[dbo].[Lst_Dictionary] as dict_ppvc
+    ON BenhAnPhauThuat.PhuongPhapVoCam_Id = dict_ppvc.Dictionary_Id
+    LEFT JOIN [eHospital_NgheAn_Dictionary].[dbo].[Lst_Dictionary] as dict_taibien
+    ON BenhAnPhauThuat.TaiBien_Id = dict_taibien.Dictionary_Id
+    WHERE BenhAn_Id = ?
 
     """
     try:
