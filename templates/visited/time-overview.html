@@ -3,6 +3,98 @@
 <i class="fa-solid fa-table me-2"></i>{% block title %}Thời gian khám ngoại trú{% endblock %}
 {% endblock %}
 {% block content %}
+<div class="row mb-3">
+    <div class="col-lg-5">
+        <div class="border text-bg-warning shadow-sm rounded table-responsive px-3 py-3 mt-3">
+            <div class="d-flex justify-content-between">
+                <h5 class=""><i class="fa-solid fa-stopwatch me-2"></i>Tổng thời gian khám bệnh</h5>
+            </div>
+            <hr class="mt-1 mb-0">
+        {% if value.time_overview %}
+            <table class="table table-borderless table-hover table-sm m-0 p-0">
+                <tbody>
+                    <tr><td>BN ngoại trú hoàn tất trong ngày</td>
+                        <td class="fw-semibold">{{value.time_overview.count}} </td>
+                    </tr>
+
+                    <tr><td>Thời gian khám trung bình</td>
+                        <td class="fw-semibold">{{value.time_overview.avg_time}} phút</td>
+                    </tr>
+                    <tr><td>Thời gian chờ thanh toán</td>
+                        <td class="fw-semibold">{{value.time_overview.avg_time_thanhtoan}} phút </td>
+                    </tr>
+    
+                </tbody>
+            </table>
+            {% endif %}
+        </div>
+
+        <div class="border shadow-sm rounded table-responsive px-3 py-3 mt-3">
+            <div class="d-flex justify-content-between">
+                <h5 class=""><i class="fa-solid fa-stopwatch me-2"></i>Thời gian thực hiện dịch vụ(phút)</h5>
+            </div>
+            <hr class="mt-1 mb-0">
+        {% if value.time_service %}
+            <table class="table table-borderless table-hover table-sm m-0 p-0">
+                <thead>
+                    <tr>
+                      <th scope="col">Dịch vụ</th>
+                      <th scope="col">Số lượt</th>
+                      <th scope="col">Chờ kết quả</th>
+                    </tr>
+                  </thead>
+                <tbody>
+                    {% for service in value.time_service %}
+                    <tr>
+                        {% for col in service %}
+                        <td>{{ col }} </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+
+                </tbody>
+            </table>
+            {% endif %}
+        </div>
+
+    </div>
+    <div class="col-lg-7">
+        <div class="border bg-white shadow-sm rounded table-responsive px-3 py-3 mt-3">
+            <div class="d-flex justify-content-between">
+                <h5 class=""><i class="fa-solid fa-stopwatch me-2"></i>Thời gian chờ khám bệnh(phút)</h5>
+            </div>
+            <small class="text-muted fst-italic">Đăng kí thành công ở phòng tiếp đón tới lúc thực hiện xong khám lâm sàng</small>
+            <hr class="mt-1 mb-0">
+        {% if value.time_departments %}
+            <table class="table table-borderless table-hover table-sm m-0 p-0">
+                <thead>
+                    <tr>
+                      <th scope="col">Phòng</th>
+                      <th scope="col">Số lượt</th>
+                      <th scope="col">Trung bình</th>
+                      <th scope="col">Lớn nhất</th>
+                      <th scope="col">Bé nhất</th>
+
+
+                    </tr>
+                  </thead>
+                <tbody>
+                    {% for department in value.time_departments %}
+
+                    <tr>
+                        {% for column in department %}
+                        <td>{{ column }} </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+
+                </tbody>
+            </table>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
 {% include 'include/table.html' %}
 
 <script>

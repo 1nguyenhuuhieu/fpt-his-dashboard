@@ -1026,11 +1026,16 @@ def time_overview(day_query=None):
 
     diff = diff_days(start, end)
 
+    time_overview = query_visited.time_overview(start, end, cursor)
+    time_departments = query_visited.time_departments(start, end, cursor)
+    time_service = query_visited.time_service(start, end, cursor)
 
-    table_column_title = ['Thời gian khám', 'Mã y tế', 'Tên bệnh nhân',
-                          'Số tiếp nhận', 'Chẩn đoán trong khoa', 'Giải quyết', 'Bác sĩ', 'Khoa']
 
-    list_patients = query_visited.patients(start, end, cursor)
+
+    table_column_title = ['Bệnh nhân', 'Dịch vụ', 'Thời gian tiếp nhận',
+                          'Thời gian yêu cầu', 'Thời gian thực hiện', 'Thời gian có kết quả', 'Thời gian hoàn tất khám bệnh', 'Thời gian xác nhận thanh toán', 'Thời gian chờ khám', 'Thời gian chờ thực hiện yêu cầu', 'Thời gian chờ có kết quả', 'Thời gian chờ hoàn tất khám bệnh', 'Thời gian chờ xác nhận thanh toán', 'Tổng thời gian']
+
+    list_patients = query_visited.time_patients(start, end, cursor)
 
     today = today.strftime("%Y-%m-%d")
 
@@ -1041,9 +1046,12 @@ def time_overview(day_query=None):
         'diff': diff,
         'list': list_patients,
         'table_column_title': table_column_title,
+        'time_overview': time_overview,
+        'time_departments': time_departments,
+        'time_service': time_service
     }
     close_db()
-    return render_template('visited/time-overview.html', value=context)
+    return render_template('visited/time-overview.html', value=context, not_patient_btn = True)
 
 
 # Trang phẫu thuật thủ thuật

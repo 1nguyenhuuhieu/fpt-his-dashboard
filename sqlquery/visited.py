@@ -476,13 +476,17 @@ def time_overview(start, end,cursor):
     query = """
         SELECT COUNT(TiepNhan.TiepNhan_Id) as count,
         AVG(DATEDIFF(minute,TiepNhan.ThoiGianTiepNhan,XacNhanChiPhi.ThoiGianXacNhan)) as avg_time,
+        AVG(DATEDIFF(minute,KhamBenh.NgayCapNhat ,XacNhanChiPhi.ThoiGianXacNhan)) as avg_time_thanhtoan,
         MAX(DATEDIFF(minute,TiepNhan.ThoiGianTiepNhan,XacNhanChiPhi.ThoiGianXacNhan)) as max_time,
         MIN(DATEDIFF(minute,TiepNhan.ThoiGianTiepNhan,XacNhanChiPhi.ThoiGianXacNhan)) as min_time
         FROM TiepNhan
         INNER JOIN XacNhanChiPhi
         ON TiepNhan.TiepNhan_Id = XacNhanChiPhi.TiepNhan_Id AND TiepNhan.NgayTiepNhan = XacNhanChiPhi.NgayXacNhan
+        INNER JOIN KhamBenh
+        ON TiepNhan.TiepNhan_Id = KhamBenh.TiepNhan_Id
+        AND KhamBenh.NgayCapNhat IS NOT NULL
         WHERE TiepNhan.ThoiGianTiepNhan BETWEEN ? AND ?
-            """
+        """
     try:
         q = cursor.execute(query, start, end).fetchone()
         return q
@@ -506,4 +510,113 @@ def tiepnhan_id_inday(start, end, cursor):
         return q
     except:
         print("Lỗi query visited.tiepnhan_id_inday")
+        return None 
+    
+# danh sách bệnh nhân tiếp nhận khám bệnh và thanh toán trong ngày
+def time_patients(start, end, cursor):
+    query = """
+    SELECT  dm_benhnhan.TenBenhNhan,
+    dm_dichvu.TenNhomDichVu,
+    TiepNhan.ThoiGianTiepNhan,
+    CLSYeuCau.ThoiGianYeuCau as thoigianyeucau,
+    CLSKetQua.ThoiGianThucHien as thoigianthuchien,
+    CLSKetQua.NgayTao as thoigiancoketqua,
+    KhamBenh.NgayCapNhat as thoigian_hoantatkhambenh,
+    XacNhanChiPhi.ThoiGianXacNhan,
+    DATEDIFF(minute, TiepNhan.ThoiGianTiepNhan, CLSYeuCau.ThoiGianYeuCau) as thoigiancho_bacsikham,
+    DATEDIFF(minute, CLSYeuCau.ThoiGianYeuCau, CLSKetQua.ThoiGianThucHien) as thoigiancho_cls,
+    DATEDIFF(minute, CLSKetQua.ThoiGianThucHien, CLSKetQua.NgayTao) as thoigian_cho_ketqua_cls,
+    DATEDIFF(minute, CLSKetQua.NgayTao, KhamBenh.NgayCapNhat) as thoigian_cho_hoantatkhambenh,
+    DATEDIFF(minute, CLSKetQua.NgayTao, XacNhanChiPhi.ThoiGianXacNhan) as thoigian_cho_thanhtoan,
+    DATEDIFF(minute,TiepNhan.ThoiGianTiepNhan, XacNhanChiPhi.ThoiGianXacNhan) as tongthoigian
+    FROM CLSYeuCau
+    INNER JOIN eHospital_NgheAn_Dictionary.dbo.DM_NhomDichVu as dm_dichvu
+    ON CLSYeuCau.NhomDichVu_Id = dm_dichvu.NhomDichVu_Id
+    LEFT JOIN CLSKetQua
+    ON CLSYeuCau.CLSYeuCau_Id = CLSKetQua.CLSYeuCau_Id
+    INNER JOIN XacNhanChiPhi
+    ON CLSYeuCau.TiepNhan_Id = XacNhanChiPhi.TiepNhan_Id
+    INNER JOIN TiepNhan
+    ON TiepNhan.TiepNhan_Id = XacNhanChiPhi.TiepNhan_Id
+    INNER JOIN KhamBenh
+    ON TiepNhan.TiepNhan_Id = KhamBenh.TiepNhan_Id
+    INNER JOIN eHospital_NgheAn_Dictionary.dbo.DM_BenhNhan as dm_benhnhan
+    ON TiepNhan.BenhNhan_Id = dm_benhnhan.BenhNhan_Id
+    WHERE TiepNhan.ThoiGianTiepNhan BETWEEN ? AND ?
+    AND TiepNhan.NgayTiepNhan = XacNhanChiPhi.NgayXacNhan
+    AND KhamBenh.NgayCapNhat IS NOT NULL
+
+    ORDER BY TiepNhan.TiepNhan_Id
+
+
+        """
+    try:
+        q = cursor.execute(query, start, end).fetchall()
+        for row in q:
+            for i in (2,3,4,5,6,7):
+                if row[i]: row[i] = row[i].strftime("%H:%M")
+        return q
+    except:
+        print("Lỗi query visited.time_patients")
+        return None 
+    
+# thời gian khám từng khoa phòng
+def time_departments(start, end, cursor):
+    query = """
+        SELECT 
+        TenPhongBan,
+        COUNT(TenPhongBan) as soluot,
+        AVG(DATEDIFF(minute,TiepNhan.ThoiGianTiepNhan,KhamBenh.ThoiGianKham)) as avg_thoigiankham,
+        MAX(DATEDIFF(minute,TiepNhan.ThoiGianTiepNhan,KhamBenh.ThoiGianKham)) as max_thoigiankham,
+        MIN(DATEDIFF(minute,TiepNhan.ThoiGianTiepNhan,KhamBenh.ThoiGianKham)) as min_thoigiankham
+        FROM CLSYeuCau
+        INNER JOIN TiepNhan
+        ON CLSYeuCau.TiepNhan_Id = TiepNhan.TiepNhan_Id
+        INNER JOIN eHospital_NgheAn_Dictionary.dbo.DM_PhongBan as dm_phongban
+        ON CLSYeuCau.NoiThucHien_Id = dm_phongban.PhongBan_Id
+        INNER JOIN KhamBenh
+        ON TiepNhan.TiepNhan_Id = KhamBenh.TiepNhan_Id
+        WHERE TiepNhan.ThoiGianTiepNhan BETWEEN ? AND ?
+        AND CLSYeuCau.NhomDichVu_Id = 27
+        GROUP BY TenPhongBan
+        ORDER BY soluot DESC
+        """
+    try:
+        q = cursor.execute(query, start, end).fetchall()
+        return q
+    except:
+        print("Lỗi query visited.time_departments")
+        return None 
+    
+# thời gian khám từng dịch vụ
+def time_service(start, end, cursor):
+    query = """
+SELECT  
+dm_dichvu.TenNhomDichVu,
+COUNT(dm_dichvu.TenNhomDichVu) as soluot,
+AVG(DATEDIFF(minute, CLSYeuCau.ThoiGianYeuCau, CLSKetQua.ThoiGianThucHien)) as avg_thoigiancho_cls
+FROM CLSYeuCau
+INNER JOIN eHospital_NgheAn_Dictionary.dbo.DM_NhomDichVu as dm_dichvu
+ON CLSYeuCau.NhomDichVu_Id = dm_dichvu.NhomDichVu_Id
+LEFT JOIN CLSKetQua
+ON CLSYeuCau.CLSYeuCau_Id = CLSKetQua.CLSYeuCau_Id
+INNER JOIN XacNhanChiPhi
+ON CLSYeuCau.TiepNhan_Id = XacNhanChiPhi.TiepNhan_Id
+INNER JOIN TiepNhan
+ON TiepNhan.TiepNhan_Id = XacNhanChiPhi.TiepNhan_Id
+INNER JOIN KhamBenh
+ON TiepNhan.TiepNhan_Id = KhamBenh.TiepNhan_Id
+WHERE TiepNhan.ThoiGianTiepNhan BETWEEN ? AND ?
+AND TiepNhan.NgayTiepNhan = XacNhanChiPhi.NgayXacNhan
+AND KhamBenh.NgayCapNhat IS NOT NULL
+AND CLSKetQua.ThoiGianThucHien IS NOT NULL
+
+GROUP BY dm_dichvu.TenNhomDichVu
+ORDER BY soluot DESC
+        """
+    try:
+        q = cursor.execute(query, start, end).fetchall()
+        return q
+    except:
+        print("Lỗi query visited.time_service")
         return None 
