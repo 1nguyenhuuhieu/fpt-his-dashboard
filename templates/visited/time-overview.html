@@ -5,13 +5,13 @@
 {% block content %}
 <div class="row mb-3">
     <div class="col-lg-5">
-        <div class="border text-bg-warning shadow-sm rounded table-responsive px-3 py-3 mt-3">
+        <div class="border shadow-sm rounded table-responsive px-3 py-3 mt-3">
             <div class="d-flex justify-content-between">
                 <h5 class=""><i class="fa-solid fa-stopwatch me-2"></i>Tổng thời gian khám bệnh</h5>
             </div>
             <hr class="mt-1 mb-0">
         {% if value.time_overview %}
-            <table class="table table-borderless table-hover table-sm m-0 p-0">
+            <table class="table bg-warning-subtle table-borderless table-hover table-sm m-0 p-0">
                 <tbody>
                     <tr><td>BN ngoại trú hoàn tất trong ngày</td>
                         <td class="fw-semibold">{{value.time_overview.count}} </td>
@@ -24,18 +24,14 @@
                         <td class="fw-semibold">{{value.time_overview.avg_time_thanhtoan}} phút </td>
                     </tr>
     
-                </tbody>
+
+
             </table>
             {% endif %}
-        </div>
-
-        <div class="border shadow-sm rounded table-responsive px-3 py-3 mt-3">
-            <div class="d-flex justify-content-between">
-                <h5 class=""><i class="fa-solid fa-stopwatch me-2"></i>Thời gian thực hiện dịch vụ(phút)</h5>
-            </div>
-            <hr class="mt-1 mb-0">
-        {% if value.time_service %}
-            <table class="table table-borderless table-hover table-sm m-0 p-0">
+            
+            {% if value.time_service %}
+        
+            <table class="table table-borderless table-hover table-sm m-0 p-0 border-top">
                 <thead>
                     <tr>
                       <th scope="col">Dịch vụ</th>
@@ -56,7 +52,6 @@
             </table>
             {% endif %}
         </div>
-
     </div>
     <div class="col-lg-7">
         <div class="border bg-white shadow-sm rounded table-responsive px-3 py-3 mt-3">
