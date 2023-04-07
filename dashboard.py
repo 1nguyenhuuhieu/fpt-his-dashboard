@@ -914,6 +914,8 @@ def visited(day_query=None):
     # 5 lượt khám bệnh gần nhất trong khoảng thời gian
     last_5 = query_visited.last5(start, end, cursor)
 
+    # thống kê thời gian khám
+    time_overview = query_visited.time_overview(start, end, cursor)
     # Chartsố lượt khám
     if diff < 30:
         start_day_chart = today - timedelta(days=30)
@@ -942,7 +944,8 @@ def visited(day_query=None):
         'doctors': doctors,
         'visited_in_department': visited_in_department_id,
         'last_5': last_5,
-        'last30days_visited': last30days_visited
+        'last30days_visited': last30days_visited,
+        'time_overview': time_overview
     }
 
     close_db()
@@ -993,6 +996,54 @@ def visited_patients(day_query=None):
     }
     close_db()
     return render_template('visited/patients.html', value=context)
+
+
+
+
+# Thời gian khám ngoại trú
+@app.route('/visited/time-overview/<string:day_query>')
+@app.route('/visited/time-overview')
+@register_breadcrumb(app, '..visited.time_overview', 'Thời gian khám')
+def time_overview(day_query=None):
+
+    # kết nối database sql server
+    cnxn = get_db()
+    cursor = cnxn.cursor()
+
+    # ngày bắt đầu và kết thúc truy vấn dữ liệu
+    time_filter = request.args.get('time')
+    start_get = request.args.get('start')
+    end_get = request.args.get('end')
+
+    # lấy ngày xem dashboard
+    day_class = DayQuery(day_query, time_filter, start_get, end_get)
+    today = day_class.today
+    start = day_class.start
+    end = day_class.end
+
+    previous_start = day_class.previous_start
+    previous_end = day_class.previous_end
+
+    diff = diff_days(start, end)
+
+
+    table_column_title = ['Thời gian khám', 'Mã y tế', 'Tên bệnh nhân',
+                          'Số tiếp nhận', 'Chẩn đoán trong khoa', 'Giải quyết', 'Bác sĩ', 'Khoa']
+
+    list_patients = query_visited.patients(start, end, cursor)
+
+    today = today.strftime("%Y-%m-%d")
+
+    context = {
+        'today': today,
+        'start': start,
+        'end': end,
+        'diff': diff,
+        'list': list_patients,
+        'table_column_title': table_column_title,
+    }
+    close_db()
+    return render_template('visited/time-overview.html', value=context)
 
 
 # Trang phẫu thuật thủ thuật

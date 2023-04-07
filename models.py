@@ -390,3 +390,9 @@ class Surgery:
         self.taibien = row.taibien
         self.canthiepphauthuat = row.CanThiepPhauThuat
         self.ekip = ekip
+
+class TimeStampExaminition:
+    def __init__(self, row):
+        self.thoigiantiepnhan = row.ThoiGianTiepNhan
+        self.thoigianxacnhan = row.thoigianxacnhan
+        self.total = row.totaltime

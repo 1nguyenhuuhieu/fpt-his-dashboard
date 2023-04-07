@@ -1,0 +1,26 @@
+<div class="border bg-white shadow-sm rounded table-responsive px-3 py-3 mt-3">
+    <div class="d-flex justify-content-between">
+        <h6 class=""><i class="fa-solid fa-stopwatch me-2"></i>Thống kê thời gian khám bệnh</h6>
+        <a href="{{ url_for('visited_patients', day_query=value.today) }}" class="text-decoration-none">Xem chi tiết<i
+                class="fa-solid fa-up-right-from-square ms-2"></i></a>
+    </div>
+    <hr class="mt-1 mb-0">
+{% if value.time_overview %}
+    <table class="table table-borderless table-hover table-sm m-0 p-0">
+        <tbody>
+            <tr><td>Lượt khám bệnh hoàn tất trong ngày</td>
+                <td class="fw-semibold">{{value.time_overview.count}} </td>
+            </tr>
+            <tr><td>Thời gian trung bình</td>
+                <td class="fw-semibold">{{value.time_overview.avg_time}} phút</td>
+            </tr>
+            <tr><td>Thời gian lớn nhất</td>
+                <td class="fw-semibold">{{value.time_overview.max_time}} phút</td>
+            </tr>
+            <tr><td>Thời gian ít nhất</td>
+                <td class="fw-semibold">{{value.time_overview.min_time}} phút </td>
+            </tr>
+        </tbody>
+    </table>
+    {% endif %}
+</div>

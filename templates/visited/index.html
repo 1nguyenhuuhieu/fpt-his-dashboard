@@ -7,7 +7,6 @@
   display: inline-block;
   margin-left: 15px;
 }
-
   .pagination li {
   display:inline-block;
 }
@@ -19,12 +18,10 @@
   text-decoration: none;
   border: solid 1px gainsboro;
 }
-
 .pagination a.active {
   background-color: #4CAF50;
   color: white;
 }
-
 .pagination a:hover:not(.active) {background-color: #ddd;}
 </style>
 {% include 'visited/chartjs.html' %}
@@ -33,7 +30,6 @@
     <!-- Top card  -->
     <div class="col-lg-6">
       <div class="row g-2">
-
         {% if value.card_top %}
         {% set card = value.card_top %}
         <div class="col-lg-6">
@@ -47,7 +43,6 @@
                       {{ card.title }}
                     </div>
                     <i class="fa-solid fa-up-right-from-square"></i>
-
                   </h6>
                 </a>
                 <hr class="my-2">
@@ -83,9 +78,7 @@
                       " class="text-decoration-none">Nhập viện<i
                         class="fa-solid fa-caret-right"></i></a></span>
                         <div><span class="fw-bold">{{ card.new_in }}</span> <span class="text-muted">{{ card.visited_in_percent()}}%</span></div>
-                  
                 </div>
-  
                 <div class="card-text d-flex justify-content-between">
                   <span> <a href="
                       {{ url_for('out_patients', day_query=value.today) }}
@@ -98,15 +91,11 @@
           </div>
         </div>
         {% endif %}
-
-
         <div class="col-lg-6">
           <div class="border rounded shadow-sm p-2 bg-white h-100">
             <div id="piechart1"></div>
           </div>
         </div>
-
-  
       </div>
       <div class="row g-2 mt-1">
         <div class="col-lg-12">
@@ -159,59 +148,45 @@
               </div>
               <div>
                   <button class="btn btn-sm btn-outline-dark sort" data-sort="total">Lượt khám<i class="fa-solid fa-sort ms-2"></i></button>
-
               </div>
           </div>
       </div>
-    
       <ul class="list list-group list-group-flush">
- 
         {% for doctor in doctors %}
         <a href="#"
           class="list-group-item list-group-item-action d-flex justify-content-between align-items-start ">
   <span class="name">{{ doctor.name }}</span>
-          
           <span class="fw-bold ms-2"><span class="total">{{ doctor.total }}</span></span>
-  
         </a>
         {% endfor %}
       </ul>
       <nav>
-
       <ul class="pagination"></ul>
     </nav>
-
     </div>
     {% endif %}
   </div>
-
   <div class="col-lg-6">
     <!-- Danh sách bệnh nhân ngoại trú theo từng phòng -->
     {% include 'visited/list_department.html'%}
     <!-- Danh sách bệnh nhân nội trú theo từng khoa -->
   </div>
-
 </div>
-
     </div>
     <!-- Top card  -->
     <div class="col-lg-6 pt-2 pt-sm-0">
       {% include 'visited/last_patients_table.html' %}
-      
+      {% include 'visited/time_examinition.html' %}
       <div class="border rounded shadow-sm p-2 bg-white mt-3">
         <div id="last30daysChartInHospital"></div>
       </div>
-
-
     </div>
     <!-- Nội trú -->
   </div>
-
 <script>
   const urlGenerator = '/visited/';
   const todayURL = "{{ url_for('visited') }}"
 </script>
-
 <!-- list js -->
 <script>
   var doctorList = new List('doctor-list', {
@@ -219,6 +194,5 @@
   page: 10,
   pagination: true,
 });
-
 </script>
 {% endblock %}

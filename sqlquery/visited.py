@@ -469,3 +469,41 @@ def doctors_department_merge(start, end, d_id,cursor):
     except:
         print("Lỗi query visited.doctors_department_merge")
         return None 
+
+    
+# Thời gian khám
+def time_overview(start, end,cursor):
+    query = """
+        SELECT COUNT(TiepNhan.TiepNhan_Id) as count,
+        AVG(DATEDIFF(minute,TiepNhan.ThoiGianTiepNhan,XacNhanChiPhi.ThoiGianXacNhan)) as avg_time,
+        MAX(DATEDIFF(minute,TiepNhan.ThoiGianTiepNhan,XacNhanChiPhi.ThoiGianXacNhan)) as max_time,
+        MIN(DATEDIFF(minute,TiepNhan.ThoiGianTiepNhan,XacNhanChiPhi.ThoiGianXacNhan)) as min_time
+        FROM TiepNhan
+        INNER JOIN XacNhanChiPhi
+        ON TiepNhan.TiepNhan_Id = XacNhanChiPhi.TiepNhan_Id AND TiepNhan.NgayTiepNhan = XacNhanChiPhi.NgayXacNhan
+        WHERE TiepNhan.ThoiGianTiepNhan BETWEEN ? AND ?
+            """
+    try:
+        q = cursor.execute(query, start, end).fetchone()
+        return q
+    except:
+        print("Lỗi query visited.time_overview")
+        return None 
+
+# danh sách id tiếp nhận khám bệnh và thanh toán trong ngày
+def tiepnhan_id_inday(start, end, cursor):
+    query = """
+        SELECT TiepNhan.TiepNhan_Id,TiepNhan.ThoiGianTiepNhan, XacNhanChiPhi.ThoiGianXacNhan as thoigianxacnhan,
+        DATEDIFF(minute,TiepNhan.ThoiGianTiepNhan,thoigianxacnhan) as totaltime
+        FROM TiepNhan
+        INNER JOIN XacNhanChiPhi
+        ON TiepNhan.TiepNhan_Id = XacNhanChiPhi.TiepNhan_Id AND TiepNhan.NgayTiepNhan = XacNhanChiPhi.NgayXacNhan
+        WHERE TiepNhan.ThoiGianTiepNhan BETWEEN ? AND ?
+        order by totaltime desc
+        """
+    try:
+        q = cursor.execute(query, start, end).fetchall()
+        return q
+    except:
+        print("Lỗi query visited.tiepnhan_id_inday")
+        return None 

@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block header %}
+<i class="fa-solid fa-table me-2"></i>{% block title %}Thời gian khám ngoại trú{% endblock %}
+{% endblock %}
+{% block content %}
+{% include 'include/table.html' %}
+
+<script>
+    const urlGenerator = '/visited/patients/';
+    const todayURL = "{{ url_for('visited') }}";
+</script>
+{% endblock %}
