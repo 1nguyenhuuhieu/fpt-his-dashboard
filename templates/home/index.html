@@ -6,7 +6,8 @@
 {% include 'home/chartjs.html' %}
 <div class="row">
   <div class="col-lg-6">
-    <div class="row g-2">
+{% if value.money_card or value.all_service_card %}
+    <div class="row g-2 mb-3">
       <div class="col-12">
         <!-- Top card -->
         <div class="row g-3">
@@ -103,9 +104,10 @@
         <!-- Top card-->
       </div>
     </div>
-    <div class="row g-3 mt-1">
+{% endif %}
+    <div class="row g-3">
       {% for card in value.patient_card %}
-      <div class="col-lg-6 mt-3">
+      <div class="col-lg-6">
         <div class="card shadow-sm border ">
           <!-- style="  background: url({{url_for('static', filename='imgs/4930491.jpg')}}) no-repeat center ;
           background-size: cover;" -->

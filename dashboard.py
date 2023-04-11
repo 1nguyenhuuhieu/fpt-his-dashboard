@@ -38,6 +38,9 @@ from myfunc import *
 
 import time
 
+from functools import wraps
+from flask import g, request, redirect, url_for
+
 
 total_bed = {
     'TTYT Anh Sơn': (200, 72, 272),
@@ -58,10 +61,33 @@ Breadcrumbs(app=app)
 # register zip filter for pararell loop
 app.jinja_env.filters['zip'] = zip
 
+
+# login decorator
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if session.get('username') is None:
+            flash('Đăng nhập để sử dụng')
+            return redirect(url_for('user_login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+# manager decorator
+def manager_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if session.get('username') is None or session['username'] != 'manager':
+            flash('Đăng nhập tài khoản quản lý để sử dụng')
+            return redirect(url_for('user_login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+
 # Trang chủ
 @app.route("/dashboard/<string:day_query>", methods=['GET', 'POST'])
 @app.route("/", methods=['GET', 'POST'])
 @register_breadcrumb(app, '.', 'Trang chủ')
+@login_required
 def home(day_query=None):
     # kết nối database sql server
     cnxn = get_db()
@@ -84,38 +110,39 @@ def home(day_query=None):
     diff = diff_days(start, end)
 
     start_time = time.time()
+    if session['username'] == 'manager':
+        print('true')
+        phannhom_money = query_revenue.phannhom_money(start, end, cursor)
+        previous_phannhom_money = query_revenue.phannhom_money(previous_start, previous_end, cursor)
+        # Tổng Doanh thu
+        current = sum(int(row.TongDoanhThu) for row in phannhom_money)
+        previous = sum(int(row.TongDoanhThu) for row in previous_phannhom_money)
+        money_card = MoneyCard(current, previous)
 
-    phannhom_money = query_revenue.phannhom_money(start, end, cursor)
-    previous_phannhom_money = query_revenue.phannhom_money(previous_start, previous_end, cursor)
-    # Tổng Doanh thu
-    current = sum(int(row.TongDoanhThu) for row in phannhom_money)
-    previous = sum(int(row.TongDoanhThu) for row in previous_phannhom_money)
-    money_card = MoneyCard(current, previous)
+        # Service card
+        all_service_card = []
+        # Tổng Doanh thu dược
+        if phannhom_money:
+            for row in phannhom_money:
+                if row.PhanNhom == 'DU':
+                    current1 = int(row.TongDoanhThu)
+                elif  row.PhanNhom == 'DV' :
+                    current2 = int(row.TongDoanhThu)
+        else:
+            current1 = 0
+            current2 = 0
 
-    # Service card
-    all_service_card = []
-    # Tổng Doanh thu dược
-    if phannhom_money:
-        for row in phannhom_money:
-            if row.PhanNhom == 'DU':
-                current1 = int(row.TongDoanhThu)
-            elif  row.PhanNhom == 'DV' :
-                current2 = int(row.TongDoanhThu)
+        card = ServiceCard('Dược', current1, money_card.current,
+                        'fa-solid fa-pills', 'medicine')
+        all_service_card.append(card)
+
+        # Tổng Doanh thu dịch vụ
+        card = ServiceCard('Dịch vụ', current2, money_card.current,
+                        'fa-solid fa-stethoscope', 'service')
+        all_service_card.append(card)
     else:
-        current1 = 0
-        current2 = 0
-
-    card = ServiceCard('Dược', current1, money_card.current,
-                       'fa-solid fa-pills', 'medicine')
-    all_service_card.append(card)
-
-    # Tổng Doanh thu dịch vụ
-    card = ServiceCard('Dịch vụ', current2, money_card.current,
-                       'fa-solid fa-stethoscope', 'service')
-    all_service_card.append(card)
-
-
-    print("--- %s seconds ---" % (time.time() - start_time))
+        all_service_card = None
+        money_card = None
 
 
     # Thống kê bệnh nhân
@@ -257,6 +284,7 @@ def home(day_query=None):
 @app.route('/revenue/<string:day_query>')
 @app.route('/revenue')
 @register_breadcrumb(app, '..revenue', 'Doanh thu')
+@manager_required
 def revenue(day_query=None):
 
     cnxn = get_db()
@@ -405,6 +433,7 @@ def revenue(day_query=None):
 @app.route('/revenue/confirmed')
 @app.route('/revenue/confirmed/<string:day_query>')
 @register_breadcrumb(app, '..revenue.confirmed', 'Danh sách')
+@login_required
 def confirmed(day_query=None):
 
     cnxn = get_db()
@@ -457,6 +486,7 @@ def confirmed(day_query=None):
 @app.route('/hospitalized/<string:day_query>')
 @app.route('/hospitalized')
 @register_breadcrumb(app, '.hospitalized', 'Nội trú')
+@login_required
 def hospitalized(day_query=None):
 
     cnxn = get_db()
@@ -641,6 +671,7 @@ def hospitalized(day_query=None):
 @app.route('/hospitalized/new-patients/<string:day_query>')
 @app.route('/hospitalized/new-patients')
 @register_breadcrumb(app, '..hospitalized.new-patients', 'Nhập viện mới')
+@login_required
 def new_patients(day_query=None):
 
     # kết nối database sql server
@@ -707,6 +738,7 @@ def new_patients(day_query=None):
 @app.route('/hospitalized/out-patients/<string:day_query>')
 @app.route('/hospitalized/out-patients')
 @register_breadcrumb(app, '..hospitalized.out-patients', 'Ra viện')
+@login_required
 def out_patients(day_query=None):
 
     # kết nối database sql server
@@ -754,6 +786,7 @@ def out_patients(day_query=None):
 @app.route('/transfer/<string:day_query>')
 @app.route('/transfer')
 @register_breadcrumb(app, '..transfer', 'Chuyển viện')
+@login_required
 def transfer(day_query=None):
 
     # kết nối database sql server
@@ -798,6 +831,7 @@ def transfer(day_query=None):
 @app.route('/hospitalized/patients/<string:day_query>')
 @app.route('/hospitalized/patients')
 @register_breadcrumb(app, '..hospitalized.patients', 'Bệnh nhân')
+@login_required
 def patients(day_query=None):
 
     cnxn = get_db()
@@ -849,6 +883,7 @@ def patients(day_query=None):
 @app.route('/visited/<string:day_query>')
 @app.route('/visited')
 @register_breadcrumb(app, '.visited', 'Khám bệnh')
+@login_required
 def visited(day_query=None):
     cnxn = get_db()
     cursor = cnxn.cursor()
@@ -956,6 +991,7 @@ def visited(day_query=None):
 @app.route('/visited/patients/<string:day_query>')
 @app.route('/visited/patients')
 @register_breadcrumb(app, '..visited.patients', 'Bệnh nhân')
+@login_required
 def visited_patients(day_query=None):
 
     # kết nối database sql server
@@ -1004,6 +1040,7 @@ def visited_patients(day_query=None):
 @app.route('/visited/time-overview/<string:day_query>')
 @app.route('/visited/time-overview')
 @register_breadcrumb(app, '..visited.time_overview', 'Thời gian khám')
+@login_required
 def time_overview(day_query=None):
 
     # kết nối database sql server
@@ -1058,6 +1095,7 @@ def time_overview(day_query=None):
 @app.route('/surgery/<string:day_query>')
 @app.route('/surgery')
 @register_breadcrumb(app, '..surgery', 'Phẫu thuật, thủ thuật')
+@login_required
 def surgery(day_query=None):
     # kết nối database sql server
     cnxn = get_db()
@@ -1111,6 +1149,7 @@ def surgery(day_query=None):
 @app.route('/surgery/list/<string:day_query>')
 @app.route('/surgery/list')
 @register_breadcrumb(app, '..surgery.list', 'Danh sách')
+@login_required
 def surgery_list(day_query=None):
 
     # kết nối database sql server
@@ -1154,6 +1193,7 @@ def surgery_list(day_query=None):
 @app.route('/born/<string:day_query>')
 @app.route('/born')
 @register_breadcrumb(app, '..surgery.born', 'Trẻ sinh')
+@login_required
 def born(day_query=None):
 
     # kết nối database sql server
@@ -1196,6 +1236,7 @@ def born(day_query=None):
 @app.route('/revenue/list/<string:day_query>')
 @app.route('/revenue/list')
 @register_breadcrumb(app, '..revenue.list', 'Danh sách')
+@login_required
 def list_revenue(day_query=None):
 
     cnxn = get_db()
@@ -1242,6 +1283,7 @@ def list_revenue(day_query=None):
 @app.route('/revenue/medicine/<string:day_query>')
 @app.route('/revenue/medicine/')
 @register_breadcrumb(app, '..revenue.medicine', 'Dược')
+@login_required
 def medicine(day_query=None):
 
     cnxn = get_db()
@@ -1298,6 +1340,7 @@ def medicine(day_query=None):
 @app.route('/revenue/service/<string:day_query>')
 @app.route('/revenue/service/')
 @register_breadcrumb(app, '..revenue.service', 'Dịch vụ')
+@login_required
 def service(day_query=None):
     cnxn = get_db()
     cursor = cnxn.cursor()
@@ -1352,6 +1395,7 @@ def service(day_query=None):
 @app.route('/revenue/department/<string:department_name>/<string:day_query>')
 @app.route('/revenue/service/<string:department_name>')
 @register_breadcrumb(app, '..revenue.department', 'Khoa/Phòng')
+@login_required
 def revenue_department(department_name,day_query=None):
     cnxn = get_db()
     cursor = cnxn.cursor()
@@ -1408,6 +1452,7 @@ def revenue_department(department_name,day_query=None):
 @app.route('/visited/<int:department_id>/<string:day_query>')
 @app.route('/visited/<int:department_id>')
 @register_breadcrumb(app, '..visited.department', 'Danh sách')
+@login_required
 def visited_department(department_id, day_query=None):
 
     department_id_list = get_department_id_list(department_id)
@@ -1479,6 +1524,7 @@ def visited_department(department_id, day_query=None):
 @app.route('/hospitalized/department/<string:department_name>/<string:day_query>')
 @app.route('/hospitalized/department/<string:department_name>')
 @register_breadcrumb(app, '..hospitalized.department', 'Danh sách')
+@login_required
 def hospitalized_department(department_name, day_query=None):
  
     cnxn = get_db()
@@ -1522,6 +1568,7 @@ def hospitalized_department(department_name, day_query=None):
 @app.route('/hospitalized/new/<string:department_name>/<string:day_query>')
 @app.route('/hospitalized/new/<string:department_name>')
 @register_breadcrumb(app, '..hospitalized.department_new', 'Nhập mới')
+@login_required
 def hospitalized_department_new(department_name, day_query=None):
 
     cnxn = get_db()
@@ -1557,6 +1604,7 @@ def hospitalized_department_new(department_name, day_query=None):
 # Trang danh sách bệnh nhân
 @app.route('/patients/')
 @register_breadcrumb(app, '..patients', 'Bệnh nhân')
+@login_required
 def all_patients():
 
     # kết nối database sql server
@@ -1611,6 +1659,7 @@ def all_patients():
 # Trang chi tiết bệnh nhân
 @app.route('/patient/<string:mayte>')
 @register_breadcrumb(app, '..patients.detail', 'Chi tiết')
+@login_required
 def patient_detail(mayte):
 
     # kết nối database sql server
@@ -1661,6 +1710,7 @@ def patient_detail(mayte):
 #Trang lịch sử nội trú điều trị
 @app.route('/medical-record/<string:sobenhan>',methods=['GET', 'POST'])
 @register_breadcrumb(app, '..medical_record', 'Chi tiết bệnh án')
+@login_required
 def patient_hospitalized(sobenhan):
     cnxn = get_db()
     cursor = cnxn.cursor()
@@ -1711,6 +1761,7 @@ def patient_hospitalized(sobenhan):
 @app.route('/report/<string:day_query>')
 @app.route('/report')
 @register_breadcrumb(app, '..report', 'Báo cáo')
+@manager_required
 def report(day_query=None):
 
     cnxn = get_db()
@@ -1737,6 +1788,7 @@ def report(day_query=None):
 @app.route('/report/79/<string:day_query>', methods=['GET', 'POST'])
 @app.route('/report/79', methods=['GET', 'POST'])
 @register_breadcrumb(app, '..report.report-79', 'Chi tiết doanh thu xác nhận')
+@manager_required
 def report_79(day_query=None):
     # kết nối database sql server
     cnxn = get_db()
@@ -1836,17 +1888,18 @@ def user_login():
     cursor = con.cursor()
 
     if request.method == "POST":
-        user = request.form['username']
+        user = request.form['username'].lower()
         pwd = request.form['password']
 
         login_user = query_user.login_user(user, pwd, cursor)
         if login_user:
             session['username'] = request.form['username']
-            return redirect(url_for('admin'))
+            return redirect(url_for('home'))
         else:
             flash('Đăng nhập thất bại')
+    today = datetime.today().strftime('%Y-%m-%d')
     context = {
-
+        'today': today
     }
 
     con.close()
@@ -1863,6 +1916,7 @@ def user_logout():
 # trang quản trị
 @app.route('/admin', methods=['GET', 'POST'])
 @register_breadcrumb(app, '..admin', 'Quản trị')
+@login_required
 def admin():
     
     con = get_db_dashboard()
@@ -1946,6 +2000,7 @@ def detail_post(post_id):
 # trang thu tiền dịch vụ
 @app.route('/admin/money', methods=['GET', 'POST'])
 @register_breadcrumb(app, '..admin.money', 'Tiền dịch vụ')
+@manager_required
 def admin_money():
 
     if session.get('username'):
@@ -2027,6 +2082,7 @@ def admin_money():
 # trang báo cáo thu tiền dịch vụ
 @app.route('/report/service-money/<string:day_query>')
 @register_breadcrumb(app, '..report.service_money', 'Tiền dịch vụ')
+@manager_required
 def report_service_money(day_query=None):
     con = get_db_dashboard()
     cursor = con.cursor()
@@ -2075,6 +2131,7 @@ def report_service_money(day_query=None):
 # chi tiết bài viết
 @app.route('/admin/medical-record-tracking', methods=['GET', 'POST'])
 @register_breadcrumb(app, '..admin.medical_record', 'Theo dõi bệnh án')
+@login_required
 def medical_record():
     if session.get('username'):
         # kết nối database sql server
@@ -2228,6 +2285,7 @@ def medical_record():
 # Trang danh bạ
 @app.route('/addressbook')
 @register_breadcrumb(app, '..addressbook', 'Danh bạ nhân viên')
+@login_required
 def addressbook():
 
     con = get_db_dashboard()
@@ -2270,6 +2328,7 @@ def search():
 @app.route('/revenue/medical-indication/<string:day_query>')
 @app.route('/revenue/medical-indication')
 @register_breadcrumb(app, '..revenue.medical-indication', 'Thống kê chỉ định')
+@manager_required
 def revenue_medical_indication(day_query=None):
 
     # kết nối database sql server
@@ -2328,6 +2387,7 @@ def revenue_medical_indication(day_query=None):
 
 # API Thông tin của bệnh nhân
 @app.route('/patient-api/<string:mayte>')
+@login_required
 def patient_api_detail(mayte):
     cnxn = get_db()
     cursor = cnxn.cursor()
@@ -2351,6 +2411,7 @@ def patient_api_detail(mayte):
 
 # API đơn thuốc của bệnh nhân
 @app.route('/prescription-api/<int:khambenh_id>')
+@login_required
 def prescription_api(khambenh_id):
     cnxn = get_db()
     cursor = cnxn.cursor()
@@ -2372,6 +2433,7 @@ def prescription_api(khambenh_id):
 
 # API chỉ định của bệnh nhân
 @app.route('/cls-api/<int:tiepnhan_id>')
+@login_required
 def cls_api(tiepnhan_id):
     cnxn = get_db()
     cursor = cnxn.cursor()
@@ -2392,6 +2454,7 @@ def cls_api(tiepnhan_id):
 
 # API kết quả của bệnh nhân
 @app.route('/ketqua-api/<int:cls_id>')
+@login_required
 def ketqua_api(cls_id):
     cnxn = get_db()
     cursor = cnxn.cursor()
@@ -2414,6 +2477,7 @@ def ketqua_api(cls_id):
 
 # API nhân viên trong khoa
 @app.route('/staff-department-api/<int:department_id>')
+@login_required
 def staff_department_api(department_id):
     cnxn = get_db()
     cursor = cnxn.cursor()
@@ -2432,9 +2496,6 @@ def staff_department_api(department_id):
     close_db()
 
     return j
-
-
-
 
 # chi tiết bài viết
 @app.route('/mlWteF6XdB')
