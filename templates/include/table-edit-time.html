@@ -25,7 +25,7 @@
                   data-noidung="{{ row.tendichvu }}"
                   data-barcode="{{ row.BarCodeID }}"
                   data-thoigianketqua="{{ row.thoigianketqua }}"
-                  data-resultid="{{ row.ResultID }}"
+                  data-resultid="{{ row.resultdetail_id }}"
                   onclick="editLabTime(this)">Sửa</button></td>
 
                 {% else %}
@@ -75,7 +75,7 @@
           </tbody>
 
         </table>
-        <label for="resultID" class="form-label">Result ID</label>
+        <label for="resultID" class="form-label">Result Detail ID</label>
         <input type="text"  class="form-control" readonly  id="resultID" name="result_change_id">
         <div class="my-3">
           <label for="timeInput2" class="form-label">Thời gian mới</label>

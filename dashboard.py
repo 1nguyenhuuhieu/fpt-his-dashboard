@@ -2427,7 +2427,7 @@ def time_labresult(day_query=None):
         time_edit = request.form['time_edit']
         result_id = request.form['result_change_id']
         new_time = datetime.strptime(time_edit, '%Y-%m-%dT%H:%M')
-        q = """update  eLab_NgheAn..LabResultDetail set ResultDateTime=?  where ResultID = ?"""
+        q = """update  eLab_NgheAn..LabResultDetail set ResultDateTime=?  where ResultDetailID = ?"""
         cursor.execute(q, new_time, result_id)
         con.commit()
         flash('Sửa thời gian thành công')
@@ -2450,25 +2450,6 @@ def time_labresult(day_query=None):
 
     return render_template('admin/time-labresult.html', value=context)
 
-
-
-# trang sửa thời gian kết quả xét nghiệm
-@app.route('/admin/edit-time-labresult', methods=['GET', 'POST'])
-@lab_required
-def edit_time_labresult():
-    con = get_db_edit()
-    cursor = con.cursor()
-    update_time = None
-    result_id = None
-
-    if request.method == 'POST':
-        time_edit = request.form['time_edit']
-        print(time_edit)
-    q = """update  eLab_NgheAn..LabResultDetail set ResultDateTime=?  where ResultID = ?"""
-    cursor.execute(q, update_time, result_id)
-    # con.commit()
-    close_db()
-    
 
 
 
