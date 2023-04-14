@@ -2430,6 +2430,8 @@ def time_labresult(day_query=None):
         q = """update  eLab_NgheAn..LabResultDetail set ResultDateTime=?  where ResultID = ?"""
         cursor.execute(q, new_time, result_id)
         con.commit()
+        flash('Sửa thời gian thành công')
+
 
 
     lab_list = query_lab.lab_result(start, end, cursor)
