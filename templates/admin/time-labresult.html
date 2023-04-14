@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block header %}
+<i class="fa-solid fa-book-medical me-2"></i>{% block title %}Sửa thời gian xét nghiệm{% endblock %}
+{% endblock %}
+{% block content %}
+
+<h6 class="mb-3">Danh sách kết quả xét nghiệm</h6>
+
+{% include 'include/table-edit-time.html' %}
+
+<script>
+    const urlGenerator = '/admin/time-labresult/';
+    const todayURL = "{{ url_for('time_labresult') }}";
+</script>
+{% endblock %}

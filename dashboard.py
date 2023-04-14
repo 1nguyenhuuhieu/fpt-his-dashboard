@@ -22,6 +22,7 @@ from sqlquery import report as query_report
 from sqlquery import user as query_user
 from sqlquery import medical_record as query_medical_record
 from sqlquery import home as query_home
+from sqlquery import lab as query_lab
 
 from db import *
 from flask_breadcrumbs import Breadcrumbs, register_breadcrumb
@@ -78,6 +79,16 @@ def manager_required(f):
     def decorated_function(*args, **kwargs):
         if session.get('username') is None or session['username'] != 'manager':
             flash('Đăng nhập tài khoản quản lý để sử dụng')
+            return redirect(url_for('user_login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+# manager decorator
+def lab_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if session.get('username') is None or session['username'] != 'lab':
+            flash('Đăng nhập tài khoản xét nghiệm để sử dụng')
             return redirect(url_for('user_login'))
         return f(*args, **kwargs)
     return decorated_function
@@ -2385,6 +2396,81 @@ def revenue_medical_indication(day_query=None):
     return render_template('revenue/medical-indication.html', value=context, active='revenue', not_patient_btn=True,order_column=3)
 
 
+# trang sửa thời gian kết quả xét nghiệm
+@app.route('/admin/time-labresult',methods=['GET', 'POST'])
+@app.route('/admin/time-labresult/<string:day_query>',methods=['GET', 'POST'])
+@register_breadcrumb(app, '..admin.time_labresult', 'Kết quả xét nghiệm')
+@lab_required
+def time_labresult(day_query=None):
+    con = get_db_edit()
+    cursor = con.cursor()
+
+    # ngày bắt đầu và kết thúc truy vấn dữ liệu
+    time_filter = request.args.get('time')
+    start_get = request.args.get('start')
+    end_get = request.args.get('end')
+
+    # lấy ngày xem dashboard
+    day_class = DayQuery(day_query, time_filter, start_get, end_get)
+    today = day_class.today
+    start = day_class.start
+    end = day_class.end
+
+    previous_start = day_class.previous_start
+    previous_end = day_class.previous_end
+
+    diff = diff_days(start, end)
+    table_column_title = ['Số phiếu yêu cầu', 'Mã y tế','Tên bệnh nhân', 'Thời gian yêu cầu','BarcodeID',  'Nội dung', 'ResultDatetime','Action']
+
+
+    if request.method == 'POST':
+        time_edit = request.form['time_edit']
+        result_id = request.form['result_change_id']
+        new_time = datetime.strptime(time_edit, '%Y-%m-%dT%H:%M')
+        q = """update  eLab_NgheAn..LabResultDetail set ResultDateTime=?  where ResultID = ?"""
+        cursor.execute(q, new_time, result_id)
+        con.commit()
+
+
+    lab_list = query_lab.lab_result(start, end, cursor)
+
+
+    today = today.strftime("%Y-%m-%d")
+    context = {
+        'today': today,
+        'start': start,
+        'end': end,
+        'diff': diff,
+        'list': lab_list,
+        'table_column_title': table_column_title
+    }
+    close_db()
+
+    return render_template('admin/time-labresult.html', value=context)
+
+
+
+# trang sửa thời gian kết quả xét nghiệm
+@app.route('/admin/edit-time-labresult', methods=['GET', 'POST'])
+@lab_required
+def edit_time_labresult():
+    con = get_db_edit()
+    cursor = con.cursor()
+    update_time = None
+    result_id = None
+
+    if request.method == 'POST':
+        time_edit = request.form['time_edit']
+        print(time_edit)
+    q = """update  eLab_NgheAn..LabResultDetail set ResultDateTime=?  where ResultID = ?"""
+    cursor.execute(q, update_time, result_id)
+    # con.commit()
+    close_db()
+    
+
+
+
+# ----------------------------------------------------------------------------------------
 # API Thông tin của bệnh nhân
 @app.route('/patient-api/<string:mayte>')
 @login_required

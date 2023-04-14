@@ -29,6 +29,19 @@ def get_db():
             g.db = pyodbc.connect('DRIVER={SQL Server Native Client 11.0};SERVER=' +
                                 server+';DATABASE='+database+';UID='+username+';PWD=' + password)
             return g.db
+        
+
+def get_db_edit():
+    if 'db' not in g:
+            server = '192.168.123.254'
+            database = 'eHospital_NgheAn'
+            username = 'sa'
+            password = 'toanthang'
+            g.db = pyodbc.connect('DRIVER={SQL Server Native Client 11.0};SERVER=' +
+                                server+';DATABASE='+database+';UID='+username+';PWD=' + password)
+            return g.db
+        
+
 
 def close_db(e=None):
     db = g.pop('db', None)
