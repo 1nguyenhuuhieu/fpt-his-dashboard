@@ -63,9 +63,6 @@ Breadcrumbs(app=app)
 app.jinja_env.filters['zip'] = zip
 
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=80)
-
 
 # login decorator
 def login_required(f):
@@ -2575,3 +2572,9 @@ def staff_department_api(department_id):
 def mlWteF6XdB():
 
     return render_template('include/mlWteF6XdB.html')
+
+
+
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=80)
