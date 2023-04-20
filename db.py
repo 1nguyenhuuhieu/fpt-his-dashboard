@@ -14,22 +14,6 @@ import sqlite3
 
 server_location = 'work'
 
-# def get_db():
-#     if server_location == 'home':
-#         if 'db' not in g:
-#             g.db = pyodbc.connect(driver='{ODBC Driver 17 for SQL Server}', server='localhost', database='eHospital_NgheAn',
-#                                 trusted_connection='yes')
-#             return g.db
-#     else:
-#         if 'db' not in g:
-#             server = '192.168.123.254'
-#             database = 'eHospital_NgheAn'
-#             username = 'dashboard'
-#             password = 'ttytanhson@2023'
-#             g.db = pyodbc.connect('DRIVER={SQL Server Native Client 11.0};SERVER=' +
-#                                 server+';DATABASE='+database+';UID='+username+';PWD=' + password)
-#             return g.db
-
 def get_db():
     if server_location == 'home':
         if 'db' not in g:
@@ -42,9 +26,25 @@ def get_db():
             database = 'eHospital_NgheAn'
             username = 'dashboard'
             password = 'ttytanhson@2023'
-            g.db = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER=' +
+            g.db = pyodbc.connect('DRIVER={SQL Server Native Client 11.0};SERVER=' +
                                 server+';DATABASE='+database+';UID='+username+';PWD=' + password)
             return g.db
+
+# def get_db():
+#     if server_location == 'home':
+#         if 'db' not in g:
+#             g.db = pyodbc.connect(driver='{ODBC Driver 17 for SQL Server}', server='localhost', database='eHospital_NgheAn',
+#                                 trusted_connection='yes')
+#             return g.db
+#     else:
+#         if 'db' not in g:
+#             server = '192.168.123.254'
+#             database = 'eHospital_NgheAn'
+#             username = 'dashboard'
+#             password = 'ttytanhson@2023'
+#             g.db = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER=' +
+#                                 server+';DATABASE='+database+';UID='+username+';PWD=' + password)
+#             return g.db
 
 
 
