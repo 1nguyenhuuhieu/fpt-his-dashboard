@@ -63,6 +63,10 @@ Breadcrumbs(app=app)
 app.jinja_env.filters['zip'] = zip
 
 
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=80)
+
+
 # login decorator
 def login_required(f):
     @wraps(f)
