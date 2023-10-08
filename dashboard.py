@@ -466,7 +466,7 @@ def confirmed(day_query=None):
     all_confirmed = query_confirmed.list(start, end, cursor)
 
     table_column_title = ['Thời gian', 'Mã y tế', 'Số xác nhận',
-                          'Loại', 'Doanh thu', 'Thanh toán', 'Nhân viên']
+                          'Loại', "Khoa/Phòng",'Doanh thu', 'Thanh toán', 'Nhân viên']
 
     staff_money = query_confirmed.staff_money(start, end, cursor)
     staff_money = list([staff, f'{int(money1):,}', f'{int(money2):,}']

@@ -49,6 +49,7 @@ def list(start, end, cursor):
             XacNhanChiPhi.SoXacNhan,
             
             XacNhanChiPhi.Loai,
+            TenPhongKham,
             SUM(SoLuong*DonGiaDoanhThu) as 'doanhthu',
             SUM(SoLuong*DonGiaThanhToan) as 'thanhtoan',
             [eHospital_NgheAn_Dictionary].[dbo].[NhanVien].TenNhanVien
@@ -77,7 +78,8 @@ def list(start, end, cursor):
             MaYTe,
             XacNhanChiPhi.NgayTao, XacNhanChiPhi.Loai,
             [eHospital_NgheAn_Dictionary].[dbo].[NhanVien].TenNhanVien,
-            XacNhanChiPhi.SoXacNhan
+            XacNhanChiPhi.SoXacNhan,
+            TenPhongKham
             """, start, end
         ).fetchall()
 
