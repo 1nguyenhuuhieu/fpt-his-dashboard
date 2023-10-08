@@ -527,8 +527,8 @@ def time_patients(start, end, cursor):
     DATEDIFF(minute, CLSYeuCau.ThoiGianYeuCau, CLSKetQua.ThoiGianThucHien) as thoigiancho_cls,
     DATEDIFF(minute, CLSKetQua.ThoiGianThucHien, CLSKetQua.NgayTao) as thoigian_cho_ketqua_cls,
     DATEDIFF(minute, CLSKetQua.NgayTao, KhamBenh.NgayCapNhat) as thoigian_cho_hoantatkhambenh,
-    DATEDIFF(minute, CLSKetQua.NgayTao, XacNhanChiPhi.NgayTao) as thoigian_cho_thanhtoan,
-    DATEDIFF(minute,TiepNhan.ThoiGianTiepNhan, XacNhanChiPhi.NgayTao) as tongthoigian
+    DATEDIFF(minute, CLSKetQua.NgayTao, XacNhanChiPhi.ThoiGianXacNhan) as thoigian_cho_thanhtoan,
+    DATEDIFF(minute,TiepNhan.ThoiGianTiepNhan, XacNhanChiPhi.ThoiGianXacNhan) as tongthoigian
     FROM CLSYeuCau
     INNER JOIN eHospital_NgheAn_Dictionary.dbo.DM_NhomDichVu as dm_dichvu
     ON CLSYeuCau.NhomDichVu_Id = dm_dichvu.NhomDichVu_Id
