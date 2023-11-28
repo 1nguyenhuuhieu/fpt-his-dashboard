@@ -1271,7 +1271,7 @@ def list_revenue(day_query=None):
     diff = diff_days(start, end)
 
     table_column_title = ['Nội dung', 'Tên',
-                          'Khoa/Phòng', 'Người chỉ định','Đơn giá', 'Số lượt', 'Tổng doanh thu']
+                          'Khoa/Phòng', 'Đơn giá', 'Số lượt', 'Tổng doanh thu']
 
     list_patients = query_revenue.services(start,end, cursor)
 

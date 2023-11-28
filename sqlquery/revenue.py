@@ -802,7 +802,6 @@ def services(start, end, cursor):
             XacNhanChiPhiChiTiet.NoiDung,
             Loai_IDRef_Name,
             XacNhanChiPhi.TenPhongKham,
-            dm_nhanvien.TenNhanVien as nguoichidinh,
             XacNhanChiPhiChiTiet.DonGiaDoanhThu,
             COALESCE(COUNT(XacNhanChiPhiChiTiet_Id),0) as 'count',
             COALESCE(SUM(SoLuong*DonGiaDoanhThu), 0) as 'tongdoanhthu'
@@ -813,15 +812,12 @@ def services(start, end, cursor):
             ON XacNhanChiPhiChiTiet.Loai_IDRef = VienPhiNoiTru_Loai_IDRef.Loai_IDRef
             inner join clsyeucau
             on CLSYeuCau.tiepnhan_id = XacNhanChiPhi.TiepNhan_Id
-            inner join eHospital_NgheAn_Dictionary.dbo.NhanVien as dm_nhanvien
-            on CLSYeuCau.BacSiChiDinh_Id = dm_nhanvien.NhanVien_Id
             WHERE XacNhanChiPhi.ThoiGianXacNhan BETWEEN ? AND ?
             GROUP BY
             XacNhanChiPhiChiTiet.NoiDung,
             XacNhanChiPhiChiTiet.DonGiaDoanhThu,
             Loai_IDRef_Name,
-            XacNhanChiPhi.TenPhongKham,
-            dm_nhanvien.TenNhanVien
+            XacNhanChiPhi.TenPhongKham
             ORDER BY tongdoanhthu DESC
             """, start, end
         ).fetchall()
