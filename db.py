@@ -40,8 +40,8 @@ def get_db():
         if 'db' not in g:
             server = '192.168.123.254'
             database = 'eHospital_NgheAn'
-            username = 'dashboard'
-            password = 'ttytanhson@2023'
+            username = 'admin'
+            password = 'Toanthang@8488'
             g.db = pyodbc.connect('DRIVER={ODBC Driver 17 for SQL Server};SERVER=' +
                                 server+';DATABASE='+database+';UID='+username+';PWD=' + password)
             return g.db
