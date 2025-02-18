@@ -44,13 +44,13 @@ from flask import g, request, redirect, url_for
 
 
 total_bed = {
-    'TTYT Anh Sơn': (200, 72, 272),
-    'Khoa Ngoại tổng hợp': (44, 8, 52),
-    'Khoa Nội tổng hơp': (37, 15, 52),
-    'Khoa Hồi sức cấp cứu': (44, 10, 54),
-    'Khoa Phụ Sản': (30, 11, 41),
-    'Liên chuyên khoa TMH-RHM-Mắt': (17, 8, 25),
-    'Khoa Y học cổ truyền': (28, 20, 48)
+    'TTYT Anh Sơn': (200, 72, 800),
+    'Khoa Ngoại tổng hợp': (44, 8, 50),
+    'Khoa Nội tổng hơp': (37, 15, 60),
+    'Khoa Hồi sức cấp cứu': (44, 10, 51),
+    'Khoa Phụ Sản': (30, 11, 38),
+    'Liên chuyên khoa TMH-RHM-Mắt': (17, 8, 24),
+    'Khoa Y học cổ truyền': (28, 20, 27)
 }
 
 # -------------------------------------------------------------
