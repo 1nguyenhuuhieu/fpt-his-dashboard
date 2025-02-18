@@ -597,12 +597,12 @@ def hospitalized(day_query=None):
 
     # Tính công suất giường bệnh
     percent_bed = [
-        ['Khoa Hồi sức cấp cứu', 0, 0, 54],
-        ['Khoa Ngoại tổng hợp', 0, 0, 52],
-        ['Khoa Nội tổng hơp', 0, 0, 52],
-        ['Khoa Phụ Sản', 0, 0, 41],
-        ['Khoa Y học cổ truyền', 0, 0, 48],
-        ['Liên chuyên khoa TMH-RHM-Mắt', 0, 0, 25]
+        ['Khoa Hồi sức cấp cứu', 0, 0, 51],
+        ['Khoa Ngoại tổng hợp', 0, 0, 50],
+        ['Khoa Nội tổng hơp', 0, 0, 60],
+        ['Khoa Phụ Sản', 0, 0, 38],
+        ['Khoa Y học cổ truyền', 0, 0, 27],
+        ['Liên chuyên khoa TMH-RHM-Mắt', 0, 0, 24]
     ]
     for i in range(diff):
         day = start + timedelta(days=i)
