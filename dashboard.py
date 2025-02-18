@@ -44,7 +44,7 @@ from flask import g, request, redirect, url_for
 
 
 total_bed = {
-    'TTYT Anh Sơn': (200, 72, 800),
+    'TTYT Anh Sơn': (200, 72, 200),
     'Khoa Ngoại tổng hợp': (44, 8, 50),
     'Khoa Nội tổng hơp': (37, 15, 60),
     'Khoa Hồi sức cấp cứu': (44, 10, 51),
